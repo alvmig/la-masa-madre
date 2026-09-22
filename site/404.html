@@ -15,7 +15,7 @@
       var base = /\.github\.io$/.test(location.hostname) && segs[1] ? '/' + segs[1] + '/' : '/';
       // Sub-apps que viven dentro de site/ con su propio router.
       var sub = base === '/' ? segs[1] : segs[2];
-      if (sub === 'buggy') base += 'buggy/';
+      if (sub === 'buggy' || sub === 'starter') base += sub + '/';
       var rest = location.pathname.slice(base.length);
       try {
         sessionStorage.setItem('mm_redirect', JSON.stringify({

@@ -4,27 +4,39 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>La Masa Madre · Obrador</title>
-  <style>
-    body { font-family: Georgia, serif; color: #1B2A4A; margin: 2rem; }
-    code { background: #eef1f6; padding: 0 .3em; }
-  </style>
+  <meta name="description" content="Obrador de pan de masa madre. Encarga hoy, recoge mañana.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!--
+    Aquí iría el snippet oficial de gtag.js. En esta SPA lo hace analytics.js
+    (initAnalytics) en el mismo orden: consent default → gtag/js → config.
+  -->
 </head>
 <body>
-  <h1>La Masa Madre</h1>
-  <p>Hola, mundo. Obrador en construcción.</p>
-  <p id="ruta"></p>
-  <script>
-    // Comprobación del fallback SPA de GitHub Pages (ver 404.html).
-    // En la Fase 1 esto pasa a router.js.
-    var raw = sessionStorage.getItem('mm_redirect');
-    if (raw) {
-      sessionStorage.removeItem('mm_redirect');
-      var r = JSON.parse(raw);
-      var base = location.pathname.replace(/\/$/, '');
-      history.replaceState(null, '', base + r.path);
-      document.getElementById('ruta').innerHTML =
-        'Ruta restaurada: <code>' + r.path + '</code> · referrer: <code>' + (r.referrer || '—') + '</code>';
-    }
-  </script>
+  <header class="top">
+    <a class="brand" href="./" data-route="/" data-testid="nav-home">La Masa Madre</a>
+    <nav>
+      <a href="panes" data-route="/panes" data-testid="nav-panes">Panes</a>
+      <a href="carrito" data-route="/carrito" data-testid="nav-carrito">Cesta <span id="cart-count" class="badge" hidden></span></a>
+    </nav>
+  </header>
+
+  <main id="app" class="wrap"></main>
+
+  <footer class="foot">
+    <p>Obrador La Masa Madre · Calle del Horno, 12 · <a href="#" data-testid="consent-reopen">Cookies</a></p>
+  </footer>
+
+  <div id="consent-banner" class="consent" data-testid="consent-banner" hidden>
+    <p>Usamos cookies de analítica para saber qué panes gustan más. Nada de publicidad.</p>
+    <div class="consent__actions">
+      <button type="button" class="btn btn--ghost" data-testid="consent-reject">Rechazar</button>
+      <button type="button" class="btn" data-testid="consent-accept">Aceptar</button>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>

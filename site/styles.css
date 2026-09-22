@@ -1,0 +1,130 @@
+/* La Masa Madre · mobile-first, pensado para ~390px dentro de un iframe. */
+:root {
+  --navy: #1B2A4A;
+  --navy-soft: #EEF1F6;
+  --ink: #1f2430;
+  --muted: #6b7280;
+  --line: #d9dee8;
+  --bg: #ffffff;
+  --serif-display: 'Playfair Display', Georgia, serif;
+  --serif-body: 'Merriweather', Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif-body);
+  font-size: 15px;
+  line-height: 1.6;
+}
+h1, h2, h3 { font-family: var(--serif-display); color: var(--navy); line-height: 1.2; margin: 0 0 .5rem; }
+h1 { font-size: 1.7rem; }
+h2 { font-size: 1.2rem; margin-top: 1.75rem; }
+p { margin: 0 0 .9rem; }
+a { color: var(--navy); }
+button { font: inherit; }
+.muted { color: var(--muted); font-size: .9rem; }
+.lead { font-size: 1.02rem; }
+
+/* Layout */
+.wrap { max-width: 560px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+.top {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: .8rem 1rem;
+  background: var(--bg);
+  border-bottom: 2px solid var(--navy);
+}
+.brand { font-family: var(--serif-display); font-weight: 700; font-size: 1.15rem; text-decoration: none; }
+.top nav { display: flex; gap: 1rem; }
+.top nav a { text-decoration: none; font-size: .95rem; }
+.badge {
+  display: inline-block; min-width: 1.3em; padding: 0 .35em;
+  background: var(--navy); color: #fff; border-radius: 999px;
+  font-size: .75rem; text-align: center; line-height: 1.5; vertical-align: text-top;
+}
+.foot { border-top: 1px solid var(--line); padding: 1rem; text-align: center; font-size: .8rem; color: var(--muted); }
+
+/* Botones */
+.btn {
+  display: inline-block;
+  background: var(--navy); color: #fff;
+  border: 2px solid var(--navy); border-radius: 4px;
+  padding: .6rem 1.1rem;
+  font-family: var(--serif-body); font-weight: 700; font-size: .95rem;
+  text-decoration: none; cursor: pointer;
+}
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn--block { display: block; width: 100%; text-align: center; margin-top: 1rem; }
+.btn--ghost { background: transparent; color: var(--navy); }
+.link { background: none; border: 0; padding: 0; color: var(--navy); text-decoration: underline; cursor: pointer; font-size: .9rem; }
+
+/* Home */
+.hero { padding: .5rem 0 1rem; border-bottom: 1px solid var(--line); }
+.hero h1 { font-size: 1.9rem; }
+.loaf { width: 96px; height: auto; color: var(--navy); display: block; margin-bottom: .75rem; }
+.info { border-top: 1px solid var(--line); margin-top: 1.5rem; }
+
+/* Tarjetas */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.card {
+  display: flex; flex-direction: column; gap: .15rem;
+  padding: .85rem;
+  border: 1px solid var(--line); border-radius: 4px;
+  text-decoration: none; color: var(--ink);
+  background: var(--bg);
+}
+.card:hover, .card:focus-visible { border-color: var(--navy); }
+.card__cat { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.card__name { font-family: var(--serif-display); font-weight: 600; color: var(--navy); font-size: 1rem; }
+.card__price { font-weight: 700; margin-top: .3rem; }
+
+/* Detalle */
+.detail__price { font-size: 1.3rem; font-weight: 700; color: var(--navy); }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 4px; }
+.qty__btn { width: 2.2rem; height: 2.2rem; border: 0; background: var(--navy-soft); color: var(--navy); font-weight: 700; cursor: pointer; }
+.qty__n { min-width: 2.2rem; text-align: center; font-weight: 700; }
+
+/* Cesta */
+.lines { list-style: none; padding: 0; margin: 0 0 1rem; }
+.line {
+  display: grid; grid-template-columns: 1fr auto; gap: .4rem .75rem; align-items: center;
+  padding: .8rem 0; border-bottom: 1px solid var(--line);
+}
+.line__main { display: flex; flex-direction: column; }
+.line__name { font-weight: 700; color: var(--navy); }
+.line__total { font-weight: 700; text-align: right; }
+.total { display: flex; justify-content: space-between; font-size: 1.05rem; margin-top: .5rem; }
+
+/* Checkout */
+.choices { display: grid; gap: .5rem; margin-bottom: .5rem; }
+.choice {
+  text-align: left; padding: .7rem .9rem;
+  border: 2px solid var(--line); border-radius: 4px; background: var(--bg);
+  color: var(--ink); cursor: pointer;
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.choice small { color: var(--muted); }
+.choice.is-selected { border-color: var(--navy); background: var(--navy-soft); }
+.summary { margin-top: 1.25rem; border-top: 1px solid var(--line); padding-top: .75rem; }
+.summary p { display: flex; justify-content: space-between; margin: 0 0 .3rem; }
+
+/* Consentimiento */
+.consent {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  background: var(--bg); border-top: 2px solid var(--navy);
+  padding: .9rem 1rem;
+  font-size: .9rem;
+}
+.consent p { margin-bottom: .6rem; }
+.consent__actions { display: flex; gap: .5rem; justify-content: flex-end; }
+.consent__actions .btn { padding: .45rem .9rem; font-size: .9rem; }
+[hidden] { display: none !important; }
+
+@media (min-width: 600px) {
+  body { font-size: 16px; }
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}

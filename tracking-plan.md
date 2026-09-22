@@ -130,7 +130,7 @@ Comportamiento esperado (modo avanzado): con `analytics_storage: denied` gtag **
 | `consent-banner`, `consent-accept`, `consent-reject` | Banner de consentimiento |
 | `nav-home`, `nav-panes`, `nav-carrito` | Navegación                        |
 | `product-card-<item_id>`      | Tarjeta en catálogo / destacados           |
-| `add-to-cart`                 | Botón añadir en el detalle                 |
+| `add-to-cart`, `detail-qty-minus`, `detail-qty-plus`, `detail-qty` | Botón añadir y selector de cantidad en el detalle |
 | `qty-plus-<item_id>`, `qty-minus-<item_id>`, `cart-remove-<item_id>` | Controles de línea en el carrito |
 | `cart-checkout`               | Botón "Hacer pedido" en el carrito         |
 | `shipping-pickup`, `shipping-delivery` | Opciones de entrega               |
@@ -167,6 +167,14 @@ gtag.js envía cada evento como query string (a veces varios eventos en el body,
 | `cid`, `sid`| client_id, session_id                          |
 
 Si al ejecutar el test la codificación real difiere, se corrige esta tabla y el decodificador, no al revés.
+
+Verificado en vivo (2026-09-22) con `G-TCCFCHKDG9`:
+
+- Los hits van a `https://region1.google-analytics.com/g/collect` (endpoint UE). El interceptor debe casar `*/g/collect*` en **cualquier host**.
+- gtag agrupa eventos cercanos en un **POST cuyo body lleva un evento por línea** (`en=…&ep.…`); la URL comparte los parámetros comunes (`cid`, `sid`, `dl`, `dt`, `dr`, `gcs`…) y no lleva `en`. El decodificador une query string + cada línea del body.
+- Codificación de items confirmada: `pr1=idMM-HOG-01~nmHogaza de masa madre~brLa Masa Madre~caPanes~c2Masa madre~pr5.5~qt2~lidestacados_home~lnDestacados home~lp0`.
+- **Reenvío de `page_view` con `ae=a`**: ~5 s después de cada `page_view`, si el usuario sigue en la página y no ha habido otro evento, gtag.js envía por su cuenta un segundo hit `en=page_view` con `ae=a` y `_et` (tiempo de interacción). No sale de nuestro código (en `dataLayer` hay un solo `page_view`) y no depende de `debug_mode`. No hay documentación pública; se interpreta como ping de interacción. El test e2e lo registra aparte y lo excluye de la secuencia. **Pendiente de confirmar en DebugView (Checkpoint 1) que GA4 no lo cuenta como segunda vista.**
+- Con consentimiento denegado los hits salen igualmente, sin `cid` persistente y con `gcs=G100`; tras aceptar, `gcs=G111`.
 
 ## 11. Measurement Protocol (backfill)
 
