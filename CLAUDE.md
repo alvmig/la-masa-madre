@@ -9,7 +9,9 @@ Repo de material para una formación de Google Analytics 4. Prioridad: **que tod
 - Slides con **reveal.js** (vendorizado en `slides/vendor/`), no un motor propio.
 - Simulador de tráfico: **Python + Playwright**. Backfill con **Measurement Protocol**.
 - Datos ricos del día 2 → cuenta demo de GA4 + `bigquery-public-data.ga4_obfuscated_sample_ecommerce`. La propiedad propia es para demo en vivo, DebugView y Tiempo real.
-- Netlify: web en `/`, slides en `/slides/`, **mismo dominio** (el iframe de las slides no es third-party → cookies OK).
+- **GitHub Pages**: web en `/`, slides en `/slides/`, **mismo dominio** (el iframe de las slides no es third-party → cookies OK). Publicación con GitHub Actions (`.github/workflows/pages.yml`) que ensambla `site/` + `slides/` en el artefacto; no es un build de la web.
+- GitHub Pages no tiene reescrituras: el fallback SPA es `site/404.html` (redirige a la raíz guardando la ruta en `sessionStorage`; el router la restaura con `replaceState` antes del primer `page_view`).
+- La web puede vivir bajo un **base path** (`/<repo>/` en project pages). El router calcula la base desde `import.meta.url`; nada de rutas absolutas `/panes` en HTML ni en JS. Los scripts Python construyen URLs con `urljoin` sobre `--url`.
 - Secretos: `G-XXXXXXXXXX` en `site/config.js`; `MEASUREMENT_ID` + `MP_API_SECRET` en `simulator/.env` (gitignored, con `.env.example`). El API secret **nunca** va al frontend.
 
 ## Regla de oro
@@ -22,14 +24,15 @@ No inventar nombres de eventos ni parámetros. La fuente de verdad es la doc ofi
 CLAUDE.md            este archivo
 tracking-plan.md     contrato de medición (eventos, parámetros, invariantes, secuencias esperadas)
 site/                SPA instrumentada = solución
-  index.html styles.css app.js router.js analytics.js catalog.js config.js
+  index.html 404.html styles.css app.js router.js analytics.js catalog.js config.js .nojekyll
   buggy/             copia con 5 fallos plantados (cierre día 2) + SOLUCIONES.md
 starter/             misma SPA con los cuerpos de analytics.js como // TODO + EJERCICIOS.md
 slides/              reveal.js (index.html, theme.css, snippets.js generado, vendor/)
-scripts/             extract-snippets.mjs (site/*.js → slides/snippets.js)
+scripts/             dev-server.mjs (sirve site/ en / y slides/ en /slides/ con fallback SPA)
+                     extract-snippets.mjs (site/*.js → slides/snippets.js)
 simulator/           traffic_generator.py  mp_backfill.py  e2e_events_test.py  requirements.txt  .env.example
 sql/                 consultas comentadas contra el dataset público
-netlify.toml         fallback SPA /* → /index.html 200 (no forzado: no rompe /slides/)
+.github/workflows/pages.yml   ensambla site/ + slides/ y publica en GitHub Pages
 README.md            arranque local, despliegue, checklist del día anterior
 ```
 
@@ -45,8 +48,7 @@ README.md            arranque local, despliegue, checklist del día anterior
 ## Comandos
 
 ```bash
-npx serve -s site -l 8080                       # web con fallback SPA
-npx serve slides -l 8081                        # slides sueltas (en Netlify van en /slides/)
+node scripts/dev-server.mjs                     # http://localhost:8080 → web; /slides/ → slides (mismo árbol que producción)
 node scripts/extract-snippets.mjs               # regenera slides/snippets.js
 cd simulator && python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt && playwright install chromium
 python simulator/e2e_events_test.py --url http://localhost:8080
