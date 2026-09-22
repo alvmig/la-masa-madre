@@ -52,8 +52,19 @@ Requiere el CLI de Google Cloud:
 ```bash
 brew install --cask google-cloud-sdk
 gcloud auth login
-gcloud config set project <tu-proyecto>
+gcloud projects create la-masa-madre-ga4 --name="La Masa Madre GA4"
+gcloud config set project la-masa-madre-ga4
 ```
+
+El script fija el proyecto explícitamente (`la-masa-madre-ga4`) para no depender
+de `gcloud config`, que puede diferir entre terminales. Con otro proyecto:
+
+```bash
+BQ_PROJECT=mi-proyecto ./scripts/run-sql.sh
+```
+
+No hace falta habilitar facturación: el **sandbox** de BigQuery da 1 TB de
+consulta al mes, y estas seis gastan 0,8 GB.
 
 ## Resultados
 

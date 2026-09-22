@@ -119,8 +119,9 @@ mejorada, que `send_page_view: false` **no** desactiva.
 - [ ] Recargar `https://alvmig.github.io/la-masa-madre/panes/MM-HOG-01`: la URL
       debe mantenerse tras el rebote por `404.html`.
 - [ ] `e2e_events_test.py` contra **producción**, en verde.
-- [x] Consultas de `sql/` ejecutadas contra BigQuery el 2026-09-22; resultados
-      en `sql/resultados/` y anotados en cada `.sql`. Reejecutar con `./scripts/run-sql.sh`.
+- [x] Consultas de `sql/` ejecutadas contra BigQuery el 2026-09-22 (proyecto
+      `la-masa-madre-ga4`, 0,8 GB); resultados en `sql/resultados/` y anotados
+      en cada `.sql`. Reejecutar con `./scripts/run-sql.sh`.
 
 **Datos**
 
