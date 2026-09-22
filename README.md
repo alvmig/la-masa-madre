@@ -97,6 +97,17 @@ conocer, porque salen en clase:
   desde `import.meta.url`, así que funciona igual en local, en la project page
   y con un dominio propio, sin tocar configuración.
 
+## Nota sobre git
+
+Este repositorio es de la cuenta `alvmig`, pero la clave SSH por defecto de
+esta máquina autentica como otra cuenta. Está fijada por repositorio:
+
+```bash
+git config core.sshCommand "ssh -i ~/.ssh/id_ed25519_alvmig -o IdentitiesOnly=yes"
+```
+
+Si un `git push` falla con "Permission denied", es esto.
+
 ## Configuración de GA4
 
 Propiedad de la formación: `G-TCCFCHKDG9` (en `site/config.js`; es público).
