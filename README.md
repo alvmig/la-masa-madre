@@ -14,7 +14,7 @@ Material de una formación de Google Analytics 4 (14 h, 2 jornadas) para desarro
 | 1 | Web SPA instrumentada (`site/`) | hecho |
 | 2 | Test e2e de eventos (`simulator/e2e_events_test.py`) | hecho |
 | 3 | Simulador de tráfico (`simulator/traffic_generator.py`) | hecho |
-| 4 | Backfill MP (`simulator/mp_backfill.py`) | pendiente |
+| 4 | Backfill MP (`simulator/mp_backfill.py`) | hecho (falta ejecutar el envío real) |
 | 5 | Slides (`slides/`) | pendiente |
 | 6 | Material de alumnos (`starter/`, `site/buggy/`, `sql/`) | pendiente |
 | 7 | README completo y checklist | pendiente |
