@@ -15,32 +15,34 @@
 <body>
 <div class="reveal"><div class="slides">
 
-<!-- ================= PORTADA ================= -->
 <section class="cover" data-menu-title="Portada">
   <p class="kicker">Formación · 14 horas · 2 jornadas</p>
   <h1>Google Analytics 4<br>para developers</h1>
-  <p class="big">La Masa Madre</p>
-  <p class="muted">gtag.js nativo, sin Tag Manager. Una SPA de verdad, instrumentada de cero.</p>
+  <p class="muted">Qué mide, cómo se configura, cómo se implementa y cómo se lee.</p>
   <aside class="notes">
-    Presentación. Preguntar quién ha tocado GA4 / UA / GTM antes. Dejar claro
-    que todo lo que veamos está en un repo público y que la web del teléfono
-    es real: los eventos que dispare durante la clase aparecen en DebugView.
+    Presentar. Preguntar quién ha tocado GA4, quién viene de Universal Analytics
+    y quién no ha visto la consola en su vida. Ajustar el ritmo del bloque 1 a eso.
   </aside>
 </section>
 
-<section data-menu-title="Qué haremos">
-  <h2>Qué vamos a hacer</h2>
+<section data-menu-title="Cómo va esto">
+  <h2>Cómo va esto</h2>
+  <p>Dos días. El primero para entender qué es GA4 y cómo se mide una web. El segundo para sacarle datos.</p>
+  <ul>
+    <li>Cada bloque termina con un ejercicio corto. Se hace en el momento, no al final del día.</li>
+    <li>Hay una tienda de ejemplo que iremos rompiendo y arreglando.</li>
+    <li>Todo lo que veáis está en un repositorio público. No hace falta copiar nada.</li>
+  </ul>
+  <p class="muted">Interrumpid cuando queráis. Esto es mejor si se parece a una conversación.</p>
+</section>
+
+<section data-menu-title="La tienda de ejemplo">
+  <h2>La tienda de ejemplo</h2>
   <div class="split">
     <div>
-      <ul>
-        <li>Instrumentar una tienda <strong>desde cero</strong> con <code>gtag.js</code>.</li>
-        <li>Medir un embudo de ecommerce completo, de <code>view_item_list</code> a <code>purchase</code>.</li>
-        <li>Depurar lo que enviamos: DebugView, Network, tests automáticos.</li>
-        <li>Consentimiento: qué se manda cuando el usuario dice que no.</li>
-        <li>Leer los datos: informes, Exploraciones, BigQuery.</li>
-        <li>Meter datos sin navegador: Measurement Protocol.</li>
-      </ul>
-      <p class="muted">Todo el código: github.com/alvmig/la-masa-madre</p>
+      <p>Un obrador de barrio con seis panes y un carrito. Sirve para tener algo real que medir.</p>
+      <p>Es solo el decorado. Lo que aprendéis vale igual para un SaaS, un periódico o una app de reservas.</p>
+      <p class="muted">alvmig.github.io/la-masa-madre</p>
     </div>
     <div>
       <div class="phone"><iframe data-src-app="/" title="La Masa Madre"></iframe></div>
@@ -48,56 +50,323 @@
     </div>
   </div>
   <aside class="notes">
-    Este teléfono acompaña toda la formación. Es la web real servida desde el
-    mismo dominio que las slides: por eso el iframe no es de terceros y las
-    cookies funcionan igual que en una pestaña normal.
+    Este teléfono acompaña toda la formación: es la web real servida desde el
+    mismo dominio que las slides, así que las cookies funcionan igual que en
+    una pestaña normal. Tecla R para recargarlo y repetir una demo.
   </aside>
 </section>
 
-<!-- ================= DÍA 1 ================= -->
+<!-- ======================= DÍA 1 ======================= -->
 <section class="cover" data-menu-title="Día 1">
-  <p class="kicker">Jornada 1 · 7 horas</p>
+  <p class="kicker">Jornada 1</p>
   <h1>Medir</h1>
-  <p class="muted">Modelo de eventos · gtag.js · SPA · ecommerce · depuración · consentimiento · práctica</p>
+  <p class="muted">Qué es un evento · la consola · instrumentar una web · depurar · consentimiento</p>
 </section>
 
-<!-- ---- 1.0 Alta y configuración ---- -->
+<!-- ---------- B1 ---------- -->
 <section>
-  <section data-menu-title="1.0 Alta y configuración">
-    <p class="kicker">Bloque 1.0</p>
-    <h2>Alta y configuración</h2>
-    <p class="muted">Lo que hay que tener montado antes de escribir una línea de código.</p>
+  <section data-menu-title="1 · Qué es medir">
+    <p class="kicker">Bloque 1 <span class="tiempo">· 45 min</span></p>
+    <h2>Qué estamos midiendo, y para qué</h2>
+  </section>
+
+  <section>
+    <p class="frase">Nadie instala Analytics porque quiera ver gráficas.</p>
+    <p>Se instala porque hay una pregunta que responder:</p>
+    <ul>
+      <li>¿De dónde viene la gente que compra?</li>
+      <li>¿En qué paso del pedido se caen?</li>
+      <li>¿Sirve de algo el dinero que metemos en publicidad?</li>
+      <li>¿La versión nueva funciona mejor que la vieja?</li>
+    </ul>
+    <p class="muted">Si no hay pregunta, cualquier dato vale, y eso no es bueno: es inútil.</p>
+  </section>
+
+  <section>
+    <h3>Lo que hace por dentro una herramienta de analítica</h3>
+    <div data-diagram="ciclo-analitica"></div>
     <aside class="notes">
-      Este bloque es el "de dónde sale todo esto". Lo hacemos en vivo sobre la
-      propiedad de la formación para que vean cada pantalla.
+      Insistir: nosotros solo controlamos los dos primeros pasos. El procesado
+      es de Google y no se toca. Los informes se configuran pero no se arreglan
+      si el dato llegó mal.
     </aside>
   </section>
 
   <section>
-    <h3>Crear la propiedad</h3>
-    <ul>
-      <li><strong>Administrar → Crear → Propiedad</strong>.</li>
-      <li><strong>Zona horaria y moneda</strong>: se fijan aquí y condicionan todos los informes. Europe/Madrid y EUR.</li>
-      <li>Luego, <strong>flujo de datos</strong> web: la URL es informativa, no filtra nada.</li>
-    </ul>
+    <h3>Si vienes de Universal Analytics</h3>
+    <p>Cambió el modelo entero, no la interfaz.</p>
+    <table>
+      <tr><th>Antes</th><th>Ahora</th></tr>
+      <tr><td>Sesiones con hits dentro</td><td>Eventos, todos iguales</td></tr>
+      <tr><td>Pageview, evento, transacción: tipos distintos</td><td>Todo es un evento con parámetros</td></tr>
+      <tr><td>Categoría / acción / etiqueta</td><td>Parámetros con el nombre que quieras</td></tr>
+      <tr><td>Vistas dentro de una propiedad</td><td>No hay vistas</td></tr>
+    </table>
+    <p class="muted">Si no vienes de UA, mejor: te ahorras desaprender.</p>
+  </section>
+
+  <section>
+    <h3>Cómo se organizan los datos</h3>
+    <div data-diagram="jerarquia"></div>
+  </section>
+
+  <section>
+    <h3>El ámbito: de dónde salen la mitad de las discusiones</h3>
+    <div data-diagram="ambitos"></div>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 1">
+    <span class="ej-num">Ejercicio 1</span><span class="ej-tiempo">10 minutos</span>
+    <h2>Tus tres preguntas</h2>
+    <p>Pensad en la web o el producto en el que trabajáis.</p>
+    <ol class="pasos">
+      <li>Escribid tres preguntas que os gustaría poder responder con datos.</li>
+      <li>Para cada una, decid de qué ámbito es la respuesta: ¿evento, sesión o usuario?</li>
+      <li>Marcad cuáles creéis que ya podríais responder hoy con lo que tenéis medido.</li>
+    </ol>
+    <p class="muted">Las recogemos en voz alta. Volveremos a ellas mañana por la tarde.</p>
+    <aside class="notes">
+      Apuntar las preguntas en la pizarra. Sirven de hilo conductor y para
+      elegir qué exploraciones montar el día 2.
+    </aside>
+  </section>
+</section>
+
+<!-- ---------- B2 ---------- -->
+<section>
+  <section data-menu-title="2 · Eventos">
+    <p class="kicker">Bloque 2 <span class="tiempo">· 45 min</span></p>
+    <h2>Eventos y parámetros</h2>
+  </section>
+
+  <section>
+    <p class="frase">En GA4 todo es un evento.</p>
+    <pre><code class="language-javascript" data-trim>
+gtag('event', 'nombre_del_evento', { parametro: 'valor' });
+    </code></pre>
+    <p>Una vista de página es un evento. Una compra es un evento. Un clic en "ver horario" es un evento.</p>
+    <p class="muted">Hay exactamente una forma de mandar cosas. Eso simplifica mucho.</p>
+  </section>
+
+  <section>
+    <h3>Cuatro familias, y solo dos te importan</h3>
+    <div data-diagram="familias-eventos"></div>
+  </section>
+
+  <section>
+    <h3>Recomendados: por qué el nombre importa tanto</h3>
+    <p>Google tiene una lista de nombres que reconoce. Si usas <code>purchase</code>, los informes de ingresos se llenan solos.</p>
+    <p>Si lo llamas <code>compra_ok</code>, funciona igual de bien… pero los informes de monetización se quedan vacíos y tendrás que construirlos a mano.</p>
     <div class="note">
-      Una propiedad GA4 puede tener varios flujos (web, iOS, Android) y los datos
-      se mezclan. Un flujo ≠ una vista de Universal Analytics: <strong>las vistas ya no existen</strong>.
+      Mismo trabajo, distinto resultado. Antes de inventar un nombre, mira si
+      ya existe en la documentación.
     </div>
   </section>
 
   <section>
-    <h3>El Measurement ID</h3>
-    <p>Flujo de datos → arriba a la derecha: <code>G-TCCFCHKDG9</code>.</p>
-    <p>Es <strong>público</strong>: va en el HTML de todo el mundo. No es un secreto y no autentica nada: cualquiera puede mandar eventos a tu propiedad si lo conoce.</p>
+    <h3>Los parámetros son la mitad del trabajo</h3>
+    <pre><code class="language-javascript" data-trim>
+gtag('event', 'buscar_pan', {
+  termino: 'centeno',
+  resultados: 3
+});
+    </code></pre>
+    <p>Esto llega a GA4 sin problema. Pero <code>termino</code> no aparecerá en ningún informe hasta que lo registres como <strong>dimensión personalizada</strong> en la configuración.</p>
+    <p class="muted">Lo veremos en el bloque siguiente, en la consola.</p>
+  </section>
+
+  <section>
+    <h3>Eventos clave</h3>
+    <p>Un evento clave es simplemente un evento que has marcado como importante. Antes se llamaban conversiones.</p>
+    <ul>
+      <li>Se marca con un interruptor en la configuración, sin tocar código.</li>
+      <li>A partir de ahí aparece en informes específicos y se puede usar en Google Ads.</li>
+      <li>Puedes marcar y desmarcar cuando quieras; no cambia los datos ya recogidos.</li>
+    </ul>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 2">
+    <span class="ej-num">Ejercicio 2</span><span class="ej-tiempo">10 minutos</span>
+    <h2>Clasificad estos eventos</h2>
+    <p>¿Automático, medición mejorada, recomendado o personalizado? ¿Y cuáles marcaríais como evento clave?</p>
+    <ul>
+      <li><code>session_start</code></li>
+      <li><code>purchase</code></li>
+      <li><code>descarga_catalogo_pdf</code></li>
+      <li><code>scroll</code></li>
+      <li><code>login</code></li>
+      <li><code>abre_horario_obrador</code></li>
+    </ul>
+    <p class="muted">Truco: si dudáis entre recomendado y personalizado, buscad el nombre en la documentación. Es la única forma.</p>
+    <aside class="notes">
+      Soluciones: automático (session_start), medición mejorada (scroll, y
+      file_download cubriría la descarga si es un enlace a PDF), recomendados
+      (purchase, login), personalizados (abre_horario_obrador, y
+      descarga_catalogo_pdf si lo mandas tú). Clave: purchase seguro; los demás
+      dependen del negocio. Discutir que "descarga" puede medirse de dos formas.
+    </aside>
+  </section>
+</section>
+
+<!-- ---------- B3 · LA CONSOLA ---------- -->
+<section>
+  <section data-menu-title="3 · La consola">
+    <p class="kicker">Bloque 3 <span class="tiempo">· 60 min</span></p>
+    <h2>La consola de GA4</h2>
+    <p class="muted">Un recorrido por todo lo que hay, para que nada os pille de nuevas.</p>
+  </section>
+
+  <section>
+    <h3>El mapa</h3>
+    <div data-diagram="mapa-consola"></div>
+    <aside class="notes">
+      Hacer este recorrido en vivo sobre la cuenta demo, no solo sobre el
+      diagrama. La consola cambia de sitio las cosas cada pocos meses; el
+      diagrama es el mapa mental, la pantalla es la verdad.
+    </aside>
+  </section>
+
+  <section>
+    <h3>Página principal</h3>
+    <p>Un resumen automático. Sirve para el primer vistazo de la mañana y poco más.</p>
+    <p>Lo útil está en la barra de búsqueda de arriba: acepta preguntas en lenguaje natural y encuentra ajustes que no sabrías dónde buscar.</p>
+    <div class="note">
+      Si no encuentras algo en la consola, búscalo ahí antes de recorrer los
+      menús. Ahorra mucho tiempo.
+    </div>
+  </section>
+
+  <section>
+    <h3>Informes · lo que ya viene hecho</h3>
+    <ul>
+      <li><strong>Tiempo real</strong> — los últimos 30 minutos. Para comprobar que algo llega.</li>
+      <li><strong>Adquisición</strong> — de dónde viene la gente. Separa usuarios nuevos de sesiones.</li>
+      <li><strong>Interacción</strong> — eventos, páginas y pantallas, páginas de destino.</li>
+      <li><strong>Monetización</strong> — compras, ingresos, artículos. Aquí aterriza <code>purchase</code>.</li>
+      <li><strong>Retención</strong> — si la gente vuelve.</li>
+      <li><strong>Datos demográficos y Tecnología</strong> — quién es y con qué entra.</li>
+    </ul>
+    <p class="muted">Son rápidos porque están precalculados. Esa es también su limitación.</p>
+  </section>
+
+  <section>
+    <h3>Informes · lo que se puede tocar</h3>
+    <ul>
+      <li><strong>Comparaciones</strong>: ver dos segmentos a la vez en el mismo informe. Móvil contra escritorio, por ejemplo.</li>
+      <li><strong>Dimensión secundaria</strong>: partir una tabla por otra cosa.</li>
+      <li><strong>Rango de fechas</strong> con comparación contra el periodo anterior.</li>
+      <li><strong>Biblioteca</strong>: crear informes propios y cambiar el menú lateral para toda la propiedad.</li>
+    </ul>
     <div class="warn">
-      Lo que sí es un secreto es el <strong>API secret</strong> del Measurement
-      Protocol (mismo panel, más abajo). Ese nunca va al frontend.
+      La Biblioteca la ve todo el mundo en la propiedad. No es tu espacio
+      personal: si reordenas el menú, se lo reordenas a tus compañeros.
     </div>
   </section>
 
   <section>
-    <h3>El snippet oficial…</h3>
+    <h3>Explorar · lo que construyes tú</h3>
+    <p>Siete tipos. Estos son los que vais a usar de verdad:</p>
+    <ul>
+      <li><strong>Formato libre</strong> — una tabla dinámica. El 60 % de los análisis.</li>
+      <li><strong>Embudo</strong> — dónde se cae la gente.</li>
+      <li><strong>Rutas</strong> — qué hicieron en vez de lo que esperabas.</li>
+      <li><strong>Cohortes</strong> — si los de enero siguen volviendo en marzo.</li>
+      <li><strong>Superposición de segmentos</strong>, <strong>Vida útil del usuario</strong> y <strong>Exploración de usuarios</strong> — más específicos.</li>
+    </ul>
+    <p class="muted">Son privadas hasta que las compartes. Y tienen límites: 200 por usuario, 10 segmentos por exploración.</p>
+  </section>
+
+  <section>
+    <h3>Publicidad</h3>
+    <p>Solo tiene sentido si invertís en campañas. Dentro está la comparación de modelos de atribución y las rutas de conversión.</p>
+    <p>Es donde se ve que el último clic se lleva el mérito de un trabajo que hicieron otros canales antes.</p>
+    <p class="muted">Lo miramos por encima mañana; si nadie invierte en Ads, lo saltamos.</p>
+  </section>
+
+  <section>
+    <h3>Administrar · recopilación y modificación</h3>
+    <ul>
+      <li><strong>Flujos de datos</strong> — el Measurement ID, la medición mejorada, los secretos de API. Aquí se entra mucho.</li>
+      <li><strong>Eventos</strong> — ver los que llegan, crear eventos nuevos a partir de otros, modificar eventos sin tocar código.</li>
+      <li><strong>Importación de datos</strong> — subir un CSV con el coste de tus campañas o datos de producto.</li>
+      <li><strong>Retención de datos</strong> — cuánto guarda GA4 el detalle. Por defecto son 2 meses; súbelo a 14.</li>
+      <li><strong>Filtros de datos</strong> — excluir el tráfico interno, por ejemplo el de vuestra oficina.</li>
+    </ul>
+    <div class="warn">
+      Lo de la retención cambiadlo el primer día. Solo afecta al futuro: lo que
+      no guardó, no se recupera.
+    </div>
+  </section>
+
+  <section>
+    <h3>Administrar · visualización de datos</h3>
+    <ul>
+      <li><strong>Eventos clave</strong> — marcar lo que importa.</li>
+      <li><strong>Audiencias</strong> — grupos de usuarios según lo que hicieron. Se pueden exportar a Google Ads.</li>
+      <li><strong>Definiciones personalizadas</strong> — convertir parámetros en dimensiones de informe.</li>
+      <li><strong>DebugView</strong> — el monitor en vivo de lo que llega. Lo usaremos mucho.</li>
+    </ul>
+    <p>Los cupos de definiciones personalizadas, para una propiedad estándar:</p>
+    <table>
+      <tr><th>Dimensiones de evento</th><th>De usuario</th><th>De artículo</th><th>Métricas</th></tr>
+      <tr><td>50</td><td>25</td><td>10</td><td>50</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h3>Administrar · el resto</h3>
+    <ul>
+      <li><strong>Vinculaciones</strong>: BigQuery, Google Ads, Search Console. La de BigQuery es gratis y la veremos mañana.</li>
+      <li><strong>Configuración de la propiedad</strong>: nombre, zona horaria y moneda. Las dos últimas se fijan al crear y luego duelen de cambiar.</li>
+      <li><strong>Gestión de accesos</strong>: quién entra y con qué permisos.</li>
+      <li><strong>Historial de cambios</strong>: quién tocó qué. El primer sitio donde mirar cuando un informe "se rompe solo".</li>
+    </ul>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 3">
+    <span class="ej-num">Ejercicio 3</span><span class="ej-tiempo">15 minutos</span>
+    <h2>Búsqueda del tesoro</h2>
+    <p>Con la cuenta demo abierta, encontrad:</p>
+    <ol class="pasos">
+      <li>El Measurement ID del flujo web.</li>
+      <li>Cuántos días guarda los datos esta propiedad.</li>
+      <li>Qué eventos están marcados como clave.</li>
+      <li>El informe que dice qué páginas son las más vistas.</li>
+      <li>Cuántas dimensiones personalizadas quedan libres.</li>
+      <li>Si alguien cambió algo en los últimos treinta días.</li>
+    </ol>
+    <p class="muted">El que acabe antes, que busque dónde se excluye el tráfico interno.</p>
+    <aside class="notes">
+      En la cuenta demo no hay permisos de administración, así que algunos
+      puntos habrá que verlos en la propiedad de la formación. Tenerla abierta
+      en otra pestaña.
+    </aside>
+  </section>
+</section>
+
+<!-- ---------- B4 ---------- -->
+<section>
+  <section data-menu-title="4 · Poner GA4 en una web">
+    <p class="kicker">Bloque 4 <span class="tiempo">· 45 min</span></p>
+    <h2>Poner GA4 en una web</h2>
+  </section>
+
+  <section>
+    <h3>Crear la propiedad</h3>
+    <ol class="pasos">
+      <li>Administrar, crear propiedad.</li>
+      <li>Zona horaria y moneda. Europe/Madrid y euros.</li>
+      <li>Crear un flujo de datos web.</li>
+      <li>Copiar el Measurement ID: <code>G-</code> y diez caracteres.</li>
+    </ol>
+    <div class="note">
+      La URL que pide al crear el flujo es informativa. No filtra nada: si
+      alguien manda datos desde otro dominio con tu ID, entran igual.
+    </div>
+  </section>
+
+  <section>
+    <h3>El snippet que te da Google</h3>
     <pre><code class="language-html" data-trim>
 &lt;script async src="https://www.googletagmanager.com/gtag/js?id=G-TCCFCHKDG9"&gt;&lt;/script&gt;
 &lt;script&gt;
@@ -107,115 +376,8 @@
   gtag('config', 'G-TCCFCHKDG9');
 &lt;/script&gt;
     </code></pre>
-    <p class="muted">Cuatro líneas que esconden bastante. Las desmontamos en el bloque 1.2.</p>
-  </section>
-
-  <section>
-    <h3>Medición mejorada: desactivar el history change</h3>
-    <p>Flujo de datos → <strong>Medición mejorada</strong> → ⚙ → Vistas de página → Configuración avanzada.</p>
-    <p>Desmarcar <strong>"Cambios de página basados en eventos del historial del navegador"</strong>.</p>
-    <div class="warn">
-      Si no lo desactivas, en una SPA tendrás <strong>dos <code>page_view</code> por navegación</strong>:
-      el tuyo y el suyo. Y <code>send_page_view: false</code> <em>no</em> lo evita.
-    </div>
-    <aside class="notes">
-      Este es el error número uno en SPAs. Enseñar en DebugView el doble evento
-      con la opción activada, si da tiempo.
-    </aside>
-  </section>
-
-  <section>
-    <h3>Dónde vive todo esto</h3>
-    <table>
-      <tr><th>Pieza</th><th>Dónde</th><th>Secreto</th></tr>
-      <tr><td>Measurement ID</td><td><code>site/config.js</code></td><td>no</td></tr>
-      <tr><td>API secret (MP)</td><td><code>simulator/.env</code> (gitignored)</td><td><strong>sí</strong></td></tr>
-      <tr><td>Web</td><td>GitHub Pages, <code>/</code></td><td>—</td></tr>
-      <tr><td>Estas slides</td><td>GitHub Pages, <code>/slides/</code></td><td>—</td></tr>
-    </table>
-    <p class="muted">Mismo dominio para web y slides: el iframe no es de terceros y las cookies no se bloquean.</p>
-  </section>
-
-  <section>
-    <h3>Hosting estático: el detalle que rompe las SPA</h3>
-    <p>GitHub Pages no tiene reescrituras. <code>/panes/MM-HOG-01</code> no existe como fichero → sirve <code>404.html</code>.</p>
-    <pre><code class="language-javascript" data-trim>
-// site/404.html · guardamos la ruta pedida y volvemos a la raíz
-sessionStorage.setItem('mm_redirect', JSON.stringify({
-  path: '/' + rest, referrer: document.referrer
-}));
-location.replace(base);
-    </code></pre>
-    <p>El router la restaura con <code>replaceState</code> <strong>antes</strong> del primer <code>page_view</code>.</p>
-    <div class="note">Si no, GA4 registraría todas las visitas profundas como si fueran a la home.</div>
-  </section>
-</section>
-
-<!-- ---- 1.1 Modelo de eventos ---- -->
-<section>
-  <section data-menu-title="1.1 Modelo de eventos">
-    <p class="kicker">Bloque 1.1</p>
-    <h2>El modelo de eventos</h2>
-  </section>
-
-  <section>
-    <h3>En GA4 todo es un evento</h3>
-    <p>No hay pageviews, ni eventos con categoría/acción/etiqueta, ni transacciones aparte. Solo:</p>
-    <pre><code class="language-javascript" data-trim>
-gtag('event', '&lt;nombre&gt;', { &lt;parámetros&gt; });
-    </code></pre>
-    <ul>
-      <li>Una vista de página es un evento: <code>page_view</code>.</li>
-      <li>Una compra es un evento: <code>purchase</code>.</li>
-      <li>Tu evento propio es un evento: <code>solicita_presupuesto</code>.</li>
-    </ul>
-    <p class="muted">Viniendo de Universal Analytics: olvida categoría / acción / etiqueta. No existen.</p>
-  </section>
-
-  <section>
-    <h3>Cuatro familias de eventos</h3>
-    <table>
-      <tr><th>Familia</th><th>Quién los manda</th><th>Ejemplo</th></tr>
-      <tr><td>Automáticos</td><td>la librería</td><td><code>session_start</code>, <code>first_visit</code></td></tr>
-      <tr><td>Medición mejorada</td><td>la librería, configurable</td><td><code>scroll</code>, <code>click</code>, <code>file_download</code></td></tr>
-      <tr><td>Recomendados</td><td><strong>tú</strong>, con nombres fijos</td><td><code>purchase</code>, <code>add_to_cart</code></td></tr>
-      <tr><td>Personalizados</td><td>tú, nombre libre</td><td><code>pide_hogaza_gigante</code></td></tr>
-    </table>
-    <div class="warn">
-      Los <strong>recomendados</strong> son los que desbloquean informes ya hechos.
-      <code>purchase</code> alimenta los informes de ingresos; <code>compra_finalizada</code> no alimenta nada.
-    </div>
-  </section>
-
-  <section>
-    <h3>Parámetros: la parte que se olvida</h3>
-    <ul>
-      <li>Cada evento lleva parámetros. Muchos se registran solos (<code>page_location</code>, <code>language</code>…).</li>
-      <li>Para ver un parámetro <strong>propio</strong> en los informes hay que registrarlo como <strong>dimensión personalizada</strong>.</li>
-      <li>Hay cupo: 50 dimensiones de evento por propiedad. No es infinito.</li>
-    </ul>
-    <div class="note">
-      Regla práctica: si vas a segmentar por ello, es dimensión personalizada.
-      Si solo lo quieres para depurar, con verlo en DebugView basta.
-    </div>
-  </section>
-</section>
-
-<!-- ---- 1.2 gtag.js por dentro ---- -->
-<section>
-  <section data-menu-title="1.2 gtag.js">
-    <p class="kicker">Bloque 1.2</p>
-    <h2>gtag.js por dentro</h2>
-  </section>
-
-  <section>
-    <h3>Nuestro arranque, comentado</h3>
-    <div data-snippet="init"></div>
-    <aside class="notes">
-      Lo importante: gtag es un push a un array. Todo lo que llamas antes de que
-      cargue la librería se encola y se procesa en orden. Por eso el orden del
-      consentimiento importa aunque el script aún no esté.
-    </aside>
+    <p>Pegado en el <code>&lt;head&gt;</code>, esto ya mide vistas de página, sesiones y usuarios.</p>
+    <p class="muted">Para una web normal puede que no necesites nada más. Para una tienda, sí.</p>
   </section>
 
   <section>
@@ -224,184 +386,208 @@ gtag('event', '&lt;nombre&gt;', { &lt;parámetros&gt; });
 window.dataLayer = window.dataLayer || [];
 function gtag() { dataLayer.push(arguments); }
     </code></pre>
-    <p><code>gtag()</code> no envía nada: <strong>encola</strong>. Cuando <code>gtag/js</code> carga, procesa la cola en orden.</p>
-    <p>Consecuencia práctica: el orden de tus llamadas se respeta aunque la red vaya lenta o el script esté bloqueado.</p>
+    <p><code>gtag()</code> no envía nada: mete lo que le pidas en una cola. Cuando la librería termina de cargar, procesa la cola en orden.</p>
+    <p>Por eso da igual que el script tarde: el orden de tus llamadas se respeta. Esto será importante en el bloque del consentimiento.</p>
   </section>
 
   <section>
-    <h3>Qué viaja por el cable</h3>
-    <p>Un evento = una petición a <code>/g/collect</code> con todo en la query string.</p>
-    <pre><code class="language-text" data-trim>
-en=add_to_cart            nombre del evento
-cu=EUR                    currency
-epn.value=11              parámetro numérico
-ep.item_list_id=catalogo  parámetro string
-pr1=idMM-HOG-01~nmHogaza…~pr5.5~qt2~lp0   item 1
-gcs=G111                  estado de consentimiento
-    </code></pre>
-    <div class="note">
-      <code>epn.</code> = número, <code>ep.</code> = string. Si mandas <code>value</code> como
-      <code>"11"</code> viaja como <code>ep.value</code> y <strong>GA4 no lo suma</strong>. Este es el fallo
-      número uno de ingresos.
+    <h3>Medición mejorada</h3>
+    <p>En los detalles del flujo hay un interruptor que activa varios eventos sin escribir código: desplazamiento, clics salientes, búsqueda interna, vídeos, descargas y formularios.</p>
+    <div class="warn">
+      Uno de ellos os va a dar problemas: <strong>vistas de página basadas en el
+      historial del navegador</strong>. En una web de toda la vida ayuda. En una
+      aplicación de una sola página duplica los datos. Lo vemos en el bloque 5.
     </div>
+  </section>
+
+  <section>
+    <h3>Qué sale por el cable</h3>
+    <div data-diagram="anatomia-hit"></div>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 4">
+    <span class="ej-num">Ejercicio 4</span><span class="ej-tiempo">10 minutos</span>
+    <h2>Leed un hit</h2>
+    <ol class="pasos">
+      <li>Abrid la tienda y las herramientas del navegador, pestaña Red.</li>
+      <li>Filtrad por <code>collect</code> y marcad "conservar el registro".</li>
+      <li>Navegad a un pan y añadidlo a la cesta.</li>
+      <li>Buscad el hit de <code>add_to_cart</code> y responded: ¿cuánto vale <code>epn.value</code>? ¿qué hay dentro de <code>pr1</code>? ¿qué pone en <code>gcs</code>?</li>
+    </ol>
+    <p class="muted">Sin mirar el código de la web. Solo lo que viaja.</p>
   </section>
 </section>
 
-<!-- ---- 1.3 SPA ---- -->
+<!-- ---------- B5 · SPA ---------- -->
 <section>
-  <section data-menu-title="1.3 SPA">
-    <p class="kicker">Bloque 1.3</p>
-    <h2>Medir una SPA</h2>
+  <section data-menu-title="5 · SPA">
+    <p class="kicker">Bloque 5 <span class="tiempo">· 45 min</span></p>
+    <h2>Webs que no recargan</h2>
   </section>
 
   <section>
     <h3>El problema</h3>
-    <div class="split split--wide">
-      <div>
-        <p>Sin recarga no hay <code>page_view</code>. GA4 vería <strong>una sola URL</strong> por sesión.</p>
-        <ol>
-          <li>Desactivar el automático: <code>send_page_view: false</code>.</li>
-          <li>Desactivar el de medición mejorada por history change (bloque 1.0).</li>
-          <li>Emitirlo tú en cada cambio de ruta.</li>
-        </ol>
-      </div>
-      <div>
-        <div class="phone"><iframe data-src-app="/panes" title="Catálogo"></iframe></div>
-        <p class="phone-url" data-url-label></p>
-      </div>
+    <div data-diagram="spa-vs-mpa"></div>
+  </section>
+
+  <section>
+    <h3>Tres pasos</h3>
+    <ol class="pasos">
+      <li>Apagar el <code>page_view</code> automático en el <code>config</code>.</li>
+      <li>Apagar también el de la medición mejorada, en la consola. Son dos cosas distintas.</li>
+      <li>Llamarlo tú en cada cambio de ruta.</li>
+    </ol>
+    <div class="warn">
+      El paso 2 se olvida siempre. <code>send_page_view: false</code> no apaga el
+      de la medición mejorada, y te quedas con el doble de vistas sin saber por qué.
     </div>
   </section>
 
   <section>
-    <h3>El router avisa a GA4</h3>
+    <h3>Cómo queda en el router</h3>
     <div data-snippet="router-page-view"></div>
-    <p class="muted">Llamado desde <code>pushState</code>, desde <code>popstate</code> y en la carga inicial.</p>
+    <p class="muted">Da igual el framework: el sitio es donde tu router decida que ha cambiado la vista.</p>
   </section>
 
   <section>
-    <h3>La función de vista</h3>
+    <h3>Y la función</h3>
     <div data-snippet="track-page-view"></div>
-    <div class="note">
-      <code>page_referrer</code> con la URL <em>virtual</em> anterior es lo que permite reconstruir
-      el recorrido dentro de la SPA. Sin él, todo parece tráfico directo a cada ruta.
-    </div>
+    <p>El <code>page_referrer</code> con la URL anterior es lo que permite reconstruir el recorrido. Sin él, cada ruta parece una entrada directa.</p>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 5">
+    <span class="ej-num">Ejercicio 5</span><span class="ej-tiempo">10 minutos</span>
+    <h2>Contad las vistas</h2>
+    <ol class="pasos">
+      <li>Abrid la tienda con <code>?debug=1</code> y DebugView al lado.</li>
+      <li>Navegad: inicio, panes, un pan, cesta. Cuatro vistas.</li>
+      <li>Contad los <code>page_view</code> en DebugView. ¿Salen cuatro?</li>
+      <li>Ahora dadle a atrás dos veces. ¿Qué pasa?</li>
+    </ol>
+    <p class="muted">Pregunta trampa: ¿debería contar como vista el botón de atrás?</p>
+    <aside class="notes">
+      Sí debería, y nuestro router lo hace porque escucha popstate. Es un
+      despiste habitual: la gente instrumenta pushState y se olvida de la
+      navegación hacia atrás.
+    </aside>
   </section>
 </section>
 
-<!-- ---- 1.4 Ecommerce ---- -->
+<!-- ---------- B6 · ECOMMERCE ---------- -->
 <section>
-  <section data-menu-title="1.4 Ecommerce">
-    <p class="kicker">Bloque 1.4</p>
-    <h2>El embudo de ecommerce</h2>
+  <section data-menu-title="6 · Ecommerce">
+    <p class="kicker">Bloque 6 <span class="tiempo">· 60 min</span></p>
+    <h2>Medir una tienda</h2>
   </section>
 
   <section>
-    <h3>Los diez eventos, en orden</h3>
+    <h3>La secuencia</h3>
+    <p>Diez nombres que Google ya conoce. Respetarlos es lo que hace que los informes de ecommerce funcionen sin configurar nada.</p>
     <table>
-      <tr><th>Evento</th><th>Cuándo</th><th>Clave</th></tr>
-      <tr><td><code>view_item_list</code></td><td>lista de productos</td><td><code>item_list_id</code></td></tr>
-      <tr><td><code>select_item</code></td><td>clic en la tarjeta</td><td><code>items[1]</code></td></tr>
-      <tr><td><code>view_item</code></td><td>ficha</td><td><code>value</code></td></tr>
-      <tr><td><code>add_to_cart</code></td><td>añadir</td><td>delta, no total</td></tr>
-      <tr><td><code>view_cart</code></td><td>cesta</td><td><code>items[]</code></td></tr>
-      <tr><td><code>begin_checkout</code></td><td>empezar pedido</td><td><code>value</code></td></tr>
-      <tr><td><code>add_shipping_info</code></td><td>elegir entrega</td><td><code>shipping_tier</code></td></tr>
+      <tr><th>Evento</th><th>Cuándo</th><th>Lo que no puede faltar</th></tr>
+      <tr><td><code>view_item_list</code></td><td>una lista de productos</td><td><code>item_list_id</code></td></tr>
+      <tr><td><code>select_item</code></td><td>clic en uno</td><td>el artículo</td></tr>
+      <tr><td><code>view_item</code></td><td>la ficha</td><td><code>value</code></td></tr>
+      <tr><td><code>add_to_cart</code></td><td>añadir</td><td>la cantidad añadida</td></tr>
+      <tr><td><code>view_cart</code></td><td>ver la cesta</td><td>todos los artículos</td></tr>
+      <tr><td><code>begin_checkout</code></td><td>empezar el pedido</td><td><code>value</code></td></tr>
+      <tr><td><code>add_shipping_info</code></td><td>elegir envío</td><td><code>shipping_tier</code></td></tr>
       <tr><td><code>add_payment_info</code></td><td>elegir pago</td><td><code>payment_type</code></td></tr>
       <tr><td><code>purchase</code></td><td>confirmar</td><td><code>transaction_id</code></td></tr>
-      <tr><td><code>refund</code></td><td>devolución</td><td>mismo <code>transaction_id</code></td></tr>
+      <tr><td><code>refund</code></td><td>devolver</td><td>el mismo <code>transaction_id</code></td></tr>
     </table>
-    <p class="muted">Nombres exactos de la documentación. Ni una letra distinta.</p>
   </section>
 
   <section>
-    <h3>Una sola función construye los items</h3>
+    <h3>El artículo</h3>
+    <p>Todos los eventos de arriba llevan un array <code>items</code>. Aunque solo haya un producto, es un array.</p>
     <div data-snippet="to-ga4-item"></div>
-    <div class="note">
-      Si cada evento construye sus items por su cuenta, acabas con
-      <code>5.50</code> en uno y <code>"5,50"</code> en otro, y los informes por producto no cuadran.
-    </div>
+    <p class="muted">Una sola función para construirlos. Si cada evento los arma por su cuenta, acabas con precios en formatos distintos y los informes por producto no cuadran.</p>
   </section>
 
   <section>
-    <h3>value: la regla</h3>
-    <pre><code class="language-javascript" data-trim>
-value = Σ (price × quantity)     // de los items del evento
-    </code></pre>
+    <h3>value</h3>
+    <p>Es la suma de precio por cantidad de los artículos del evento. Nada más.</p>
     <ul>
-      <li>En <code>purchase</code>, <strong><code>tax</code> y <code>shipping</code> van aparte</strong> y no se suman a <code>value</code>.</li>
-      <li><code>currency</code> es obligatorio siempre que haya <code>value</code>.</li>
-      <li>Números, no strings. Céntimos por dentro si puedes.</li>
+      <li>En <code>purchase</code>, los impuestos y el envío van en sus propios parámetros y no se suman aquí.</li>
+      <li>Si mandas <code>value</code>, tienes que mandar <code>currency</code>.</li>
+      <li>Número, no texto. <code>"11.00"</code> no es <code>11</code>.</li>
     </ul>
     <div data-snippet="track-add-to-cart"></div>
   </section>
 
   <section>
-    <h3>Atribución de lista: el detalle que casi nadie hace</h3>
+    <h3>De dónde venía el producto</h3>
+    <p>Si guardas la lista de origen cuando el usuario pulsa una tarjeta y la arrastras hasta <code>add_to_cart</code>, puedes responder algo que casi nadie mide: si vende más el carrusel de la portada o el catálogo.</p>
     <div data-snippet="select-item"></div>
-    <p>Guardamos la lista de origen y la propagamos hasta <code>add_to_cart</code>.</p>
-    <p class="muted">Así sabes si vende más el carrusel de la home o el catálogo.</p>
   </section>
 
   <section>
-    <h3>purchase: una vez y solo una</h3>
+    <h3>purchase: una vez, y solo una</h3>
     <div data-snippet="track-purchase"></div>
   </section>
 
   <section>
-    <h3>Y en la UI</h3>
+    <h3>El error clásico</h3>
     <div class="split split--wide">
-      <div><div data-snippet="confirm-order"></div></div>
+      <div>
+        <p>Disparar <code>purchase</code> al pintar la página de gracias.</p>
+        <p>Funciona el día que lo pruebas. Luego un usuario recarga, otro le da a atrás, y de pronto tienes más ingresos de los que has facturado.</p>
+        <p>Va en el manejador del botón, antes de navegar.</p>
+      </div>
       <div>
         <div class="phone"><iframe data-src-app="/carrito" title="Cesta"></iframe></div>
         <p class="phone-url" data-url-label></p>
       </div>
     </div>
-    <div class="warn">
-      Nunca dispares <code>purchase</code> al renderizar la página de gracias: una
-      recarga o un "atrás" duplican la venta.
-    </div>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 6">
+    <span class="ej-num">Ejercicio 6</span><span class="ej-tiempo">15 minutos</span>
+    <h2>Seguid el dinero</h2>
+    <ol class="pasos">
+      <li>Haced un pedido completo en la tienda con <code>?debug=1</code>.</li>
+      <li>En DebugView, abrid el <code>purchase</code> y anotad <code>value</code>, <code>tax</code> y <code>shipping</code>.</li>
+      <li>Comprobad que <code>value</code> coincide con la suma de los artículos y no con el total que veíais en pantalla.</li>
+      <li>Recargad la página de gracias. ¿Aparece otro <code>purchase</code>?</li>
+      <li>Haced un segundo pedido. ¿Cambia el <code>transaction_id</code>?</li>
+    </ol>
   </section>
 </section>
 
-<!-- ---- 1.5 Depuración ---- -->
+<!-- ---------- B7 · DEPURAR ---------- -->
 <section>
-  <section data-menu-title="1.5 Depuración">
-    <p class="kicker">Bloque 1.5</p>
-    <h2>Depurar lo que enviamos</h2>
+  <section data-menu-title="7 · Depurar">
+    <p class="kicker">Bloque 7 <span class="tiempo">· 45 min</span></p>
+    <h2>Comprobar que lo que mandas es lo que crees</h2>
   </section>
 
   <section>
-    <h3>Tres herramientas, tres momentos</h3>
-    <table>
-      <tr><th>Herramienta</th><th>Para qué</th><th>Cuándo</th></tr>
-      <tr><td><strong>DebugView</strong></td><td>ver eventos y parámetros como los interpreta GA4</td><td>mientras desarrollas</td></tr>
-      <tr><td><strong>Network</strong></td><td>ver lo que sale de verdad del navegador</td><td>cuando DebugView no cuadra</td></tr>
-      <tr><td><strong>Test automático</strong></td><td>que no se rompa dentro de tres sprints</td><td>en CI</td></tr>
-    </table>
+    <h3>Tres herramientas</h3>
+    <ul>
+      <li><strong>DebugView</strong> — lo que GA4 entiende. Es la interpretación.</li>
+      <li><strong>Pestaña Red</strong> — lo que de verdad sale del navegador. Es la verdad.</li>
+      <li><strong>Un test automático</strong> — lo que seguirá saliendo dentro de seis meses.</li>
+    </ul>
+    <p class="muted">Cuando DebugView y Red no coinciden, gana Red.</p>
   </section>
 
   <section>
     <h3>DebugView</h3>
     <ul>
-      <li><code>debug_mode: true</code> en el <code>config</code>, o la extensión de Chrome.</li>
-      <li>Nosotros lo atamos a <code>?debug=1</code> en la URL: nadie toca código para depurar.</li>
-      <li>Los eventos con <code>debug_mode</code> <strong>también</strong> entran en los informes normales.</li>
+      <li>Se activa con <code>debug_mode: true</code> o con la extensión de Chrome.</li>
+      <li>Nosotros lo atamos a <code>?debug=1</code>: así nadie toca código para depurar.</li>
+      <li>Los eventos marcados también entran en los informes normales. No es un entorno aparte.</li>
     </ul>
-    <div class="note"><code>debug_mode: false</code> no desactiva nada: hay que <strong>omitir la clave</strong>.</div>
-  </section>
-
-  <section>
-    <h3>Network: filtro <code>collect</code></h3>
-    <ul>
-      <li>Varios eventos pueden ir <strong>en un solo POST</strong>: una línea por evento en el body.</li>
-      <li>Los hits salen a <code>region1.google-analytics.com</code> desde Europa.</li>
-      <li>Mira <code>epn.value</code> frente a <code>ep.value</code>. Y <code>gcs</code>.</li>
-    </ul>
+    <div class="note">
+      Poner <code>debug_mode: false</code> no lo desactiva. Hay que no mandar la clave.
+      Es un despiste que cuesta media tarde.
+    </div>
   </section>
 
   <section>
     <h3>Tests de analítica</h3>
-    <p>Interceptamos <code>*/g/collect*</code> con Playwright, decodificamos y comprobamos el contrato.</p>
+    <p>La medición se rompe en silencio. Nadie abre un ticket porque falte un evento.</p>
     <pre><code class="language-bash" data-trim>
 python simulator/e2e_events_test.py --url http://localhost:8080/
     </code></pre>
@@ -410,616 +596,559 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
 [OK ] abandon    page_view → view_item_list → … → add_payment_info
 [OK ] purchase   … → purchase → page_view
     </code></pre>
-    <p class="muted">Falla si falta un evento, si <code>value</code> no cuadra o si <code>purchase</code> se repite.</p>
+    <p>Intercepta lo que sale por la red, lo descodifica y comprueba la secuencia, los importes y que <code>purchase</code> no se repita.</p>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 7">
+    <span class="ej-num">Ejercicio 7</span><span class="ej-tiempo">10 minutos</span>
+    <h2>Romped algo</h2>
+    <ol class="pasos">
+      <li>Lanzad el test contra la tienda. Todo en verde.</li>
+      <li>Abrid <code>site/analytics.js</code> y cambiad <code>value</code> para que sea texto.</li>
+      <li>Volved a lanzarlo. ¿Qué dice exactamente?</li>
+      <li>Miradlo también en Red: ¿en qué cambia el parámetro?</li>
+    </ol>
+    <p class="muted">Luego deshaced el cambio, que lo vamos a seguir usando.</p>
   </section>
 </section>
 
-<!-- ---- 1.6 Consent Mode ---- -->
+<!-- ---------- B8 · CONSENTIMIENTO ---------- -->
 <section>
-  <section data-menu-title="1.6 Consent Mode">
-    <p class="kicker">Bloque 1.6</p>
-    <h2>Consent Mode v2</h2>
+  <section data-menu-title="8 · Consentimiento">
+    <p class="kicker">Bloque 8 <span class="tiempo">· 45 min</span></p>
+    <h2>Consentimiento</h2>
   </section>
 
   <section>
-    <h3>El orden es lo único que importa</h3>
-    <ol>
-      <li><code>dataLayer</code> + stub de <code>gtag</code></li>
-      <li><code>gtag('consent', 'default', {…})</code> ← <strong>antes de todo lo demás</strong></li>
-      <li>carga de <code>gtag/js</code></li>
-      <li><code>gtag('config', …)</code></li>
-    </ol>
-    <div class="warn">
-      La documentación es literal: <em>"the order of the code here is vital"</em>.
-      Con <code>config</code> antes del <code>default</code>, los defaults no se aplican.
-    </div>
+    <p class="frase">Aquí el orden del código no es un detalle de estilo.</p>
+    <div data-diagram="orden-consent"></div>
   </section>
 
   <section>
     <h3>Las cuatro señales</h3>
     <div data-snippet="consent-update"></div>
-    <table>
-      <tr><th>Señal</th><th>Qué controla</th></tr>
-      <tr><td><code>analytics_storage</code></td><td>cookie <code>_ga</code> (la que nos importa)</td></tr>
-      <tr><td><code>ad_storage</code></td><td>cookies publicitarias</td></tr>
-      <tr><td><code>ad_user_data</code></td><td>envío de datos a Ads</td></tr>
-      <tr><td><code>ad_personalization</code></td><td>personalización de anuncios</td></tr>
-    </table>
+    <ul>
+      <li><code>analytics_storage</code> — la cookie de analítica. La que nos afecta.</li>
+      <li><code>ad_storage</code> — cookies de publicidad.</li>
+      <li><code>ad_user_data</code> — mandar datos a Google Ads.</li>
+      <li><code>ad_personalization</code> — personalizar anuncios.</li>
+    </ul>
   </section>
 
   <section>
-    <h3>Denegado no es silencio</h3>
+    <h3>Rechazar no es silencio</h3>
     <div class="split split--wide">
       <div>
-        <p>Con <code>analytics_storage: 'denied'</code>, gtag <strong>sigue enviando</strong> pings sin cookie ni identificador.</p>
-        <ul>
-          <li><code>gcs=G100</code> → denegado</li>
-          <li><code>gcs=G111</code> → concedido</li>
-        </ul>
-        <p>GA4 los usa para <strong>modelar</strong> lo que no puede medir.</p>
-        <div class="note">Lo que salió antes de aceptar no se reenvía: esos eventos quedan sin identificar para siempre.</div>
+        <p>Con la analítica denegada, la librería sigue mandando avisos, pero sin cookie y sin identificador.</p>
+        <p>Se ve en el parámetro <code>gcs</code>: <code>G100</code> denegado, <code>G111</code> concedido.</p>
+        <p>Google usa esos avisos para estimar lo que no puede medir.</p>
+        <div class="note">
+          Lo que salió antes de que el usuario decidiera no se reenvía después.
+          Esos eventos se quedan sin identificar para siempre.
+        </div>
       </div>
       <div>
         <div class="phone"><iframe data-src-app="/?debug=1" title="Banner"></iframe></div>
         <p class="phone-url" data-url-label></p>
       </div>
     </div>
-    <aside class="notes">
-      Demo en vivo: rechazar en el teléfono, enseñar en Network gcs=G100 y la
-      ausencia de cookie _ga en Application. Luego aceptar y ver G111.
-    </aside>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 8">
+    <span class="ej-num">Ejercicio 8</span><span class="ej-tiempo">10 minutos</span>
+    <h2>Mirad qué pasa al decir que no</h2>
+    <ol class="pasos">
+      <li>Abrid la tienda en una ventana de incógnito, con la pestaña Red.</li>
+      <li>Antes de tocar el banner, mirad el primer hit: ¿qué pone en <code>gcs</code>? ¿hay cookie <code>_ga</code>?</li>
+      <li>Pulsad Rechazar y navegad un poco. ¿Se siguen enviando eventos?</li>
+      <li>Ahora aceptad. ¿Qué cambia?</li>
+    </ol>
+    <p class="muted">La pregunta interesante: lo que se midió antes de aceptar, ¿se recupera?</p>
   </section>
 </section>
 
-<!-- ---- 1.7 Práctica ---- -->
-<section data-menu-title="1.7 Práctica">
-  <p class="kicker">Bloque 1.7 · resto de la jornada</p>
-  <h2>Práctica</h2>
+<!-- ---------- PRÁCTICA DÍA 1 ---------- -->
+<section data-menu-title="Práctica día 1">
+  <p class="kicker">Resto de la jornada</p>
+  <h2>Instrumentad vosotros</h2>
   <div class="task">
-    <h3>Instrumenta tú</h3>
-    <p>En <code>/starter/</code> tienes la misma web con <code>analytics.js</code> vacío: cada función es un <code>// TODO</code> con pistas.</p>
-    <ol>
-      <li>Arranque y consentimiento</li>
-      <li><code>page_view</code> en el router</li>
-      <li><code>toGA4Item</code> y el embudo</li>
-      <li><code>purchase</code> sin duplicados</li>
+    <p>En <code>/starter/</code> está la misma tienda con el archivo de medición vacío. Cada función es un hueco con una pista.</p>
+    <ol class="pasos">
+      <li>Arranque y consentimiento.</li>
+      <li>Vistas de página en el router.</li>
+      <li>La función de artículos y el embudo.</li>
+      <li><code>purchase</code> sin duplicados.</li>
     </ol>
-    <p class="muted">Criterio de terminado: <code>e2e_events_test.py</code> en verde.</p>
+    <p class="muted">Terminado es cuando el test pasa en verde. Los enunciados completos están en EJERCICIOS.md.</p>
   </div>
 </section>
 
-<!-- ================= DÍA 2 ================= -->
+<!-- ======================= DÍA 2 ======================= -->
 <section class="cover" data-menu-title="Día 2">
-  <p class="kicker">Jornada 2 · 7 horas</p>
-  <h1>Leer y explotar</h1>
-  <p class="muted">Informes vs Exploraciones · embudos y rutas · BigQuery · Measurement Protocol · detección de fallos</p>
+  <p class="kicker">Jornada 2</p>
+  <h1>Leer</h1>
+  <p class="muted">Informes · exploraciones · configuración avanzada · BigQuery · datos desde el servidor</p>
   <aside class="notes">
-    Ayer escribimos los eventos. Hoy vemos qué hace GA4 con ellos, dónde te
-    miente (muestreo, cardinalidad, umbrales) y cómo salir de la interfaz
-    cuando se queda corta.
+    Ayer escribimos los eventos. Hoy vemos qué hace GA4 con ellos y hasta dónde
+    te puedes fiar de lo que enseña.
   </aside>
 </section>
 
-<section data-menu-title="2.0 Repaso">
-  <h2>De ayer nos llevamos tres cosas</h2>
+<section data-menu-title="Repaso">
+  <h2>Dónde lo dejamos</h2>
   <ul>
-    <li>Un <strong>contrato</strong>: <code>tracking-plan.md</code>. Sin él, cada evento es una opinión.</li>
-    <li>Un <strong>test</strong> que lo verifica. La analítica se rompe en silencio; esto hace ruido.</li>
-    <li>Una <strong>propiedad con datos</strong>: los que generamos ayer más un histórico sintético.</li>
+    <li>Un documento que dice qué se mide y cómo. Sin eso, cada evento es una opinión.</li>
+    <li>Un test que lo comprueba.</li>
+    <li>Una propiedad con datos de verdad dentro.</li>
   </ul>
-  <p>Hoy la pregunta cambia: ya no es <em>"¿estoy midiendo bien?"</em> sino <strong>"¿me puedo fiar de este número?"</strong>.</p>
-  <div class="note">
-    Spoiler: casi siempre sí, pero hay que saber <strong>cuándo no</strong>. Eso es
-    lo que separa a quien sabe usar GA4 de quien pega capturas en un informe.
-  </div>
+  <p>Hoy la pregunta ya no es si estamos midiendo bien, sino si el número que sale en pantalla se puede usar para decidir algo.</p>
 </section>
 
-<!-- ---- 2.1 Informes vs Exploraciones ---- -->
+<!-- ---------- B9 · INFORMES ---------- -->
 <section>
-  <section data-menu-title="2.1 Informes y Exploraciones">
-    <p class="kicker">Bloque 2.1</p>
-    <h2>Informes vs Exploraciones</h2>
-    <p class="muted">Dos productos distintos dentro de la misma herramienta.</p>
+  <section data-menu-title="9 · Informes a fondo">
+    <p class="kicker">Bloque 9 <span class="tiempo">· 60 min</span></p>
+    <h2>Informes, a fondo</h2>
   </section>
 
   <section>
-    <h3>Antes: el ámbito de los datos</h3>
-    <p>Todo dato en GA4 tiene un <strong>ámbito</strong>. Mezclarlos es la causa nº 1 de informes que no cuadran.</p>
-    <table>
-      <tr><th>Ámbito</th><th>Ejemplo de dimensión</th><th>Ejemplo de métrica</th></tr>
-      <tr><td>Evento</td><td><code>event_name</code>, <code>page_location</code></td><td>recuento de eventos</td></tr>
-      <tr><td>Item</td><td><code>item_name</code>, <code>item_category</code></td><td>ingresos por artículo</td></tr>
-      <tr><td>Sesión</td><td>fuente/medio de la sesión</td><td>sesiones, tasa de interacción</td></tr>
-      <tr><td>Usuario</td><td>primera fuente, país</td><td>usuarios totales</td></tr>
-    </table>
-    <div class="warn">
-      "Ingresos por campaña" ¿usa la campaña de la <strong>sesión</strong> o la de
-      <strong>primera visita</strong>? Son números distintos y los dos son correctos.
-      Cuando alguien diga "esto no cuadra", empieza preguntando por el ámbito.
-    </div>
-  </section>
-
-  <section>
-    <h3>Los cuatro informes del ciclo de vida</h3>
+    <h3>Adquisición: la trampa de los nombres</h3>
+    <p>Hay dos informes que parecen el mismo y no lo son.</p>
     <ul>
-      <li><strong>Adquisición</strong> — de dónde vienen. Usuarios nuevos vs sesiones.</li>
-      <li><strong>Interacción</strong> — qué hacen. Eventos, páginas, tiempo.</li>
-      <li><strong>Monetización</strong> — qué compran. Aquí aterriza tu <code>purchase</code>.</li>
-      <li><strong>Retención</strong> — si vuelven.</li>
+      <li><strong>Adquisición de usuarios</strong> — de dónde vino la gente <em>la primera vez</em>.</li>
+      <li><strong>Adquisición de tráfico</strong> — de dónde vino <em>cada sesión</em>.</li>
     </ul>
-    <p class="muted">Más "Tiempo real" y "DebugView", que ya usamos ayer.</p>
-    <div class="note">
-      Los informes estándar se apoyan en <strong>tablas agregadas</strong>: por eso van
-      rápidos y por eso no puedes preguntarles cualquier cosa.
-    </div>
+    <p>Un usuario que os descubrió por Instagram y hoy entra escribiendo la URL aparece en Instagram en el primero y en directo en el segundo.</p>
+    <p class="muted">Los dos están bien. Responden a preguntas distintas. Es el ámbito de ayer.</p>
   </section>
 
   <section>
-    <h3>Dónde te mienten (1): muestreo</h3>
-    <p>GA4 puede responder con una <strong>muestra</strong> y escalar el resultado.</p>
-    <table>
-      <tr><th>Propiedad</th><th>Límite por consulta</th></tr>
-      <tr><td>Estándar</td><td><strong>10 millones de eventos</strong></td></tr>
-      <tr><td>360</td><td>hasta 1.000 millones</td></tr>
-    </table>
-    <p>Se ve en el <strong>icono de calidad de datos</strong> arriba del informe, con el porcentaje usado.</p>
-    <div class="warn">
-      Mira ese icono <strong>siempre</strong> antes de copiar una cifra a un informe.
-      Un 8 % de muestra en un embudo de nicho es ruido con aspecto de dato.
-    </div>
-    <aside class="notes">
-      En la cuenta demo hay volumen suficiente para provocarlo: filtrar por país
-      y rango largo suele disparar el muestreo. Enseñarlo en vivo.
-    </aside>
-  </section>
-
-  <section>
-    <h3>Dónde te mienten (2): la fila <code>(other)</code></h3>
-    <p>Cuando una tabla tiene demasiadas filas, GA4 deja las más frecuentes y mete el resto en <code>(other)</code>.</p>
+    <h3>Interacción</h3>
     <ul>
-      <li>La documentación no publica un número fijo: depende de la consulta.</li>
-      <li>Regla que sí da: <strong>más de 500 valores distintos = dimensión de alta cardinalidad</strong>.</li>
-      <li>Afecta más a Exploraciones que a informes estándar.</li>
-    </ul>
-    <div class="warn">
-      Por eso <strong>nunca</strong> metas un ID de usuario, un <code>transaction_id</code> o un
-      timestamp en una dimensión personalizada. Te comes el cupo y ensucias
-      todas las tablas.
-    </div>
-  </section>
-
-  <section>
-    <h3>Dónde te mienten (3): umbrales</h3>
-    <p>GA4 <strong>oculta</strong> datos cuando podrían identificar a alguien: demografía, intereses, consultas de búsqueda.</p>
-    <p class="muted">Mensaje típico: "Se ha aplicado un umbral a una o varias tarjetas de este informe".</p>
-    <ul>
-      <li>Se dispara sobre todo con <strong>señales de Google</strong> activadas y pocos usuarios.</li>
-      <li><strong>BigQuery no aplica umbrales</strong>… pero tampoco recibe datos de señales de Google.</li>
+      <li><strong>Eventos</strong> — el inventario de lo que llega. Buen sitio para detectar que alguien metió un evento nuevo sin avisar.</li>
+      <li><strong>Páginas y pantallas</strong> — lo más visto.</li>
+      <li><strong>Páginas de destino</strong> — por dónde entran. Más útil que el anterior para decidir dónde invertir.</li>
     </ul>
     <div class="note">
-      Consecuencia práctica: los totales de la interfaz y los de BigQuery
-      <strong>no van a coincidir exactamente</strong>. Y las dos cifras son "correctas".
+      Si medís mal las vistas en una SPA, estos tres informes mienten a la vez
+      y en la misma dirección. Por eso ayer insistimos tanto.
     </div>
   </section>
 
   <section>
-    <h3>Entonces, ¿qué uso para qué?</h3>
-    <table>
-      <tr><th></th><th>Informes</th><th>Exploraciones</th><th>BigQuery</th></tr>
-      <tr><td>Para</td><td>vigilar</td><td>investigar</td><td>todo lo demás</td></tr>
-      <tr><td>Velocidad</td><td>instantáneo</td><td>segundos</td><td>según consulta</td></tr>
-      <tr><td>Muestreo</td><td>raro</td><td><strong>sí</strong>, &gt;10 M</td><td>nunca</td></tr>
-      <tr><td>Umbrales</td><td>sí</td><td>sí</td><td>no</td></tr>
-      <tr><td>Flexibilidad</td><td>baja</td><td>media</td><td>total</td></tr>
-      <tr><td>Coste</td><td>0</td><td>0</td><td>por consulta</td></tr>
-    </table>
-    <p class="muted">Sube de escalón solo cuando el anterior no te dé la respuesta.</p>
+    <h3>Comparaciones</h3>
+    <p>Es lo que convierte un informe plano en un análisis. Añadís una comparación y la tabla se parte en dos series.</p>
+    <p>Móvil contra escritorio. Usuarios nuevos contra recurrentes. Una campaña contra el resto.</p>
+    <p class="muted">Casi nunca interesa el número global. Interesa la diferencia entre dos grupos.</p>
+  </section>
+
+  <section>
+    <h3>Hasta dónde fiarse</h3>
+    <div data-diagram="limites-datos"></div>
+  </section>
+
+  <section>
+    <h3>Y luego está el tiempo</h3>
+    <ul>
+      <li>Tiempo real va en segundos.</li>
+      <li>Los informes estándar tardan horas en cuadrar del todo.</li>
+      <li>El día de hoy siempre está incompleto.</li>
+    </ul>
+    <div class="warn">
+      No comparéis lo que lleváis de hoy con un día entero de la semana pasada.
+      Parece obvio y se hace constantemente.
+    </div>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 9">
+    <span class="ej-num">Ejercicio 9</span><span class="ej-tiempo">15 minutos</span>
+    <h2>Dos informes, dos respuestas</h2>
+    <p>Sobre la cuenta demo:</p>
+    <ol class="pasos">
+      <li>Abrid Adquisición de usuarios y anotad los tres primeros canales.</li>
+      <li>Abrid Adquisición de tráfico y anotad los tres primeros.</li>
+      <li>¿Cambia el orden? ¿Por qué?</li>
+      <li>Añadid una comparación de móvil contra escritorio y mirad si la respuesta cambia.</li>
+    </ol>
   </section>
 </section>
 
-<!-- ---- 2.2 Embudos y rutas ---- -->
+<!-- ---------- B10 · EXPLORACIONES ---------- -->
 <section>
-  <section data-menu-title="2.2 Embudos y rutas">
-    <p class="kicker">Bloque 2.2</p>
-    <h2>Embudos y rutas</h2>
-    <p class="muted">Sobre la cuenta demo, que tiene volumen real.</p>
+  <section data-menu-title="10 · Exploraciones">
+    <p class="kicker">Bloque 10 <span class="tiempo">· 75 min</span></p>
+    <h2>Exploraciones</h2>
   </section>
 
   <section>
-    <h3>Nuestro embudo, con datos reales</h3>
+    <h3>Cómo se monta una</h3>
+    <p>Tres columnas: las variables que tienes disponibles, la configuración de la pestaña, y el resultado.</p>
+    <p>Se arrastran dimensiones y métricas desde la izquierda. Si algo no aparece en la lista, primero hay que importarlo con el botón de más.</p>
+    <p class="muted">Es la parte que más frustra al principio. No es que falte el dato: es que no lo has traído al panel.</p>
+  </section>
+
+  <section>
+    <h3>El embudo de la tienda de Google</h3>
     <table>
-      <tr><th>Paso</th><th>Sesiones</th><th>Del inicio</th><th>Del paso anterior</th></tr>
+      <tr><th>Paso</th><th>Sesiones</th><th>Del inicio</th><th>Del anterior</th></tr>
       <tr><td><code>view_item</code></td><td>23.105</td><td>100 %</td><td>—</td></tr>
-      <tr><td><code>add_to_cart</code></td><td>4.537</td><td>19,64 %</td><td><strong>19,64 %</strong></td></tr>
+      <tr><td><code>add_to_cart</code></td><td>4.537</td><td>19,64 %</td><td>19,64 %</td></tr>
       <tr><td><code>begin_checkout</code></td><td>2.159</td><td>9,34 %</td><td>47,59 %</td></tr>
       <tr><td><code>add_payment_info</code></td><td>1.560</td><td>6,75 %</td><td>72,26 %</td></tr>
       <tr><td><code>purchase</code></td><td>1.115</td><td>4,83 %</td><td>71,47 %</td></tr>
     </table>
-    <p class="muted">Google Merchandise Store, enero 2021. Consulta <code>sql/04</code>.</p>
-    <div class="warn">
-      <strong>¿Dónde está el problema?</strong> No en el pago, que retiene el 70 %.
-      Está en el primer salto: ficha → carrito pierde el <strong>80 %</strong>.
-      Es el error de lectura más común: se optimiza el checkout, que es lo que
-      duele, cuando el dinero está en la ficha de producto.
-    </div>
+    <p class="muted">Datos reales de enero de 2021.</p>
     <aside class="notes">
-      Preguntar a la sala dónde invertirían antes de enseñar el aviso. Casi
-      todo el mundo dice "el checkout".
+      Antes de pasar de slide, preguntar a la sala: si tuvierais presupuesto
+      para arreglar un solo paso, ¿cuál? Casi todo el mundo dice el checkout.
     </aside>
   </section>
 
   <section>
-    <h3>Y el embudo solo existe porque…</h3>
-    <p>…los nombres de evento son los <strong>recomendados</strong>. Con <code>compra_ok</code> en
-    vez de <code>purchase</code>, esta exploración habría que construirla a mano, paso a
-    paso, y los informes de monetización estarían vacíos.</p>
-    <div class="note">
-      Todo el trabajo de ayer —nombres exactos, <code>value</code> numérico, <code>items</code>
-      con <code>item_id</code>— sirve exactamente para esto.
-    </div>
+    <h3>Dónde está el dinero</h3>
+    <p class="frase">El checkout retiene el 70 %. La ficha de producto pierde el 80 %.</p>
+    <p>Optimizar el pago es lo que se siente urgente, porque es donde duele. Pero el agujero grande está tres pasos antes.</p>
   </section>
 
   <section>
-    <h3>Abierto vs cerrado</h3>
-    <table>
-      <tr><th></th><th>Abierto</th><th>Cerrado</th></tr>
-      <tr><td>Entrada</td><td>por cualquier paso</td><td>solo por el primero</td></tr>
-      <tr><td>Orden</td><td>no se exige</td><td>se exige</td></tr>
-      <tr><td>Un paso puede superar al anterior</td><td><strong>sí</strong></td><td>no</td></tr>
-      <tr><td>Sirve para</td><td>ver volumen real</td><td>medir fricción</td></tr>
-    </table>
-    <div class="warn">
-      Si tu embudo abierto tiene más <code>add_to_cart</code> que <code>view_item</code>, no es un
-      error: hay gente que añade desde el catálogo sin abrir la ficha. Justo lo
-      que hace nuestra tienda desde <code>/carrito</code> con el botón "+".
-    </div>
-  </section>
-
-  <section>
-    <h3>Segmentar: donde aparece la información</h3>
-    <p>El embudo global no dice casi nada. El comparado, sí.</p>
+    <h3>Abierto o cerrado</h3>
     <ul>
-      <li><strong>Móvil vs escritorio</strong></li>
-      <li><strong>Nuevos vs recurrentes</strong>: el recurrente se salta pasos.</li>
-      <li><strong>Por fuente</strong>: el tráfico de pago suele rebotar antes.</li>
-      <li><strong>Por lista de origen</strong>: aquí se nota el <code>item_list_id</code> de ayer.</li>
+      <li><strong>Abierto</strong>: se puede entrar por cualquier paso. Enseña el volumen real.</li>
+      <li><strong>Cerrado</strong>: hay que empezar por el principio y en orden. Mide la fricción.</li>
     </ul>
-    <table>
-      <tr><th>Dispositivo</th><th>Sesiones</th><th>Ev./sesión</th><th>Conversión</th></tr>
-      <tr><td>escritorio</td><td>15.408</td><td>9,5</td><td>0,54 %</td></tr>
-      <tr><td>móvil</td><td>10.330</td><td>9,1</td><td><strong>0,55 %</strong></td></tr>
-      <tr><td>tablet</td><td>593</td><td>9,5</td><td>0,67 %</td></tr>
-    </table>
-    <div class="warn">
-      Datos reales de la tienda de Google, enero 2021. Aquí el móvil <strong>no</strong>
-      convierte peor. El tópico de "el móvil convierte la mitad" es cierto en
-      muchas tiendas y falso en esta: por eso se miden los datos propios en vez
-      de repetir lo que dice un blog.
-    </div>
+    <p>En uno abierto es normal que un paso tenga más gente que el anterior. Si os pasa, no es un error de medición: es alguien que añadió al carrito sin abrir la ficha.</p>
   </section>
 
   <section>
     <h3>Rutas: la pregunta del revés</h3>
-    <p>El embudo responde "¿cuántos llegaron?". La exploración de rutas responde <strong>"¿y los demás qué hicieron?"</strong>.</p>
-    <ul>
-      <li><strong>Hacia adelante</strong>: desde un punto, a dónde van.</li>
-      <li><strong>Hacia atrás</strong>: desde <code>purchase</code>, por dónde vinieron. Más útil y menos usada.</li>
-    </ul>
+    <p>El embudo dice cuántos llegaron. Las rutas dicen qué hicieron los que no.</p>
+    <p>Lo más útil es recorrerlas hacia atrás: partir de <code>purchase</code> y ver por dónde vinieron. Casi nadie lo usa así.</p>
     <div class="note">
-      Ojo con el ruido: <code>user_engagement</code> y <code>scroll</code> aparecen por todas partes.
-      Excluir esos eventos es el primer paso de cualquier análisis de rutas.
+      Quitad <code>user_engagement</code> y <code>scroll</code> antes de empezar o no veréis
+      nada más.
     </div>
   </section>
 
-  <section>
-    <h3>Las otras exploraciones</h3>
-    <table>
-      <tr><th>Tipo</th><th>Responde a</th></tr>
-      <tr><td>Formato libre</td><td>"quiero una tabla dinámica"</td></tr>
-      <tr><td>Embudo</td><td>"¿dónde se caen?"</td></tr>
-      <tr><td>Rutas</td><td>"¿qué hacen en vez de comprar?"</td></tr>
-      <tr><td>Superposición de segmentos</td><td>"¿quién compra Y vuelve?"</td></tr>
-      <tr><td>Cohortes</td><td>"¿los de enero siguen aquí en marzo?"</td></tr>
-      <tr><td>Vida útil del usuario</td><td>"¿cuánto vale un usuario de Instagram?"</td></tr>
-    </table>
-    <p class="muted">Ejercicio: tres preguntas de negocio sobre el obrador → elegir el tipo y construirla.</p>
+  <section class="ejercicio" data-menu-title="Ejercicio 10">
+    <span class="ej-num">Ejercicio 10</span><span class="ej-tiempo">20 minutos</span>
+    <h2>Vuestro embudo</h2>
+    <ol class="pasos">
+      <li>Montad un embudo abierto de cinco pasos sobre la cuenta demo.</li>
+      <li>Anotad en qué paso se pierde más gente.</li>
+      <li>Segmentadlo por dispositivo. ¿Cambia el paso malo?</li>
+      <li>Cambiadlo a cerrado. ¿Qué números se mueven y por qué?</li>
+    </ol>
+    <p class="muted">Si acabáis pronto: haced una exploración de rutas hacia atrás desde <code>purchase</code>.</p>
   </section>
 </section>
 
-<!-- ---- 2.3 BigQuery ---- -->
+<!-- ---------- B11 · CONFIGURACIÓN ---------- -->
 <section>
-  <section data-menu-title="2.3 BigQuery">
-    <p class="kicker">Bloque 2.3</p>
-    <h2>BigQuery</h2>
-    <p class="muted">Donde se acaban las excusas de la interfaz.</p>
+  <section data-menu-title="11 · Configurar a fondo">
+    <p class="kicker">Bloque 11 <span class="tiempo">· 60 min</span></p>
+    <h2>Configurar GA4 sin tocar código</h2>
   </section>
 
   <section>
-    <h3>Por qué exportar</h3>
+    <h3>Dimensiones personalizadas</h3>
+    <p>Ayer mandamos parámetros propios. Para que aparezcan en un informe hay que registrarlos.</p>
     <ul>
-      <li><strong>Sin muestreo y sin umbrales.</strong> Los datos crudos, evento a evento.</li>
-      <li><strong>Sin límite de cardinalidad.</strong> Todos los <code>transaction_id</code> que quieras.</li>
-      <li><strong>Joins con lo tuyo</strong>: márgenes, devoluciones, CRM, coste real de cada pedido.</li>
-      <li><strong>Histórico tuyo.</strong> Si mañana borras la propiedad, los datos siguen ahí.</li>
+      <li>Se hace en Administrar, definiciones personalizadas.</li>
+      <li>Solo cuentan desde que las creas: los datos de antes no se rellenan.</li>
+      <li>Hay cupo. 50 de evento, 25 de usuario, 10 de artículo, 50 métricas.</li>
     </ul>
     <div class="warn">
-      La exportación <strong>no es retroactiva</strong>: empieza a llenarse el día que la
-      activas. Actívala hoy aunque no la vayas a usar hasta dentro de un año.
+      No metáis identificadores ni correos ni nada parecido. Os cargáis el cupo,
+      ensuciáis los informes con la fila <code>(other)</code> y, según qué dato, estáis
+      incumpliendo las condiciones de uso.
     </div>
   </section>
 
   <section>
-    <h3>Las dos exportaciones</h3>
-    <table>
-      <tr><th></th><th>Diaria</th><th>Streaming</th></tr>
-      <tr><td>Frecuencia</td><td>1 vez al día</td><td>minutos</td></tr>
-      <tr><td>Tabla</td><td><code>events_YYYYMMDD</code></td><td><code>events_intraday_YYYYMMDD</code></td></tr>
-      <tr><td>Límite (estándar)</td><td><strong>1 millón de eventos/día</strong></td><td>—</td></tr>
-      <tr><td>Coste extra</td><td>no</td><td>~0,05 $/GB (≈600.000 eventos)</td></tr>
-      <tr><td>Pega</td><td>llega por la tarde</td><td><strong>sin fuente/medio</strong> en usuarios nuevos</td></tr>
-    </table>
-    <p class="muted">La tabla intradía se borra cuando se completa la diaria de ese día.</p>
+    <h3>Eventos creados y modificados</h3>
+    <p>Se pueden fabricar eventos nuevos a partir de los que ya llegan, y cambiar los que llegan mal, todo desde la consola.</p>
+    <p>Sirve para salir de un apuro cuando el despliegue tarda dos semanas. No sirve como solución permanente: dentro de un año nadie recordará que ese evento se inventa en la interfaz.</p>
+    <p class="muted">Si lo usáis, dejadlo escrito en el documento de medición.</p>
   </section>
 
   <section>
-    <h3>Cinco cosas del esquema que hay que interiorizar</h3>
-    <ol>
-      <li><strong>Una fila = un evento.</strong> No una sesión, no un pedido.</li>
-      <li><strong>Los parámetros no son columnas</strong>: viven en <code>event_params</code>, con cuatro cajones de tipo.</li>
-      <li><strong>Los items tampoco</strong>: <code>items</code> es otro array dentro de la fila.</li>
-      <li><strong>No hay session_id</strong>: hay <code>ga_session_id</code>, y solo es único junto a <code>user_pseudo_id</code>.</li>
-      <li><strong>Tablas diarias</strong>: <code>events_*</code> + <code>_TABLE_SUFFIX</code>, que es lo que controla el coste.</li>
+    <h3>Audiencias</h3>
+    <p>Grupos de usuarios definidos por lo que hicieron: los que añadieron al carrito y no compraron, los que entraron tres veces esta semana.</p>
+    <ul>
+      <li>Se pueden usar como comparación en los informes.</li>
+      <li>Se pueden exportar a Google Ads para hacer remarketing.</li>
+      <li>Empiezan a llenarse cuando las creas, no antes.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Filtros y tráfico interno</h3>
+    <p>Vuestras propias visitas están contaminando los datos desde el primer día.</p>
+    <ol class="pasos">
+      <li>En el flujo de datos, definid el tráfico interno por IP.</li>
+      <li>En filtros de datos, activad el filtro de tráfico interno.</li>
+      <li>Dejadlo primero en modo prueba para ver cuánto tráfico era vuestro.</li>
+    </ol>
+  </section>
+
+  <section class="ejercicio" data-menu-title="Ejercicio 11">
+    <span class="ej-num">Ejercicio 11</span><span class="ej-tiempo">15 minutos</span>
+    <h2>Configurad algo de verdad</h2>
+    <ol class="pasos">
+      <li>En la propiedad de la formación, cread una dimensión personalizada para un parámetro que mandamos ayer.</li>
+      <li>Marcad un evento como clave.</li>
+      <li>Cread una audiencia con quien haya hecho <code>add_to_cart</code> pero no <code>purchase</code>.</li>
+      <li>Mirad cuánto cupo os queda de dimensiones.</li>
+    </ol>
+    <p class="muted">La dimensión tardará un rato en aparecer en los informes. Es normal.</p>
+  </section>
+</section>
+
+<!-- ---------- B12 · BIGQUERY ---------- -->
+<section>
+  <section data-menu-title="12 · BigQuery">
+    <p class="kicker">Bloque 12 <span class="tiempo">· 75 min</span></p>
+    <h2>BigQuery</h2>
+  </section>
+
+  <section>
+    <p class="frase">Aquí se acaban el muestreo, la fila <code>(other)</code> y los umbrales.</p>
+    <p>La exportación manda a BigQuery los datos crudos, evento a evento, sin agregar y sin esconder nada.</p>
+  </section>
+
+  <section>
+    <h3>Para qué sirve de verdad</h3>
+    <ul>
+      <li>Cruzar los datos con los vuestros: márgenes, devoluciones, el CRM.</li>
+      <li>Calcular la atribución a vuestra manera, no a la de Google.</li>
+      <li>Auditar la propia medición, que es lo que haremos al final del bloque.</li>
+      <li>Quedaros el histórico. Si mañana se borra la propiedad, los datos siguen ahí.</li>
+    </ul>
+    <div class="warn">
+      No es retroactiva. Empieza a llenarse el día que la activáis. Activadla
+      hoy aunque no penséis usarla hasta dentro de un año: es gratis.
+    </div>
+  </section>
+
+  <section>
+    <h3>Diaria o continua</h3>
+    <table>
+      <tr><th></th><th>Diaria</th><th>Streaming</th></tr>
+      <tr><td>Cuándo llega</td><td>una vez al día, por la tarde</td><td>en minutos</td></tr>
+      <tr><td>Tabla</td><td><code>events_YYYYMMDD</code></td><td><code>events_intraday_YYYYMMDD</code></td></tr>
+      <tr><td>Límite</td><td>1 millón de eventos al día</td><td>—</td></tr>
+      <tr><td>Coste</td><td>gratis</td><td>unos 0,05 $ por GB</td></tr>
+      <tr><td>Pega</td><td>tarda</td><td>le falta la fuente de los usuarios nuevos</td></tr>
+    </table>
+    <p class="muted">Para empezar, con la diaria sobra.</p>
+  </section>
+
+  <section>
+    <h3>Cinco cosas del esquema</h3>
+    <ol class="pasos">
+      <li>Una fila es un evento. No una sesión ni un pedido.</li>
+      <li>Los parámetros no son columnas: están en un array y hay que desanidarlos.</li>
+      <li>Los artículos, igual.</li>
+      <li>No existe un identificador de sesión suelto: hay que combinar dos campos.</li>
+      <li>Las tablas son diarias y el filtro de fechas es lo que controla el coste.</li>
     </ol>
   </section>
 
   <section>
-    <h3>1 · El comodín de fecha</h3>
+    <h3>Empezar por lo fácil</h3>
     <div data-snippet="sql-eventos-por-dia"></div>
-    <p class="muted"><code>_TABLE_SUFFIX</code> no es un <code>WHERE</code> cualquiera: decide qué tablas se leen, y por tanto lo que pagas.</p>
   </section>
 
   <section>
-    <h3>2 · UNNEST, el patrón que repetirás toda tu vida</h3>
+    <h3>Desanidar, que es lo que duele</h3>
     <div data-snippet="sql-unnest"></div>
-    <div class="note">
-      Si el parámetro es numérico, <code>string_value</code> viene <code>NULL</code>. De ahí el
-      <code>COALESCE</code> que verás en todas partes.
-    </div>
+    <p class="muted">Este patrón lo vais a escribir mil veces. Copiadlo y guardadlo.</p>
   </section>
 
   <section>
-    <h3>Truco: documentar una propiedad que no conoces</h3>
+    <h3>Un truco que vale su peso en oro</h3>
     <pre><code class="language-sql" data-trim>
 SELECT p.key, COUNT(*) AS veces
 FROM `…events_*`, UNNEST(event_params) AS p
 WHERE _TABLE_SUFFIX = '20210131'
 GROUP BY p.key ORDER BY veces DESC
     </code></pre>
-    <p>La forma más rápida de saber <strong>qué mide de verdad</strong> una web que acabas de heredar.</p>
-    <p class="muted">Lo mismo con <code>event_name</code> te da el inventario de eventos.</p>
+    <p>Acabáis de heredar una web y nadie sabe qué mide. Esto os lo dice en diez segundos.</p>
+    <p class="muted">Lo mismo con <code>event_name</code> os da el inventario de eventos.</p>
   </section>
 
   <section>
-    <h3>3 · Qué es una sesión aquí</h3>
+    <h3>Qué es una sesión aquí</h3>
     <div data-snippet="sql-sesiones"></div>
-    <p class="muted">La clave es siempre <code>user_pseudo_id</code> + <code>ga_session_id</code>.</p>
   </section>
 
   <section>
-    <h3>4 · El embudo, explícito</h3>
+    <h3>El embudo, escrito</h3>
     <div data-snippet="sql-funnel"></div>
-    <p class="muted">Lo que en Exploraciones es un clic, aquí se puede versionar, revisar en un PR y programar.</p>
+    <p class="muted">Lo que en Exploraciones es un clic, aquí se revisa en un pull request y se ejecuta cada noche.</p>
   </section>
 
   <section>
-    <h3>5 · Ingresos por producto: la trampa clásica</h3>
+    <h3>Ingresos por producto</h3>
     <div data-snippet="sql-ingresos-item"></div>
     <div class="warn">
-      Si haces <code>UNNEST(items)</code> y sumas <code>purchase_revenue</code>, cuentas el pedido
-      una vez <strong>por producto</strong>. Es el error más común de este dataset.
+      Si desanidáis los artículos y sumáis el total del pedido, contáis cada
+      pedido una vez por producto. Es el error más repetido con este esquema.
     </div>
   </section>
 
   <section>
-    <h3>6 · Auditar tu propia medición</h3>
+    <h3>Auditar la medición</h3>
     <div data-snippet="sql-auditoria"></div>
   </section>
 
   <section>
     <h3>Lo que encuentra en la tienda de Google</h3>
     <table>
-      <tr><th>Métrica</th><th>Valor</th><th>Qué significa</th></tr>
-      <tr><td>eventos <code>purchase</code></td><td>1.204</td><td></td></tr>
-      <tr><td><code>transaction_id</code> distintos</td><td>895</td><td></td></tr>
-      <tr><td>sin <code>transaction_id</code></td><td><strong>300</strong></td><td>1 de cada 4 compras, anónimas</td></tr>
-      <tr><td>sin ingresos</td><td>300</td><td>las mismas</td></tr>
-      <tr><td><code>transaction_id</code> repetidos</td><td>10</td><td>pedidos contados dos veces</td></tr>
-      <tr><td>items sin <code>item_id</code></td><td>0</td><td>esto sí lo hacen bien</td></tr>
+      <tr><th>Qué</th><th>Cuánto</th></tr>
+      <tr><td>Eventos <code>purchase</code></td><td>1.204</td></tr>
+      <tr><td>Compras sin <code>transaction_id</code></td><td>300</td></tr>
+      <tr><td>Compras sin importe</td><td>300</td></tr>
+      <tr><td>Pedidos contados dos veces</td><td>10</td></tr>
+      <tr><td>Artículos sin identificador</td><td>0</td></tr>
     </table>
-    <div class="warn">
-      Esto es la <strong>tienda de merchandising de Google</strong>, medida por Google, en
-      su dataset de ejemplo público. Dos de los cinco fallos de ayer, en
-      producción. Que nadie se sienta mal por su implementación.
-    </div>
+    <p class="frase">Una de cada cuatro compras llega sin identificador.</p>
+    <p>Esto es la tienda de Google, medida por Google, en el ejemplo que Google publica para enseñar a usar esto.</p>
     <aside class="notes">
-      Cierre del bloque: esta consulta en un cron semanal es alerta temprana de
-      que alguien rompió la medición en un despliegue. Es la versión "datos ya
-      recogidos" del test e2e del día 1.
+      Es el momento de bajar la ansiedad de la sala: si a ellos les pasa, a
+      cualquiera. La diferencia entre una implementación buena y una mala no es
+      no tener fallos, es enterarse.
     </aside>
   </section>
 
   <section>
-    <h3>Coste: cómo no llevarte un susto</h3>
+    <h3>Cuánto cuesta</h3>
     <ul>
-      <li>Se paga por <strong>bytes escaneados</strong>, no por filas devueltas. <code>LIMIT</code> no abarata nada.</li>
-      <li><code>SELECT *</code> escanea todas las columnas. Pide solo las que uses.</li>
-      <li>Filtra <strong>siempre</strong> por <code>_TABLE_SUFFIX</code>.</li>
-      <li>El editor te dice el coste estimado <strong>antes</strong> de ejecutar. Míralo.</li>
-      <li>El sandbox da 1 TB al mes gratis, sin tarjeta.</li>
+      <li>Se paga por lo que se escanea, no por lo que devuelve. Un <code>LIMIT</code> no abarata nada.</li>
+      <li><code>SELECT *</code> lee todas las columnas. Pedid solo lo que uséis.</li>
+      <li>Filtrad siempre por fecha de tabla.</li>
+      <li>El editor os dice el coste estimado antes de ejecutar.</li>
+      <li>El modo gratuito da 1 TB al mes y no pide tarjeta.</li>
     </ul>
-    <p class="muted">Comprobación honesta: <code>bq query --dry_run</code> te da los bytes sin ejecutar nada.</p>
-    <table>
-      <tr><th>Consulta de <code>/sql</code></th><th>Escanea</th></tr>
-      <tr><td>01 eventos por día (7 días)</td><td>0,01 GB</td></tr>
-      <tr><td>02 páginas más vistas (7 días)</td><td>0,07 GB</td></tr>
-      <tr><td>04 embudo (31 días)</td><td>0,27 GB</td></tr>
-      <tr><td>05 ingresos por item (31 días)</td><td>0,08 GB</td></tr>
-    </table>
-    <p class="muted">Las seis juntas: menos del 0,1 % del terabyte gratuito mensual.</p>
+    <p class="muted">Las seis consultas de este bloque, juntas, escanean menos de 1 GB.</p>
   </section>
 
-  <section>
-    <h3>Lo que se puede hacer y en la interfaz no</h3>
-    <ul>
-      <li><strong>LTV real</strong> por canal de captación, con el margen de tu ERP.</li>
-      <li><strong>Atribución propia</strong>: la de GA4 es una caja negra; aquí decides tú.</li>
-      <li><strong>Detección de fallos de medición</strong>: eventos sin parámetros obligatorios, <code>value</code> nulo, duplicados.</li>
-      <li><strong>Alimentar modelos</strong>: recomendación, propensión a comprar, churn.</li>
-    </ul>
-    <div class="note">
-      El ejercicio de la última consulta de <code>/sql</code> es precisamente ese: comparar
-      tres formas de calcular los ingresos y explicar por qué no coinciden.
-    </div>
+  <section class="ejercicio" data-menu-title="Ejercicio 12">
+    <span class="ej-num">Ejercicio 12</span><span class="ej-tiempo">20 minutos</span>
+    <h2>Preguntad vosotros</h2>
+    <ol class="pasos">
+      <li>Ejecutad la consulta del inventario de eventos sobre un día cualquiera.</li>
+      <li>Elegid un evento que os llame la atención y sacad sus parámetros.</li>
+      <li>Calculad los ingresos totales de una semana de dos formas distintas.</li>
+      <li>Comparad los dos números y explicad la diferencia.</li>
+    </ol>
+    <p class="muted">Mirad el coste estimado antes de darle a ejecutar. Siempre.</p>
   </section>
 </section>
 
-<!-- ---- 2.4 Measurement Protocol ---- -->
+<!-- ---------- B13 · SERVIDOR ---------- -->
 <section>
-  <section data-menu-title="2.4 Measurement Protocol">
-    <p class="kicker">Bloque 2.4</p>
-    <h2>Measurement Protocol y server-side</h2>
+  <section data-menu-title="13 · Datos desde el servidor">
+    <p class="kicker">Bloque 13 <span class="tiempo">· 45 min</span></p>
+    <h2>Datos que no vienen del navegador</h2>
   </section>
 
   <section>
-    <h3>Cuándo lo necesitas de verdad</h3>
+    <h3>Cuándo hace falta</h3>
     <ul>
-      <li>Una <strong>devolución</strong> que se aprueba tres días después, en tu back-office.</li>
-      <li>Un pago <strong>diferido</strong> (transferencia, contrarreembolso) que confirma el banco.</li>
-      <li>Una baja de suscripción procesada por un cron.</li>
-      <li>Una compra por <strong>teléfono</strong> que mete un comercial.</li>
-      <li>Rellenar una propiedad de demo… como hicimos para esta formación.</li>
+      <li>Una devolución que se aprueba tres días después, a mano.</li>
+      <li>Un pago por transferencia que confirma el banco.</li>
+      <li>Una baja que procesa un cron a las tres de la mañana.</li>
+      <li>Una venta por teléfono.</li>
     </ul>
-    <div class="warn">
-      Lo que <strong>no</strong> es: un sustituto de gtag.js. Sin navegador no hay
-      dispositivo, ni geografía, ni referrer, ni medición mejorada.
-    </div>
+    <p class="muted">Todo eso pasa fuera del navegador y no existe para GA4 a menos que se lo contéis.</p>
+  </section>
+
+  <section>
+    <h3>Cómo funciona</h3>
+    <div data-diagram="mp-vs-navegador"></div>
   </section>
 
   <section>
     <h3>La petición</h3>
-    <pre><code class="language-bash" data-trim>
-POST https://www.google-analytics.com/mp/collect
-     ?measurement_id=G-TCCFCHKDG9&api_secret=SECRETO
-    </code></pre>
     <pre><code class="language-json" data-trim>
 {
   "client_id": "1699642630.1789889256",
-  "timestamp_micros": "1789889256061000",
   "events": [{
-    "name": "purchase",
+    "name": "refund",
     "params": {
       "transaction_id": "MM-1789889256-VO1P",
-      "currency": "EUR", "value": 15.6, "tax": 1.56, "shipping": 3.5,
-      "items": [{ "item_id": "MM-HOG-01", "price": 5.2, "quantity": 3 }],
+      "currency": "EUR", "value": 15.6,
       "session_id": "1789827990",
-      "engagement_time_msec": 434
+      "engagement_time_msec": 1
     }
   }]
 }
     </code></pre>
-    <p class="muted">Mismos nombres que en el navegador: el tracking plan no cambia porque cambie el transporte.</p>
+    <p>Los mismos nombres de siempre. Cambia el transporte, no lo que se mide.</p>
   </section>
 
   <section>
-    <h3>Las cuatro reglas que se saltan todos</h3>
-    <ol>
-      <li><strong><code>session_id</code> y <code>engagement_time_msec</code></strong> o no cuenta como sesión ni como interacción.</li>
-      <li><strong>72 horas</strong> de retroactividad. Más atrás, GA4 acepta el evento y le <em>cambia la fecha en silencio</em>.</li>
-      <li><strong>Límites</strong>: 25 eventos por petición, 25 parámetros por evento, cuerpo &lt; 130 kB.</li>
-      <li><strong><code>client_id</code></strong>: si no es el mismo del navegador, es <strong>otro usuario</strong>. Y ahí se rompe la atribución.</li>
+    <h3>Cuatro cosas que se saltan todos</h3>
+    <ol class="pasos">
+      <li>Sin <code>session_id</code> y <code>engagement_time_msec</code>, no cuenta como sesión.</li>
+      <li>Solo se puede retroceder 72 horas. Más atrás, GA4 acepta el evento y le cambia la fecha sin avisar.</li>
+      <li>Máximo 25 eventos por petición.</li>
+      <li>El <code>client_id</code> tiene que ser el mismo que usó el navegador. Si no, es otra persona.</li>
     </ol>
   </section>
 
   <section>
-    <h3>El problema del client_id</h3>
-    <p>El usuario compra en el navegador y tu backend confirma el pago dos días después. ¿Cómo sabe GA4 que es la misma persona?</p>
+    <h3>Guardar el client_id</h3>
     <pre><code class="language-javascript" data-trim>
-// En el navegador, al confirmar el pedido: guárdalo con el pedido.
 gtag('get', MEASUREMENT_ID, 'client_id', (cid) => {
   fetch('/api/pedido', { method: 'POST',
     body: JSON.stringify({ transaction_id, ga_client_id: cid }) });
 });
     </code></pre>
-    <p>Tu backend lo almacena junto al pedido y lo reutiliza cuando manda el <code>refund</code>.</p>
+    <p>Se guarda junto al pedido y se reutiliza cuando el backend manda la devolución.</p>
+    <p class="muted">Sin esto, restáis la devolución a un usuario que nunca compró.</p>
+  </section>
+
+  <section>
+    <h3>Y el secreto</h3>
+    <p>El Measurement ID es público: está en el HTML de todo el mundo y cualquiera puede mandar eventos falsos a vuestra propiedad. Se asume.</p>
+    <p>La clave de la API no. Variable de entorno en el servidor, nunca en el navegador ni en el repositorio.</p>
     <div class="note">
-      Sin esto, la devolución se atribuye a un usuario fantasma y los ingresos
-      netos por canal quedan mal para siempre.
+      El validador de Google no comprueba si la clave es correcta: os
+      responderá que todo bien y perderéis los datos. Comprobadlo siempre en
+      Tiempo real después del primer envío.
     </div>
   </section>
 
-  <section>
-    <h3>Valida antes de enviar</h3>
-    <pre><code class="language-bash" data-trim>
-POST https://www.google-analytics.com/debug/mp/collect?…
-    </code></pre>
-    <pre><code class="language-json" data-trim>
-{"validationMessages": [{
-  "fieldPath": "events",
-  "description": "Event at index: [0] has invalid name [_bad]…",
-  "validationCode": "NAME_INVALID"
-}]}
-    </code></pre>
-    <div class="warn">
-      El validador <strong>no comprueba</strong> tu <code>api_secret</code> ni tu <code>measurement_id</code>.
-      Con el secreto mal copiado recibirás <code>204 No Content</code> y perderás los
-      datos sin un solo error. Comprueba siempre en Tiempo real.
-    </div>
-  </section>
-
-  <section>
-    <h3>Seguridad</h3>
-    <ul>
-      <li>El <strong>Measurement ID es público</strong>: cualquiera puede mandar eventos falsos a tu propiedad. Se asume.</li>
-      <li>El <strong>API secret no</strong>: variable de entorno en el servidor, nunca en el frontend ni en el repo.</li>
-      <li>Si se filtra, se revoca y se crea otro desde el flujo de datos.</li>
-    </ul>
-    <p class="muted">En este repo: <code>site/config.js</code> lleva el ID; el secreto vive en <code>simulator/.env</code>, gitignored.</p>
-  </section>
-
-  <section>
-    <h3>Server-side tagging, en una slide</h3>
-    <p>Un contenedor tuyo (en tu dominio) recibe los hits del navegador y decide qué reenvía a Google y a quién más.</p>
-    <table>
-      <tr><th>A favor</th><th>En contra</th></tr>
-      <tr><td>cookies de primera parte, más duraderas</td><td>es infraestructura: servidor, coste, guardias</td></tr>
-      <tr><td>los bloqueadores lo ven menos</td><td>más piezas que se pueden romper</td></tr>
-      <tr><td>datos sensibles no salen del servidor</td><td>no arregla una instrumentación mala</td></tr>
-    </table>
-    <div class="note">
-      Si tu medición está mal en el navegador, server-side la envía mal más
-      caro. Primero el tracking plan; la infraestructura después.
-    </div>
+  <section class="ejercicio" data-menu-title="Ejercicio 13">
+    <span class="ej-num">Ejercicio 13</span><span class="ej-tiempo">10 minutos</span>
+    <h2>Mandad un evento a mano</h2>
+    <ol class="pasos">
+      <li>Sacad vuestro <code>client_id</code> de la tienda con <code>gtag('get', …)</code>.</li>
+      <li>Mandad un evento al validador y provocad un error a propósito.</li>
+      <li>Arregladlo y mandadlo de verdad.</li>
+      <li>Buscadlo en Tiempo real.</li>
+    </ol>
+    <p class="muted">El script <code>mp_backfill.py</code> del repositorio hace esto mismo, pero con 350 sesiones.</p>
   </section>
 </section>
 
-<!-- ---- 2.5 Cierre ---- -->
+<!-- ---------- B14 · CIERRE ---------- -->
 <section>
-  <section data-menu-title="2.5 Cierre">
-    <p class="kicker">Bloque 2.5 · cierre</p>
-    <h2>Encuentra los cinco fallos</h2>
+  <section data-menu-title="14 · Cierre">
+    <p class="kicker">Bloque 14 <span class="tiempo">· 45 min</span></p>
+    <h2>Encontrad los cinco fallos</h2>
   </section>
 
   <section>
     <h3>El ejercicio</h3>
     <div class="split split--wide">
       <div>
-        <p>En <code>/buggy/</code> está la misma tienda con <strong>cinco errores</strong> de instrumentación. Los cinco están hoy en webs reales.</p>
-        <ul>
-          <li>Herramientas: DebugView, Network, el test e2e.</li>
-          <li>Por parejas, 15 minutos.</li>
-          <li>Vale describir el síntoma; mejor si dais el arreglo.</li>
-        </ul>
-        <p class="muted">Pista: uno de ellos no se arregla tocando código.</p>
+        <p>En <code>/buggy/</code> está la misma tienda con cinco errores de medición. Los cinco existen hoy en webs de verdad.</p>
+        <p>Tenéis DebugView, la pestaña Red y el test.</p>
+        <p>Por parejas, quince minutos. Vale con describir el síntoma, pero mejor si decís cómo se arregla.</p>
+        <p class="muted">Uno de ellos no se arregla tocando código.</p>
       </div>
       <div>
         <div class="phone"><iframe data-src-app="/buggy/?debug=1" title="Versión con fallos"></iframe></div>
@@ -1031,48 +1160,41 @@ POST https://www.google-analytics.com/debug/mp/collect?…
   <section>
     <h3>Solución</h3>
     <table>
-      <tr><th>#</th><th>Fallo</th><th>Se ve en</th><th>Coste real</th></tr>
-      <tr><td>1</td><td><code>config</code> antes de <code>consent default</code></td><td>falta <code>gcs</code>, cookie sin permiso</td><td>legal</td></tr>
-      <tr><td>2</td><td><code>page_view</code> doble</td><td>DebugView</td><td>páginas infladas</td></tr>
-      <tr><td>3</td><td><code>value</code> como string</td><td><code>ep.value</code> en Network</td><td>ingresos a cero</td></tr>
-      <tr><td>4</td><td>items sin <code>item_id</code></td><td><code>pr1</code> en Network</td><td>informes de producto vacíos</td></tr>
-      <tr><td>5</td><td><code>purchase</code> duplicado, id fijo</td><td>dos eventos, mismo id</td><td>ingresos inventados</td></tr>
+      <tr><th>Fallo</th><th>Cómo se ve</th><th>Qué cuesta</th></tr>
+      <tr><td>Consentimiento después del <code>config</code></td><td>falta <code>gcs</code>, cookie sin permiso</td><td>un problema legal</td></tr>
+      <tr><td>Vista de página doble</td><td>dos <code>page_view</code> seguidos</td><td>el doble de tráfico del real</td></tr>
+      <tr><td>Importe como texto</td><td><code>ep.value</code> en vez de <code>epn.value</code></td><td>ingresos a cero</td></tr>
+      <tr><td>Artículos sin identificador</td><td>hay que mirar el <code>pr1</code></td><td>informes de producto vacíos</td></tr>
+      <tr><td>Compra repetida con id fijo</td><td>dos eventos, mismo id</td><td>ventas que no existen</td></tr>
     </table>
-    <p class="muted">El nº 2 tiene media solución en el código y media en la interfaz de GA4.</p>
+    <p class="muted">El segundo se arregla a medias en el código y a medias en la consola.</p>
   </section>
 
   <section>
-    <h3>Checklist para revisar cualquier implementación</h3>
-    <ol>
-      <li>¿Hay un <strong>tracking plan</strong> escrito? Si no, no hay nada que revisar.</li>
-      <li>¿Los eventos usan los <strong>nombres recomendados</strong>?</li>
-      <li>¿<code>value</code> es numérico y lleva <code>currency</code>?</li>
-      <li>¿Los items llevan <code>item_id</code> en <strong>todos</strong> los eventos?</li>
-      <li>¿<code>purchase</code> puede dispararse dos veces? Recarga y "atrás".</li>
-      <li>¿Cuántos <code>page_view</code> por navegación? Cuéntalos.</li>
-      <li>¿El consentimiento va <strong>antes</strong> del <code>config</code>?</li>
-      <li>¿Hay un <strong>test</strong> que lo verifique en CI?</li>
+    <h3>Para revisar cualquier implementación</h3>
+    <ol class="pasos">
+      <li>¿Hay un documento que diga qué se mide? Si no, no hay nada que revisar.</li>
+      <li>¿Los nombres son los que reconoce Google?</li>
+      <li>¿Los importes son números y llevan moneda?</li>
+      <li>¿Los artículos llevan identificador en todos los eventos?</li>
+      <li>¿Se puede duplicar una compra recargando?</li>
+      <li>¿Cuántas vistas se cuentan por navegación?</li>
+      <li>¿El consentimiento va antes de la configuración?</li>
+      <li>¿Alguien se entera si esto se rompe?</li>
     </ol>
   </section>
 
   <section>
-    <h3>Qué os lleváis</h3>
-    <ul>
-      <li>Un repo que funciona y del que copiar: <code>analytics.js</code> es reutilizable tal cual.</li>
-      <li>Un <strong>test de analítica</strong>, que casi nadie tiene.</li>
-      <li>Un simulador para probar sin esperar tráfico real.</li>
-      <li>Seis consultas de BigQuery: las cinco de las que tiran el 80 % de los análisis, y una que audita tu medición.</li>
-    </ul>
-    <div class="note">
-      La idea que se queda: <strong>la analítica es código</strong>. Tiene contrato, tiene
-      tests, se revisa en un PR y se rompe en silencio si no la vigilas.
-    </div>
+    <h3>Volvamos a vuestras preguntas</h3>
+    <p>Las del primer ejercicio, las que apuntamos ayer por la mañana.</p>
+    <p>¿Cuáles podéis responder ya? ¿Cuáles necesitan que midáis algo nuevo? ¿Y cuáles necesitan BigQuery?</p>
+    <p class="muted">Eso es vuestro plan de trabajo para el mes que viene.</p>
   </section>
-</section>
 
-<section class="cover">
-  <h1>Gracias.</h1>
-  <p class="muted">github.com/alvmig/la-masa-madre</p>
+  <section class="cover">
+    <h1>Gracias.</h1>
+    <p class="muted">github.com/alvmig/la-masa-madre</p>
+  </section>
 </section>
 
 </div></div>
@@ -1081,6 +1203,7 @@ POST https://www.google-analytics.com/debug/mp/collect?…
 <script src="vendor/plugin/highlight.js"></script>
 <script src="vendor/plugin/notes.js"></script>
 <script src="snippets.js"></script>
+<script src="diagrams.js"></script>
 <script src="slides.js"></script>
 </body>
 </html>

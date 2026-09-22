@@ -51,6 +51,16 @@ function renderSnippets() {
 }
 renderSnippets();
 
+// --- 2b. Diagramas -----------------------------------------------------------
+// <div data-diagram="anatomia-hit"></div> → el SVG de diagrams.js.
+function renderDiagrams() {
+  document.querySelectorAll('[data-diagram]').forEach((host) => {
+    const svg = (window.DIAGRAMS || {})[host.dataset.diagram];
+    host.innerHTML = svg || `<div class="warn">Falta el diagrama <code>${host.dataset.diagram}</code>.</div>`;
+  });
+}
+renderDiagrams();
+
 // --- 3. reveal ---------------------------------------------------------------
 Reveal.initialize({
   hash: true,

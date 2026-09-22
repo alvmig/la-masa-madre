@@ -106,3 +106,36 @@
 /* Ejercicio */
 .task { border: 2px solid var(--navy); padding: .8em 1em; font-size: .8em; }
 .task h3 { margin-top: 0; }
+
+
+/* Diagramas SVG */
+.diagram { width: 100%; height: auto; display: block; margin: .6em 0; }
+.diagram--sm { max-width: 70%; margin-inline: auto; }
+
+/* Ejercicios intercalados */
+.reveal section.ejercicio { background: var(--navy-soft); }
+.ej-num {
+  display: inline-block; background: var(--navy); color: #fff;
+  font-family: var(--serif-body); font-weight: 700; font-size: .6em;
+  padding: .15em .7em; border-radius: 999px; margin-bottom: .5em;
+  letter-spacing: .04em;
+}
+.ej-tiempo { float: right; color: var(--muted); font-size: .7em; font-style: italic; }
+.reveal .ejercicio h2 { margin-top: 0; }
+.pasos { counter-reset: paso; list-style: none; margin-left: 0; }
+.pasos li { counter-increment: paso; position: relative; padding-left: 2.1em; margin-bottom: .5em; }
+.pasos li::before {
+  content: counter(paso); position: absolute; left: 0; top: .1em;
+  width: 1.5em; height: 1.5em; line-height: 1.5em; text-align: center;
+  border: 2px solid var(--navy); border-radius: 50%; font-size: .75em; font-weight: 700; color: var(--navy);
+}
+
+/* Cita / frase suelta para respirar entre bloques */
+.frase {
+  font-family: var(--serif-display); font-size: 1.5em; color: var(--navy);
+  line-height: 1.3; max-width: 22em;
+}
+.frase + p { color: var(--muted); font-size: .85em; }
+
+/* Tiempo estimado del bloque */
+.reveal .kicker .tiempo { color: var(--accent); }
