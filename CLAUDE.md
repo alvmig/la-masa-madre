@@ -67,7 +67,7 @@ python simulator/mp_backfill.py --dry-run      # valida contra /debug/mp/collect
 
 ## Estado por fases
 
-Ver `README.md` → sección "Estado". Fase actual: **3 (simulador)**.
+Ver `README.md` → sección "Estado". Fase actual: **4 (backfill MP)**.
 
 ## Contenido obligatorio en slides (petición del formador)
 
