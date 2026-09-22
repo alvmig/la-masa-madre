@@ -17,6 +17,3 @@ node_modules/
 
 # SO / editores
 .DS_Store
-
-# Resultados de BigQuery: se regeneran con ./scripts/run-sql.sh
-# (se versionan igualmente porque son pequeños y sirven de referencia en clase)

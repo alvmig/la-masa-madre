@@ -1,6 +1,6 @@
 # Consultas · BigQuery + GA4
 
-Cinco consultas comentadas, de menos a más, contra el **dataset público** de
+Seis consultas comentadas, de menos a más, contra el **dataset público** de
 Google, que es una exportación real de GA4 de la Google Merchandise Store:
 
 ```
@@ -36,14 +36,37 @@ a la derecha. Con el rango de fechas puesto, ninguna de estas pasa de unos pocos
 3. `03_sesiones.sql` — qué es una sesión aquí.
 4. `04_funnel_ecommerce.sql` — el embudo que en la interfaz es un clic.
 5. `05_ingresos_por_item.sql` — desanidar items y cuadrar ingresos.
+6. `06_auditoria_calidad.sql` — usar SQL para auditar tu propia medición.
 
-## Antes de la formación
+## Ejecutarlas
 
-Estas consultas **no se han ejecutado** contra BigQuery (no había CLI en la
-máquina donde se escribieron). Están escritas contra el esquema oficial de la
-exportación, pero **ejecútalas una vez** el día anterior: el dataset público
-tiene campos sin poblar y es mejor descubrirlo en casa que en clase.
+```bash
+./scripts/run-sql.sh        # todas · ./scripts/run-sql.sh 04 para una sola
+```
 
-Apunta el resultado de cada una (número de filas, si alguna columna sale NULL)
-y ajusta el comentario si hace falta. La consulta 05 ya trae plan B para
-`item_revenue`.
+Hace primero un `--dry_run` de cada consulta (dice cuántos GB escanearía sin
+gastar cuota) y guarda el resultado en `sql/resultados/*.json`.
+
+Requiere el CLI de Google Cloud:
+
+```bash
+brew install --cask google-cloud-sdk
+gcloud auth login
+gcloud config set project <tu-proyecto>
+```
+
+## Resultados
+
+**Ejecutadas el 2026-09-22.** Las seis funcionan; el resultado real está
+anotado al final de cada archivo, para poder comentarlo en clase sin depender
+de la red. Coste total: unos 0,8 GB, menos del 0,1 % del terabyte mensual
+gratuito del sandbox.
+
+Tres hallazgos que valen para la clase:
+
+- El móvil **no** convierte peor que el escritorio en esta tienda (0,55 % vs
+  0,54 %), al contrario del tópico que repite todo el mundo.
+- El embudo pierde el **80 % entre la ficha y el carrito**, no en el checkout,
+  que es donde casi todos miran primero.
+- La consulta 06 encuentra, en los datos reales de Google, **300 compras sin
+  `transaction_id`** (una de cada cuatro) y **10 pedidos duplicados**.
