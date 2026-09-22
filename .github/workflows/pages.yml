@@ -34,6 +34,12 @@ jobs:
             mkdir -p _site/slides
             cp -R slides/. _site/slides/
           fi
+          if [ -d starter ]; then
+            mkdir -p _site/starter
+            cp -R starter/. _site/starter/
+          fi
+          # Las soluciones del ejercicio no se publican con la web (siguen en el repo).
+          rm -f _site/buggy/SOLUCIONES.md
           find _site -maxdepth 2 -type f | sort
 
       - uses: actions/configure-pages@v5

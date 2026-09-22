@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>La Masa Madre</title>
+  <script>
+    // GitHub Pages no tiene reescrituras de servidor: sirve este 404.html para
+    // cualquier ruta que no exista como fichero (/panes, /carrito, ...).
+    // Guardamos la ruta pedida y el referrer original y volvemos a la raíz de
+    // la app; el router los restaura con history.replaceState ANTES del primer
+    // page_view, así page_location y page_referrer llegan correctos a GA4.
+    (function () {
+      var segs = location.pathname.split('/');
+      // Project page: /<repo>/... · User page o dominio propio: /...
+      var base = /\.github\.io$/.test(location.hostname) && segs[1] ? '/' + segs[1] + '/' : '/';
+      // Sub-apps que viven dentro de site/ con su propio router.
+      var sub = base === '/' ? segs[1] : segs[2];
+      if (sub === 'buggy' || sub === 'starter') base += sub + '/';
+      var rest = location.pathname.slice(base.length);
+      try {
+        sessionStorage.setItem('mm_redirect', JSON.stringify({
+          path: '/' + rest + location.search + location.hash,
+          referrer: document.referrer
+        }));
+      } catch (e) {}
+      location.replace(base);
+    })();
+  </script>
+</head>
+<body></body>
+</html>
