@@ -203,10 +203,15 @@ def build_session(rng: random.Random, base_url: str, when_ms: int, client_id: st
     return events, subtotal
 
 
-def pick_timestamp(rng: random.Random, now_ms: int, hours: float) -> int:
+def pick_timestamp(rng: random.Random, now_ms: int, hours: float, min_age_h: float = 1.0) -> int:
     """Instante dentro de la ventana permitida, con forma de día real."""
     oldest = now_ms - int(hours * 3600 * 1000)
-    newest = now_ms - 3600 * 1000            # 1 h de margen
+    newest = now_ms - int(min_age_h * 3600 * 1000)
+    if newest <= oldest:                     # ventana degenerada (--min-age-hours 0 y --hours 0)
+        return now_ms - 30_000
+    if min_age_h < 0.25:
+        # Eventos recientes: sin curva horaria, para poder verlos en Tiempo real.
+        return int(rng.uniform(oldest, newest))
     for _ in range(40):                      # rechazo según el peso horario
         ts = rng.uniform(oldest, newest)
         hour = time.localtime(ts / 1000).tm_hour
@@ -227,7 +232,7 @@ def build_payloads(rng, args, base_url):
     for n in range(args.sessions):
         persona = args.persona or personas.pick_persona(rng)
         stats[persona] += 1
-        when_ms = pick_timestamp(rng, now_ms, args.hours)
+        when_ms = pick_timestamp(rng, now_ms, args.hours, getattr(args, 'min_age_hours', 1.0))
         # ~20 % de client_id repetidos → usuarios recurrentes.
         if rng.random() < personas.RETURNING_SHARE and payloads:
             client_id = rng.choice(payloads)["client_id"]
@@ -293,6 +298,8 @@ def main():
     ap.add_argument("--sessions", type=int, default=100, help="sesiones a generar (por defecto 100)")
     ap.add_argument("--hours", type=float, default=71.0,
                     help="ventana hacia atrás en horas (máx. 72 por la doc; por defecto 71)")
+    ap.add_argument("--min-age-hours", type=float, default=1.0,
+                    help="antigüedad mínima de los eventos (0 = ahora mismo, para verlos en Tiempo real)")
     ap.add_argument("--url", default="https://alvmig.github.io/la-masa-madre/",
                     help="URL base para page_location")
     ap.add_argument("--persona", choices=[n for n, _ in personas.PERSONAS], default=None)

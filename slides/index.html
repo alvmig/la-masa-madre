@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GA4 para developers · La Masa Madre</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="vendor/reset.css">
+  <link rel="stylesheet" href="vendor/reveal.css">
+  <link rel="stylesheet" href="vendor/plugin/highlight-theme.css">
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- ================= PORTADA ================= -->
+<section class="cover" data-menu-title="Portada">
+  <p class="kicker">Formación · 14 horas · 2 jornadas</p>
+  <h1>Google Analytics 4<br>para developers</h1>
+  <p class="big">La Masa Madre</p>
+  <p class="muted">gtag.js nativo, sin Tag Manager. Una SPA de verdad, instrumentada de cero.</p>
+  <aside class="notes">
+    Presentación. Preguntar quién ha tocado GA4 / UA / GTM antes. Dejar claro
+    que todo lo que veamos está en un repo público y que la web del teléfono
+    es real: los eventos que dispare durante la clase aparecen en DebugView.
+  </aside>
+</section>
+
+<section data-menu-title="Qué haremos">
+  <h2>Qué vamos a hacer</h2>
+  <div class="split">
+    <div>
+      <ul>
+        <li>Instrumentar una tienda <strong>desde cero</strong> con <code>gtag.js</code>.</li>
+        <li>Medir un embudo de ecommerce completo, de <code>view_item_list</code> a <code>purchase</code>.</li>
+        <li>Depurar lo que enviamos: DebugView, Network, tests automáticos.</li>
+        <li>Consentimiento: qué se manda cuando el usuario dice que no.</li>
+        <li>Leer los datos: informes, Exploraciones, BigQuery.</li>
+        <li>Meter datos sin navegador: Measurement Protocol.</li>
+      </ul>
+      <p class="muted">Todo el código: github.com/alvmig/la-masa-madre</p>
+    </div>
+    <div>
+      <div class="phone"><iframe data-src-app="/" title="La Masa Madre"></iframe></div>
+      <p class="phone-url" data-url-label></p>
+    </div>
+  </div>
+  <aside class="notes">
+    Este teléfono acompaña toda la formación. Es la web real servida desde el
+    mismo dominio que las slides: por eso el iframe no es de terceros y las
+    cookies funcionan igual que en una pestaña normal.
+  </aside>
+</section>
+
+<!-- ================= DÍA 1 ================= -->
+<section class="cover" data-menu-title="Día 1">
+  <p class="kicker">Jornada 1 · 7 horas</p>
+  <h1>Medir</h1>
+  <p class="muted">Modelo de eventos · gtag.js · SPA · ecommerce · depuración · consentimiento · práctica</p>
+</section>
+
+<!-- ---- 1.0 Alta y configuración ---- -->
+<section>
+  <section data-menu-title="1.0 Alta y configuración">
+    <p class="kicker">Bloque 1.0</p>
+    <h2>Alta y configuración</h2>
+    <p class="muted">Lo que hay que tener montado antes de escribir una línea de código.</p>
+    <aside class="notes">
+      Este bloque es el "de dónde sale todo esto". Lo hacemos en vivo sobre la
+      propiedad de la formación para que vean cada pantalla.
+    </aside>
+  </section>
+
+  <section>
+    <h3>Crear la propiedad</h3>
+    <ul>
+      <li><strong>Administrar → Crear → Propiedad</strong>.</li>
+      <li><strong>Zona horaria y moneda</strong>: se fijan aquí y condicionan todos los informes. Europe/Madrid y EUR.</li>
+      <li>Luego, <strong>flujo de datos</strong> web: la URL es informativa, no filtra nada.</li>
+    </ul>
+    <div class="note">
+      Una propiedad GA4 puede tener varios flujos (web, iOS, Android) y los datos
+      se mezclan. Un flujo ≠ una vista de Universal Analytics: <strong>las vistas ya no existen</strong>.
+    </div>
+  </section>
+
+  <section>
+    <h3>El Measurement ID</h3>
+    <p>Flujo de datos → arriba a la derecha: <code>G-TCCFCHKDG9</code>.</p>
+    <p>Es <strong>público</strong>: va en el HTML de todo el mundo. No es un secreto y no autentica nada: cualquiera puede mandar eventos a tu propiedad si lo conoce.</p>
+    <div class="warn">
+      Lo que sí es un secreto es el <strong>API secret</strong> del Measurement
+      Protocol (mismo panel, más abajo). Ese nunca va al frontend.
+    </div>
+  </section>
+
+  <section>
+    <h3>El snippet oficial…</h3>
+    <pre><code class="language-html" data-trim>
+&lt;script async src="https://www.googletagmanager.com/gtag/js?id=G-TCCFCHKDG9"&gt;&lt;/script&gt;
+&lt;script&gt;
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-TCCFCHKDG9');
+&lt;/script&gt;
+    </code></pre>
+    <p class="muted">Cuatro líneas que esconden bastante. Las desmontamos en el bloque 1.2.</p>
+  </section>
+
+  <section>
+    <h3>Medición mejorada: desactivar el history change</h3>
+    <p>Flujo de datos → <strong>Medición mejorada</strong> → ⚙ → Vistas de página → Configuración avanzada.</p>
+    <p>Desmarcar <strong>"Cambios de página basados en eventos del historial del navegador"</strong>.</p>
+    <div class="warn">
+      Si no lo desactivas, en una SPA tendrás <strong>dos <code>page_view</code> por navegación</strong>:
+      el tuyo y el suyo. Y <code>send_page_view: false</code> <em>no</em> lo evita.
+    </div>
+    <aside class="notes">
+      Este es el error número uno en SPAs. Enseñar en DebugView el doble evento
+      con la opción activada, si da tiempo.
+    </aside>
+  </section>
+
+  <section>
+    <h3>Dónde vive todo esto</h3>
+    <table>
+      <tr><th>Pieza</th><th>Dónde</th><th>Secreto</th></tr>
+      <tr><td>Measurement ID</td><td><code>site/config.js</code></td><td>no</td></tr>
+      <tr><td>API secret (MP)</td><td><code>simulator/.env</code> (gitignored)</td><td><strong>sí</strong></td></tr>
+      <tr><td>Web</td><td>GitHub Pages, <code>/</code></td><td>—</td></tr>
+      <tr><td>Estas slides</td><td>GitHub Pages, <code>/slides/</code></td><td>—</td></tr>
+    </table>
+    <p class="muted">Mismo dominio para web y slides: el iframe no es de terceros y las cookies no se bloquean.</p>
+  </section>
+
+  <section>
+    <h3>Hosting estático: el detalle que rompe las SPA</h3>
+    <p>GitHub Pages no tiene reescrituras. <code>/panes/MM-HOG-01</code> no existe como fichero → sirve <code>404.html</code>.</p>
+    <pre><code class="language-javascript" data-trim>
+// site/404.html · guardamos la ruta pedida y volvemos a la raíz
+sessionStorage.setItem('mm_redirect', JSON.stringify({
+  path: '/' + rest, referrer: document.referrer
+}));
+location.replace(base);
+    </code></pre>
+    <p>El router la restaura con <code>replaceState</code> <strong>antes</strong> del primer <code>page_view</code>.</p>
+    <div class="note">Si no, GA4 registraría todas las visitas profundas como si fueran a la home.</div>
+  </section>
+</section>
+
+<!-- ---- 1.1 Modelo de eventos ---- -->
+<section>
+  <section data-menu-title="1.1 Modelo de eventos">
+    <p class="kicker">Bloque 1.1</p>
+    <h2>El modelo de eventos</h2>
+  </section>
+
+  <section>
+    <h3>En GA4 todo es un evento</h3>
+    <p>No hay pageviews, ni eventos con categoría/acción/etiqueta, ni transacciones aparte. Solo:</p>
+    <pre><code class="language-javascript" data-trim>
+gtag('event', '&lt;nombre&gt;', { &lt;parámetros&gt; });
+    </code></pre>
+    <ul>
+      <li>Una vista de página es un evento: <code>page_view</code>.</li>
+      <li>Una compra es un evento: <code>purchase</code>.</li>
+      <li>Tu evento propio es un evento: <code>solicita_presupuesto</code>.</li>
+    </ul>
+    <p class="muted">Viniendo de Universal Analytics: olvida categoría / acción / etiqueta. No existen.</p>
+  </section>
+
+  <section>
+    <h3>Cuatro familias de eventos</h3>
+    <table>
+      <tr><th>Familia</th><th>Quién los manda</th><th>Ejemplo</th></tr>
+      <tr><td>Automáticos</td><td>la librería</td><td><code>session_start</code>, <code>first_visit</code></td></tr>
+      <tr><td>Medición mejorada</td><td>la librería, configurable</td><td><code>scroll</code>, <code>click</code>, <code>file_download</code></td></tr>
+      <tr><td>Recomendados</td><td><strong>tú</strong>, con nombres fijos</td><td><code>purchase</code>, <code>add_to_cart</code></td></tr>
+      <tr><td>Personalizados</td><td>tú, nombre libre</td><td><code>pide_hogaza_gigante</code></td></tr>
+    </table>
+    <div class="warn">
+      Los <strong>recomendados</strong> son los que desbloquean informes ya hechos.
+      <code>purchase</code> alimenta los informes de ingresos; <code>compra_finalizada</code> no alimenta nada.
+    </div>
+  </section>
+
+  <section>
+    <h3>Parámetros: la parte que se olvida</h3>
+    <ul>
+      <li>Cada evento lleva parámetros. Muchos se registran solos (<code>page_location</code>, <code>language</code>…).</li>
+      <li>Para ver un parámetro <strong>propio</strong> en los informes hay que registrarlo como <strong>dimensión personalizada</strong>.</li>
+      <li>Hay cupo: 50 dimensiones de evento por propiedad. No es infinito.</li>
+    </ul>
+    <div class="note">
+      Regla práctica: si vas a segmentar por ello, es dimensión personalizada.
+      Si solo lo quieres para depurar, con verlo en DebugView basta.
+    </div>
+  </section>
+</section>
+
+<!-- ---- 1.2 gtag.js por dentro ---- -->
+<section>
+  <section data-menu-title="1.2 gtag.js">
+    <p class="kicker">Bloque 1.2</p>
+    <h2>gtag.js por dentro</h2>
+  </section>
+
+  <section>
+    <h3>Nuestro arranque, comentado</h3>
+    <div data-snippet="init"></div>
+    <aside class="notes">
+      Lo importante: gtag es un push a un array. Todo lo que llamas antes de que
+      cargue la librería se encola y se procesa en orden. Por eso el orden del
+      consentimiento importa aunque el script aún no esté.
+    </aside>
+  </section>
+
+  <section>
+    <h3>Por qué funciona antes de cargar nada</h3>
+    <pre><code class="language-javascript" data-trim>
+window.dataLayer = window.dataLayer || [];
+function gtag() { dataLayer.push(arguments); }
+    </code></pre>
+    <p><code>gtag()</code> no envía nada: <strong>encola</strong>. Cuando <code>gtag/js</code> carga, procesa la cola en orden.</p>
+    <p>Consecuencia práctica: el orden de tus llamadas se respeta aunque la red vaya lenta o el script esté bloqueado.</p>
+  </section>
+
+  <section>
+    <h3>Qué viaja por el cable</h3>
+    <p>Un evento = una petición a <code>/g/collect</code> con todo en la query string.</p>
+    <pre><code class="language-text" data-trim>
+en=add_to_cart            nombre del evento
+cu=EUR                    currency
+epn.value=11              parámetro numérico
+ep.item_list_id=catalogo  parámetro string
+pr1=idMM-HOG-01~nmHogaza…~pr5.5~qt2~lp0   item 1
+gcs=G111                  estado de consentimiento
+    </code></pre>
+    <div class="note">
+      <code>epn.</code> = número, <code>ep.</code> = string. Si mandas <code>value</code> como
+      <code>"11"</code> viaja como <code>ep.value</code> y <strong>GA4 no lo suma</strong>. Este es el fallo
+      número uno de ingresos.
+    </div>
+  </section>
+</section>
+
+<!-- ---- 1.3 SPA ---- -->
+<section>
+  <section data-menu-title="1.3 SPA">
+    <p class="kicker">Bloque 1.3</p>
+    <h2>Medir una SPA</h2>
+  </section>
+
+  <section>
+    <h3>El problema</h3>
+    <div class="split split--wide">
+      <div>
+        <p>Sin recarga no hay <code>page_view</code>. GA4 vería <strong>una sola URL</strong> por sesión.</p>
+        <ol>
+          <li>Desactivar el automático: <code>send_page_view: false</code>.</li>
+          <li>Desactivar el de medición mejorada por history change (bloque 1.0).</li>
+          <li>Emitirlo tú en cada cambio de ruta.</li>
+        </ol>
+      </div>
+      <div>
+        <div class="phone"><iframe data-src-app="/panes" title="Catálogo"></iframe></div>
+        <p class="phone-url" data-url-label></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>El router avisa a GA4</h3>
+    <div data-snippet="router-page-view"></div>
+    <p class="muted">Llamado desde <code>pushState</code>, desde <code>popstate</code> y en la carga inicial.</p>
+  </section>
+
+  <section>
+    <h3>La función de vista</h3>
+    <div data-snippet="track-page-view"></div>
+    <div class="note">
+      <code>page_referrer</code> con la URL <em>virtual</em> anterior es lo que permite reconstruir
+      el recorrido dentro de la SPA. Sin él, todo parece tráfico directo a cada ruta.
+    </div>
+  </section>
+</section>
+
+<!-- ---- 1.4 Ecommerce ---- -->
+<section>
+  <section data-menu-title="1.4 Ecommerce">
+    <p class="kicker">Bloque 1.4</p>
+    <h2>El embudo de ecommerce</h2>
+  </section>
+
+  <section>
+    <h3>Los diez eventos, en orden</h3>
+    <table>
+      <tr><th>Evento</th><th>Cuándo</th><th>Clave</th></tr>
+      <tr><td><code>view_item_list</code></td><td>lista de productos</td><td><code>item_list_id</code></td></tr>
+      <tr><td><code>select_item</code></td><td>clic en la tarjeta</td><td><code>items[1]</code></td></tr>
+      <tr><td><code>view_item</code></td><td>ficha</td><td><code>value</code></td></tr>
+      <tr><td><code>add_to_cart</code></td><td>añadir</td><td>delta, no total</td></tr>
+      <tr><td><code>view_cart</code></td><td>cesta</td><td><code>items[]</code></td></tr>
+      <tr><td><code>begin_checkout</code></td><td>empezar pedido</td><td><code>value</code></td></tr>
+      <tr><td><code>add_shipping_info</code></td><td>elegir entrega</td><td><code>shipping_tier</code></td></tr>
+      <tr><td><code>add_payment_info</code></td><td>elegir pago</td><td><code>payment_type</code></td></tr>
+      <tr><td><code>purchase</code></td><td>confirmar</td><td><code>transaction_id</code></td></tr>
+      <tr><td><code>refund</code></td><td>devolución</td><td>mismo <code>transaction_id</code></td></tr>
+    </table>
+    <p class="muted">Nombres exactos de la documentación. Ni una letra distinta.</p>
+  </section>
+
+  <section>
+    <h3>Una sola función construye los items</h3>
+    <div data-snippet="to-ga4-item"></div>
+    <div class="note">
+      Si cada evento construye sus items por su cuenta, acabas con
+      <code>5.50</code> en uno y <code>"5,50"</code> en otro, y los informes por producto no cuadran.
+    </div>
+  </section>
+
+  <section>
+    <h3>value: la regla</h3>
+    <pre><code class="language-javascript" data-trim>
+value = Σ (price × quantity)     // de los items del evento
+    </code></pre>
+    <ul>
+      <li>En <code>purchase</code>, <strong><code>tax</code> y <code>shipping</code> van aparte</strong> y no se suman a <code>value</code>.</li>
+      <li><code>currency</code> es obligatorio siempre que haya <code>value</code>.</li>
+      <li>Números, no strings. Céntimos por dentro si puedes.</li>
+    </ul>
+    <div data-snippet="track-add-to-cart"></div>
+  </section>
+
+  <section>
+    <h3>Atribución de lista: el detalle que casi nadie hace</h3>
+    <div data-snippet="select-item"></div>
+    <p>Guardamos la lista de origen y la propagamos hasta <code>add_to_cart</code>.</p>
+    <p class="muted">Así sabes si vende más el carrusel de la home o el catálogo.</p>
+  </section>
+
+  <section>
+    <h3>purchase: una vez y solo una</h3>
+    <div data-snippet="track-purchase"></div>
+  </section>
+
+  <section>
+    <h3>Y en la UI</h3>
+    <div class="split split--wide">
+      <div><div data-snippet="confirm-order"></div></div>
+      <div>
+        <div class="phone"><iframe data-src-app="/carrito" title="Cesta"></iframe></div>
+        <p class="phone-url" data-url-label></p>
+      </div>
+    </div>
+    <div class="warn">
+      Nunca dispares <code>purchase</code> al renderizar la página de gracias: una
+      recarga o un "atrás" duplican la venta.
+    </div>
+  </section>
+</section>
+
+<!-- ---- 1.5 Depuración ---- -->
+<section>
+  <section data-menu-title="1.5 Depuración">
+    <p class="kicker">Bloque 1.5</p>
+    <h2>Depurar lo que enviamos</h2>
+  </section>
+
+  <section>
+    <h3>Tres herramientas, tres momentos</h3>
+    <table>
+      <tr><th>Herramienta</th><th>Para qué</th><th>Cuándo</th></tr>
+      <tr><td><strong>DebugView</strong></td><td>ver eventos y parámetros como los interpreta GA4</td><td>mientras desarrollas</td></tr>
+      <tr><td><strong>Network</strong></td><td>ver lo que sale de verdad del navegador</td><td>cuando DebugView no cuadra</td></tr>
+      <tr><td><strong>Test automático</strong></td><td>que no se rompa dentro de tres sprints</td><td>en CI</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h3>DebugView</h3>
+    <ul>
+      <li><code>debug_mode: true</code> en el <code>config</code>, o la extensión de Chrome.</li>
+      <li>Nosotros lo atamos a <code>?debug=1</code> en la URL: nadie toca código para depurar.</li>
+      <li>Los eventos con <code>debug_mode</code> <strong>también</strong> entran en los informes normales.</li>
+    </ul>
+    <div class="note"><code>debug_mode: false</code> no desactiva nada: hay que <strong>omitir la clave</strong>.</div>
+  </section>
+
+  <section>
+    <h3>Network: filtro <code>collect</code></h3>
+    <ul>
+      <li>Varios eventos pueden ir <strong>en un solo POST</strong>: una línea por evento en el body.</li>
+      <li>Los hits salen a <code>region1.google-analytics.com</code> desde Europa.</li>
+      <li>Mira <code>epn.value</code> frente a <code>ep.value</code>. Y <code>gcs</code>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>Tests de analítica</h3>
+    <p>Interceptamos <code>*/g/collect*</code> con Playwright, decodificamos y comprobamos el contrato.</p>
+    <pre><code class="language-bash" data-trim>
+python simulator/e2e_events_test.py --url http://localhost:8080/
+    </code></pre>
+    <pre><code class="language-text" data-trim>
+[OK ] bounce     page_view → view_item_list
+[OK ] abandon    page_view → view_item_list → … → add_payment_info
+[OK ] purchase   … → purchase → page_view
+    </code></pre>
+    <p class="muted">Falla si falta un evento, si <code>value</code> no cuadra o si <code>purchase</code> se repite.</p>
+  </section>
+</section>
+
+<!-- ---- 1.6 Consent Mode ---- -->
+<section>
+  <section data-menu-title="1.6 Consent Mode">
+    <p class="kicker">Bloque 1.6</p>
+    <h2>Consent Mode v2</h2>
+  </section>
+
+  <section>
+    <h3>El orden es lo único que importa</h3>
+    <ol>
+      <li><code>dataLayer</code> + stub de <code>gtag</code></li>
+      <li><code>gtag('consent', 'default', {…})</code> ← <strong>antes de todo lo demás</strong></li>
+      <li>carga de <code>gtag/js</code></li>
+      <li><code>gtag('config', …)</code></li>
+    </ol>
+    <div class="warn">
+      La documentación es literal: <em>"the order of the code here is vital"</em>.
+      Con <code>config</code> antes del <code>default</code>, los defaults no se aplican.
+    </div>
+  </section>
+
+  <section>
+    <h3>Las cuatro señales</h3>
+    <div data-snippet="consent-update"></div>
+    <table>
+      <tr><th>Señal</th><th>Qué controla</th></tr>
+      <tr><td><code>analytics_storage</code></td><td>cookie <code>_ga</code> (la que nos importa)</td></tr>
+      <tr><td><code>ad_storage</code></td><td>cookies publicitarias</td></tr>
+      <tr><td><code>ad_user_data</code></td><td>envío de datos a Ads</td></tr>
+      <tr><td><code>ad_personalization</code></td><td>personalización de anuncios</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h3>Denegado no es silencio</h3>
+    <div class="split split--wide">
+      <div>
+        <p>Con <code>analytics_storage: 'denied'</code>, gtag <strong>sigue enviando</strong> pings sin cookie ni identificador.</p>
+        <ul>
+          <li><code>gcs=G100</code> → denegado</li>
+          <li><code>gcs=G111</code> → concedido</li>
+        </ul>
+        <p>GA4 los usa para <strong>modelar</strong> lo que no puede medir.</p>
+        <div class="note">Lo que salió antes de aceptar no se reenvía: esos eventos quedan sin identificar para siempre.</div>
+      </div>
+      <div>
+        <div class="phone"><iframe data-src-app="/?debug=1" title="Banner"></iframe></div>
+        <p class="phone-url" data-url-label></p>
+      </div>
+    </div>
+    <aside class="notes">
+      Demo en vivo: rechazar en el teléfono, enseñar en Network gcs=G100 y la
+      ausencia de cookie _ga en Application. Luego aceptar y ver G111.
+    </aside>
+  </section>
+</section>
+
+<!-- ---- 1.7 Práctica ---- -->
+<section data-menu-title="1.7 Práctica">
+  <p class="kicker">Bloque 1.7 · resto de la jornada</p>
+  <h2>Práctica</h2>
+  <div class="task">
+    <h3>Instrumenta tú</h3>
+    <p>En <code>/starter/</code> tienes la misma web con <code>analytics.js</code> vacío: cada función es un <code>// TODO</code> con pistas.</p>
+    <ol>
+      <li>Arranque y consentimiento</li>
+      <li><code>page_view</code> en el router</li>
+      <li><code>toGA4Item</code> y el embudo</li>
+      <li><code>purchase</code> sin duplicados</li>
+    </ol>
+    <p class="muted">Criterio de terminado: <code>e2e_events_test.py</code> en verde.</p>
+  </div>
+</section>
+
+<!-- ================= DÍA 2 ================= -->
+<section class="cover" data-menu-title="Día 2">
+  <p class="kicker">Jornada 2 · 7 horas</p>
+  <h1>Leer y explotar</h1>
+  <p class="muted">Informes vs Exploraciones · embudos y rutas · BigQuery · Measurement Protocol · detección de fallos</p>
+</section>
+
+<section>
+  <section data-menu-title="2.1 Informes">
+    <p class="kicker">Bloque 2.1</p>
+    <h2>Informes vs Exploraciones</h2>
+  </section>
+  <section>
+    <h3>Dos productos distintos</h3>
+    <table>
+      <tr><th></th><th>Informes</th><th>Exploraciones</th></tr>
+      <tr><td>Para</td><td>vigilar</td><td>investigar</td></tr>
+      <tr><td>Datos</td><td>agregados, rápidos</td><td>muestreados si hay mucho</td></tr>
+      <tr><td>Fuerte en</td><td>tendencia, tiempo real</td><td>embudos, rutas, cohortes</td></tr>
+      <tr><td>Límite</td><td>poca flexibilidad</td><td>cardinalidad y muestreo</td></tr>
+    </table>
+    <aside class="notes">Trabajamos sobre la cuenta demo (Google Merchandise Store): volumen real.</aside>
+  </section>
+</section>
+
+<section>
+  <section data-menu-title="2.2 Embudos y rutas">
+    <p class="kicker">Bloque 2.2</p>
+    <h2>Embudos y rutas</h2>
+  </section>
+  <section>
+    <h3>Nuestro embudo</h3>
+    <p><code>view_item</code> → <code>add_to_cart</code> → <code>begin_checkout</code> → <code>add_payment_info</code> → <code>purchase</code></p>
+    <ul>
+      <li>Abierto vs cerrado: quién puede entrar por el medio.</li>
+      <li>Segmentar por dispositivo: el móvil siempre convierte peor.</li>
+      <li>Rutas: para responder "¿y qué hicieron <em>en vez de</em> comprar?".</li>
+    </ul>
+  </section>
+</section>
+
+<section>
+  <section data-menu-title="2.3 BigQuery">
+    <p class="kicker">Bloque 2.3</p>
+    <h2>BigQuery</h2>
+  </section>
+  <section>
+    <h3>El esquema que asusta</h3>
+    <pre><code class="language-sql" data-trim>
+SELECT event_name, COUNT(*) AS n
+FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
+WHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210107'
+GROUP BY event_name ORDER BY n DESC
+    </code></pre>
+    <p>Una fila por evento. Los parámetros van en <code>event_params</code>, un array de structs: hay que <code>UNNEST</code>.</p>
+    <p class="muted">Las cinco consultas comentadas están en <code>/sql</code>.</p>
+  </section>
+</section>
+
+<section>
+  <section data-menu-title="2.4 Measurement Protocol">
+    <p class="kicker">Bloque 2.4</p>
+    <h2>Measurement Protocol y server-side</h2>
+  </section>
+  <section>
+    <h3>Eventos sin navegador</h3>
+    <pre><code class="language-bash" data-trim>
+POST https://www.google-analytics.com/mp/collect
+     ?measurement_id=G-XXXX&api_secret=SECRETO
+    </code></pre>
+    <ul>
+      <li>Para lo que pasa en tu backend: una devolución, una baja, un pago diferido.</li>
+      <li><code>session_id</code> + <code>engagement_time_msec</code> o no cuenta como sesión.</li>
+      <li><strong>72 horas</strong> de retroactividad. Más atrás, GA4 re-sella la fecha en silencio.</li>
+      <li>Valida primero en <code>/debug/mp/collect</code> (no comprueba tus credenciales).</li>
+    </ul>
+  </section>
+</section>
+
+<section data-menu-title="2.5 Cierre">
+  <p class="kicker">Bloque 2.5 · cierre</p>
+  <h2>Encuentra los cinco fallos</h2>
+  <div class="split split--wide">
+    <div>
+      <p>En <code>/buggy/</code> hay la misma tienda con cinco errores de instrumentación. Están todos en producción real, en alguna web, ahora mismo.</p>
+      <p>Herramientas: DebugView, Network, el test e2e.</p>
+      <p class="muted">Quince minutos. Por parejas.</p>
+    </div>
+    <div>
+      <div class="phone"><iframe data-src-app="/buggy/?debug=1" title="Versión con fallos"></iframe></div>
+      <p class="phone-url" data-url-label></p>
+    </div>
+  </div>
+</section>
+
+<section class="cover">
+  <h1>Gracias.</h1>
+  <p class="muted">github.com/alvmig/la-masa-madre</p>
+</section>
+
+</div></div>
+
+<script src="vendor/reveal.js"></script>
+<script src="vendor/plugin/highlight.js"></script>
+<script src="vendor/plugin/notes.js"></script>
+<script src="snippets.js"></script>
+<script src="slides.js"></script>
+</body>
+</html>
