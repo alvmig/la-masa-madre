@@ -493,94 +493,510 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
   <p class="kicker">Jornada 2 · 7 horas</p>
   <h1>Leer y explotar</h1>
   <p class="muted">Informes vs Exploraciones · embudos y rutas · BigQuery · Measurement Protocol · detección de fallos</p>
+  <aside class="notes">
+    Ayer escribimos los eventos. Hoy vemos qué hace GA4 con ellos, dónde te
+    miente (muestreo, cardinalidad, umbrales) y cómo salir de la interfaz
+    cuando se queda corta.
+  </aside>
 </section>
 
+<section data-menu-title="2.0 Repaso">
+  <h2>De ayer nos llevamos tres cosas</h2>
+  <ul>
+    <li>Un <strong>contrato</strong>: <code>tracking-plan.md</code>. Sin él, cada evento es una opinión.</li>
+    <li>Un <strong>test</strong> que lo verifica. La analítica se rompe en silencio; esto hace ruido.</li>
+    <li>Una <strong>propiedad con datos</strong>: los que generamos ayer más un histórico sintético.</li>
+  </ul>
+  <p>Hoy la pregunta cambia: ya no es <em>"¿estoy midiendo bien?"</em> sino <strong>"¿me puedo fiar de este número?"</strong>.</p>
+  <div class="note">
+    Spoiler: casi siempre sí, pero hay que saber <strong>cuándo no</strong>. Eso es
+    lo que separa a quien sabe usar GA4 de quien pega capturas en un informe.
+  </div>
+</section>
+
+<!-- ---- 2.1 Informes vs Exploraciones ---- -->
 <section>
-  <section data-menu-title="2.1 Informes">
+  <section data-menu-title="2.1 Informes y Exploraciones">
     <p class="kicker">Bloque 2.1</p>
     <h2>Informes vs Exploraciones</h2>
+    <p class="muted">Dos productos distintos dentro de la misma herramienta.</p>
   </section>
+
   <section>
-    <h3>Dos productos distintos</h3>
+    <h3>Antes: el ámbito de los datos</h3>
+    <p>Todo dato en GA4 tiene un <strong>ámbito</strong>. Mezclarlos es la causa nº 1 de informes que no cuadran.</p>
     <table>
-      <tr><th></th><th>Informes</th><th>Exploraciones</th></tr>
-      <tr><td>Para</td><td>vigilar</td><td>investigar</td></tr>
-      <tr><td>Datos</td><td>agregados, rápidos</td><td>muestreados si hay mucho</td></tr>
-      <tr><td>Fuerte en</td><td>tendencia, tiempo real</td><td>embudos, rutas, cohortes</td></tr>
-      <tr><td>Límite</td><td>poca flexibilidad</td><td>cardinalidad y muestreo</td></tr>
+      <tr><th>Ámbito</th><th>Ejemplo de dimensión</th><th>Ejemplo de métrica</th></tr>
+      <tr><td>Evento</td><td><code>event_name</code>, <code>page_location</code></td><td>recuento de eventos</td></tr>
+      <tr><td>Item</td><td><code>item_name</code>, <code>item_category</code></td><td>ingresos por artículo</td></tr>
+      <tr><td>Sesión</td><td>fuente/medio de la sesión</td><td>sesiones, tasa de interacción</td></tr>
+      <tr><td>Usuario</td><td>primera fuente, país</td><td>usuarios totales</td></tr>
     </table>
-    <aside class="notes">Trabajamos sobre la cuenta demo (Google Merchandise Store): volumen real.</aside>
+    <div class="warn">
+      "Ingresos por campaña" ¿usa la campaña de la <strong>sesión</strong> o la de
+      <strong>primera visita</strong>? Son números distintos y los dos son correctos.
+      Cuando alguien diga "esto no cuadra", empieza preguntando por el ámbito.
+    </div>
+  </section>
+
+  <section>
+    <h3>Los cuatro informes del ciclo de vida</h3>
+    <ul>
+      <li><strong>Adquisición</strong> — de dónde vienen. Usuarios nuevos vs sesiones.</li>
+      <li><strong>Interacción</strong> — qué hacen. Eventos, páginas, tiempo.</li>
+      <li><strong>Monetización</strong> — qué compran. Aquí aterriza tu <code>purchase</code>.</li>
+      <li><strong>Retención</strong> — si vuelven.</li>
+    </ul>
+    <p class="muted">Más "Tiempo real" y "DebugView", que ya usamos ayer.</p>
+    <div class="note">
+      Los informes estándar se apoyan en <strong>tablas agregadas</strong>: por eso van
+      rápidos y por eso no puedes preguntarles cualquier cosa.
+    </div>
+  </section>
+
+  <section>
+    <h3>Dónde te mienten (1): muestreo</h3>
+    <p>GA4 puede responder con una <strong>muestra</strong> y escalar el resultado.</p>
+    <table>
+      <tr><th>Propiedad</th><th>Límite por consulta</th></tr>
+      <tr><td>Estándar</td><td><strong>10 millones de eventos</strong></td></tr>
+      <tr><td>360</td><td>hasta 1.000 millones</td></tr>
+    </table>
+    <p>Se ve en el <strong>icono de calidad de datos</strong> arriba del informe, con el porcentaje usado.</p>
+    <div class="warn">
+      Mira ese icono <strong>siempre</strong> antes de copiar una cifra a un informe.
+      Un 8 % de muestra en un embudo de nicho es ruido con aspecto de dato.
+    </div>
+    <aside class="notes">
+      En la cuenta demo hay volumen suficiente para provocarlo: filtrar por país
+      y rango largo suele disparar el muestreo. Enseñarlo en vivo.
+    </aside>
+  </section>
+
+  <section>
+    <h3>Dónde te mienten (2): la fila <code>(other)</code></h3>
+    <p>Cuando una tabla tiene demasiadas filas, GA4 deja las más frecuentes y mete el resto en <code>(other)</code>.</p>
+    <ul>
+      <li>La documentación no publica un número fijo: depende de la consulta.</li>
+      <li>Regla que sí da: <strong>más de 500 valores distintos = dimensión de alta cardinalidad</strong>.</li>
+      <li>Afecta más a Exploraciones que a informes estándar.</li>
+    </ul>
+    <div class="warn">
+      Por eso <strong>nunca</strong> metas un ID de usuario, un <code>transaction_id</code> o un
+      timestamp en una dimensión personalizada. Te comes el cupo y ensucias
+      todas las tablas.
+    </div>
+  </section>
+
+  <section>
+    <h3>Dónde te mienten (3): umbrales</h3>
+    <p>GA4 <strong>oculta</strong> datos cuando podrían identificar a alguien: demografía, intereses, consultas de búsqueda.</p>
+    <p class="muted">Mensaje típico: "Se ha aplicado un umbral a una o varias tarjetas de este informe".</p>
+    <ul>
+      <li>Se dispara sobre todo con <strong>señales de Google</strong> activadas y pocos usuarios.</li>
+      <li><strong>BigQuery no aplica umbrales</strong>… pero tampoco recibe datos de señales de Google.</li>
+    </ul>
+    <div class="note">
+      Consecuencia práctica: los totales de la interfaz y los de BigQuery
+      <strong>no van a coincidir exactamente</strong>. Y las dos cifras son "correctas".
+    </div>
+  </section>
+
+  <section>
+    <h3>Entonces, ¿qué uso para qué?</h3>
+    <table>
+      <tr><th></th><th>Informes</th><th>Exploraciones</th><th>BigQuery</th></tr>
+      <tr><td>Para</td><td>vigilar</td><td>investigar</td><td>todo lo demás</td></tr>
+      <tr><td>Velocidad</td><td>instantáneo</td><td>segundos</td><td>según consulta</td></tr>
+      <tr><td>Muestreo</td><td>raro</td><td><strong>sí</strong>, &gt;10 M</td><td>nunca</td></tr>
+      <tr><td>Umbrales</td><td>sí</td><td>sí</td><td>no</td></tr>
+      <tr><td>Flexibilidad</td><td>baja</td><td>media</td><td>total</td></tr>
+      <tr><td>Coste</td><td>0</td><td>0</td><td>por consulta</td></tr>
+    </table>
+    <p class="muted">Sube de escalón solo cuando el anterior no te dé la respuesta.</p>
   </section>
 </section>
 
+<!-- ---- 2.2 Embudos y rutas ---- -->
 <section>
   <section data-menu-title="2.2 Embudos y rutas">
     <p class="kicker">Bloque 2.2</p>
     <h2>Embudos y rutas</h2>
+    <p class="muted">Sobre la cuenta demo, que tiene volumen real.</p>
   </section>
+
   <section>
     <h3>Nuestro embudo</h3>
     <p><code>view_item</code> → <code>add_to_cart</code> → <code>begin_checkout</code> → <code>add_payment_info</code> → <code>purchase</code></p>
+    <p>Ayer lo instrumentamos. Hoy lo miramos.</p>
+    <div class="note">
+      Fíjate en que el embudo <strong>solo existe</strong> porque los nombres de evento son
+      los recomendados. Con <code>compra_ok</code> tendrías que construirlo a mano.
+    </div>
+  </section>
+
+  <section>
+    <h3>Abierto vs cerrado</h3>
+    <table>
+      <tr><th></th><th>Abierto</th><th>Cerrado</th></tr>
+      <tr><td>Entrada</td><td>por cualquier paso</td><td>solo por el primero</td></tr>
+      <tr><td>Orden</td><td>no se exige</td><td>se exige</td></tr>
+      <tr><td>Un paso puede superar al anterior</td><td><strong>sí</strong></td><td>no</td></tr>
+      <tr><td>Sirve para</td><td>ver volumen real</td><td>medir fricción</td></tr>
+    </table>
+    <div class="warn">
+      Si tu embudo abierto tiene más <code>add_to_cart</code> que <code>view_item</code>, no es un
+      error: hay gente que añade desde el catálogo sin abrir la ficha. Justo lo
+      que hace nuestra tienda desde <code>/carrito</code> con el botón "+".
+    </div>
+  </section>
+
+  <section>
+    <h3>Segmentar: donde aparece la información</h3>
+    <p>El embudo global no dice casi nada. El comparado, sí.</p>
     <ul>
-      <li>Abierto vs cerrado: quién puede entrar por el medio.</li>
-      <li>Segmentar por dispositivo: el móvil siempre convierte peor.</li>
-      <li>Rutas: para responder "¿y qué hicieron <em>en vez de</em> comprar?".</li>
+      <li><strong>Móvil vs escritorio</strong>: el móvil casi siempre cae en el pago.</li>
+      <li><strong>Nuevos vs recurrentes</strong>: el recurrente se salta pasos.</li>
+      <li><strong>Por fuente</strong>: el tráfico de pago suele rebotar antes.</li>
+      <li><strong>Por lista de origen</strong>: aquí se nota el <code>item_list_id</code> de ayer.</li>
     </ul>
+    <p class="muted">"Tendencia del embudo" convierte cada paso en una serie temporal: para ver si una release rompió algo.</p>
+  </section>
+
+  <section>
+    <h3>Rutas: la pregunta del revés</h3>
+    <p>El embudo responde "¿cuántos llegaron?". La exploración de rutas responde <strong>"¿y los demás qué hicieron?"</strong>.</p>
+    <ul>
+      <li><strong>Hacia adelante</strong>: desde un punto, a dónde van.</li>
+      <li><strong>Hacia atrás</strong>: desde <code>purchase</code>, por dónde vinieron. Más útil y menos usada.</li>
+    </ul>
+    <div class="note">
+      Ojo con el ruido: <code>user_engagement</code> y <code>scroll</code> aparecen por todas partes.
+      Excluir esos eventos es el primer paso de cualquier análisis de rutas.
+    </div>
+  </section>
+
+  <section>
+    <h3>Las otras exploraciones</h3>
+    <table>
+      <tr><th>Tipo</th><th>Responde a</th></tr>
+      <tr><td>Formato libre</td><td>"quiero una tabla dinámica"</td></tr>
+      <tr><td>Embudo</td><td>"¿dónde se caen?"</td></tr>
+      <tr><td>Rutas</td><td>"¿qué hacen en vez de comprar?"</td></tr>
+      <tr><td>Superposición de segmentos</td><td>"¿quién compra Y vuelve?"</td></tr>
+      <tr><td>Cohortes</td><td>"¿los de enero siguen aquí en marzo?"</td></tr>
+      <tr><td>Vida útil del usuario</td><td>"¿cuánto vale un usuario de Instagram?"</td></tr>
+    </table>
+    <p class="muted">Ejercicio: tres preguntas de negocio sobre el obrador → elegir el tipo y construirla.</p>
   </section>
 </section>
 
+<!-- ---- 2.3 BigQuery ---- -->
 <section>
   <section data-menu-title="2.3 BigQuery">
     <p class="kicker">Bloque 2.3</p>
     <h2>BigQuery</h2>
+    <p class="muted">Donde se acaban las excusas de la interfaz.</p>
   </section>
+
   <section>
-    <h3>El esquema que asusta</h3>
+    <h3>Por qué exportar</h3>
+    <ul>
+      <li><strong>Sin muestreo y sin umbrales.</strong> Los datos crudos, evento a evento.</li>
+      <li><strong>Sin límite de cardinalidad.</strong> Todos los <code>transaction_id</code> que quieras.</li>
+      <li><strong>Joins con lo tuyo</strong>: márgenes, devoluciones, CRM, coste real de cada pedido.</li>
+      <li><strong>Histórico tuyo.</strong> Si mañana borras la propiedad, los datos siguen ahí.</li>
+    </ul>
+    <div class="warn">
+      La exportación <strong>no es retroactiva</strong>: empieza a llenarse el día que la
+      activas. Actívala hoy aunque no la vayas a usar hasta dentro de un año.
+    </div>
+  </section>
+
+  <section>
+    <h3>Las dos exportaciones</h3>
+    <table>
+      <tr><th></th><th>Diaria</th><th>Streaming</th></tr>
+      <tr><td>Frecuencia</td><td>1 vez al día</td><td>minutos</td></tr>
+      <tr><td>Tabla</td><td><code>events_YYYYMMDD</code></td><td><code>events_intraday_YYYYMMDD</code></td></tr>
+      <tr><td>Límite (estándar)</td><td><strong>1 millón de eventos/día</strong></td><td>—</td></tr>
+      <tr><td>Coste extra</td><td>no</td><td>~0,05 $/GB (≈600.000 eventos)</td></tr>
+      <tr><td>Pega</td><td>llega por la tarde</td><td><strong>sin fuente/medio</strong> en usuarios nuevos</td></tr>
+    </table>
+    <p class="muted">La tabla intradía se borra cuando se completa la diaria de ese día.</p>
+  </section>
+
+  <section>
+    <h3>Cinco cosas del esquema que hay que interiorizar</h3>
+    <ol>
+      <li><strong>Una fila = un evento.</strong> No una sesión, no un pedido.</li>
+      <li><strong>Los parámetros no son columnas</strong>: viven en <code>event_params</code>, con cuatro cajones de tipo.</li>
+      <li><strong>Los items tampoco</strong>: <code>items</code> es otro array dentro de la fila.</li>
+      <li><strong>No hay session_id</strong>: hay <code>ga_session_id</code>, y solo es único junto a <code>user_pseudo_id</code>.</li>
+      <li><strong>Tablas diarias</strong>: <code>events_*</code> + <code>_TABLE_SUFFIX</code>, que es lo que controla el coste.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h3>1 · El comodín de fecha</h3>
+    <div data-snippet="sql-eventos-por-dia"></div>
+    <p class="muted"><code>_TABLE_SUFFIX</code> no es un <code>WHERE</code> cualquiera: decide qué tablas se leen, y por tanto lo que pagas.</p>
+  </section>
+
+  <section>
+    <h3>2 · UNNEST, el patrón que repetirás toda tu vida</h3>
+    <div data-snippet="sql-unnest"></div>
+    <div class="note">
+      Si el parámetro es numérico, <code>string_value</code> viene <code>NULL</code>. De ahí el
+      <code>COALESCE</code> que verás en todas partes.
+    </div>
+  </section>
+
+  <section>
+    <h3>Truco: documentar una propiedad que no conoces</h3>
     <pre><code class="language-sql" data-trim>
-SELECT event_name, COUNT(*) AS n
-FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
-WHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210107'
-GROUP BY event_name ORDER BY n DESC
+SELECT p.key, COUNT(*) AS veces
+FROM `…events_*`, UNNEST(event_params) AS p
+WHERE _TABLE_SUFFIX = '20210131'
+GROUP BY p.key ORDER BY veces DESC
     </code></pre>
-    <p>Una fila por evento. Los parámetros van en <code>event_params</code>, un array de structs: hay que <code>UNNEST</code>.</p>
-    <p class="muted">Las cinco consultas comentadas están en <code>/sql</code>.</p>
+    <p>La forma más rápida de saber <strong>qué mide de verdad</strong> una web que acabas de heredar.</p>
+    <p class="muted">Lo mismo con <code>event_name</code> te da el inventario de eventos.</p>
+  </section>
+
+  <section>
+    <h3>3 · Qué es una sesión aquí</h3>
+    <div data-snippet="sql-sesiones"></div>
+    <p class="muted">La clave es siempre <code>user_pseudo_id</code> + <code>ga_session_id</code>.</p>
+  </section>
+
+  <section>
+    <h3>4 · El embudo, explícito</h3>
+    <div data-snippet="sql-funnel"></div>
+    <p class="muted">Lo que en Exploraciones es un clic, aquí se puede versionar, revisar en un PR y programar.</p>
+  </section>
+
+  <section>
+    <h3>5 · Ingresos por producto: la trampa clásica</h3>
+    <div data-snippet="sql-ingresos-item"></div>
+    <div class="warn">
+      Si haces <code>UNNEST(items)</code> y sumas <code>purchase_revenue</code>, cuentas el pedido
+      una vez <strong>por producto</strong>. Es el error más común de este dataset.
+    </div>
+  </section>
+
+  <section>
+    <h3>Coste: cómo no llevarte un susto</h3>
+    <ul>
+      <li>Se paga por <strong>bytes escaneados</strong>, no por filas devueltas. <code>LIMIT</code> no abarata nada.</li>
+      <li><code>SELECT *</code> escanea todas las columnas. Pide solo las que uses.</li>
+      <li>Filtra <strong>siempre</strong> por <code>_TABLE_SUFFIX</code>.</li>
+      <li>El editor te dice el coste estimado <strong>antes</strong> de ejecutar. Míralo.</li>
+      <li>El sandbox da 1 TB al mes gratis, sin tarjeta.</li>
+    </ul>
+    <p class="muted">Comprobación honesta: <code>bq query --dry_run</code> te da los bytes sin ejecutar nada.</p>
+  </section>
+
+  <section>
+    <h3>Lo que se puede hacer y en la interfaz no</h3>
+    <ul>
+      <li><strong>LTV real</strong> por canal de captación, con el margen de tu ERP.</li>
+      <li><strong>Atribución propia</strong>: la de GA4 es una caja negra; aquí decides tú.</li>
+      <li><strong>Detección de fallos de medición</strong>: eventos sin parámetros obligatorios, <code>value</code> nulo, duplicados.</li>
+      <li><strong>Alimentar modelos</strong>: recomendación, propensión a comprar, churn.</li>
+    </ul>
+    <div class="note">
+      El ejercicio de la última consulta de <code>/sql</code> es precisamente ese: comparar
+      tres formas de calcular los ingresos y explicar por qué no coinciden.
+    </div>
   </section>
 </section>
 
+<!-- ---- 2.4 Measurement Protocol ---- -->
 <section>
   <section data-menu-title="2.4 Measurement Protocol">
     <p class="kicker">Bloque 2.4</p>
     <h2>Measurement Protocol y server-side</h2>
   </section>
+
   <section>
-    <h3>Eventos sin navegador</h3>
+    <h3>Cuándo lo necesitas de verdad</h3>
+    <ul>
+      <li>Una <strong>devolución</strong> que se aprueba tres días después, en tu back-office.</li>
+      <li>Un pago <strong>diferido</strong> (transferencia, contrarreembolso) que confirma el banco.</li>
+      <li>Una baja de suscripción procesada por un cron.</li>
+      <li>Una compra por <strong>teléfono</strong> que mete un comercial.</li>
+      <li>Rellenar una propiedad de demo… como hicimos para esta formación.</li>
+    </ul>
+    <div class="warn">
+      Lo que <strong>no</strong> es: un sustituto de gtag.js. Sin navegador no hay
+      dispositivo, ni geografía, ni referrer, ni medición mejorada.
+    </div>
+  </section>
+
+  <section>
+    <h3>La petición</h3>
     <pre><code class="language-bash" data-trim>
 POST https://www.google-analytics.com/mp/collect
-     ?measurement_id=G-XXXX&api_secret=SECRETO
+     ?measurement_id=G-TCCFCHKDG9&api_secret=SECRETO
     </code></pre>
+    <pre><code class="language-json" data-trim>
+{
+  "client_id": "1699642630.1789889256",
+  "timestamp_micros": "1789889256061000",
+  "events": [{
+    "name": "purchase",
+    "params": {
+      "transaction_id": "MM-1789889256-VO1P",
+      "currency": "EUR", "value": 15.6, "tax": 1.56, "shipping": 3.5,
+      "items": [{ "item_id": "MM-HOG-01", "price": 5.2, "quantity": 3 }],
+      "session_id": "1789827990",
+      "engagement_time_msec": 434
+    }
+  }]
+}
+    </code></pre>
+    <p class="muted">Mismos nombres que en el navegador: el tracking plan no cambia porque cambie el transporte.</p>
+  </section>
+
+  <section>
+    <h3>Las cuatro reglas que se saltan todos</h3>
+    <ol>
+      <li><strong><code>session_id</code> y <code>engagement_time_msec</code></strong> o no cuenta como sesión ni como interacción.</li>
+      <li><strong>72 horas</strong> de retroactividad. Más atrás, GA4 acepta el evento y le <em>cambia la fecha en silencio</em>.</li>
+      <li><strong>Límites</strong>: 25 eventos por petición, 25 parámetros por evento, cuerpo &lt; 130 kB.</li>
+      <li><strong><code>client_id</code></strong>: si no es el mismo del navegador, es <strong>otro usuario</strong>. Y ahí se rompe la atribución.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h3>El problema del client_id</h3>
+    <p>El usuario compra en el navegador y tu backend confirma el pago dos días después. ¿Cómo sabe GA4 que es la misma persona?</p>
+    <pre><code class="language-javascript" data-trim>
+// En el navegador, al confirmar el pedido: guárdalo con el pedido.
+gtag('get', MEASUREMENT_ID, 'client_id', (cid) => {
+  fetch('/api/pedido', { method: 'POST',
+    body: JSON.stringify({ transaction_id, ga_client_id: cid }) });
+});
+    </code></pre>
+    <p>Tu backend lo almacena junto al pedido y lo reutiliza cuando manda el <code>refund</code>.</p>
+    <div class="note">
+      Sin esto, la devolución se atribuye a un usuario fantasma y los ingresos
+      netos por canal quedan mal para siempre.
+    </div>
+  </section>
+
+  <section>
+    <h3>Valida antes de enviar</h3>
+    <pre><code class="language-bash" data-trim>
+POST https://www.google-analytics.com/debug/mp/collect?…
+    </code></pre>
+    <pre><code class="language-json" data-trim>
+{"validationMessages": [{
+  "fieldPath": "events",
+  "description": "Event at index: [0] has invalid name [_bad]…",
+  "validationCode": "NAME_INVALID"
+}]}
+    </code></pre>
+    <div class="warn">
+      El validador <strong>no comprueba</strong> tu <code>api_secret</code> ni tu <code>measurement_id</code>.
+      Con el secreto mal copiado recibirás <code>204 No Content</code> y perderás los
+      datos sin un solo error. Comprueba siempre en Tiempo real.
+    </div>
+  </section>
+
+  <section>
+    <h3>Seguridad</h3>
     <ul>
-      <li>Para lo que pasa en tu backend: una devolución, una baja, un pago diferido.</li>
-      <li><code>session_id</code> + <code>engagement_time_msec</code> o no cuenta como sesión.</li>
-      <li><strong>72 horas</strong> de retroactividad. Más atrás, GA4 re-sella la fecha en silencio.</li>
-      <li>Valida primero en <code>/debug/mp/collect</code> (no comprueba tus credenciales).</li>
+      <li>El <strong>Measurement ID es público</strong>: cualquiera puede mandar eventos falsos a tu propiedad. Se asume.</li>
+      <li>El <strong>API secret no</strong>: variable de entorno en el servidor, nunca en el frontend ni en el repo.</li>
+      <li>Si se filtra, se revoca y se crea otro desde el flujo de datos.</li>
     </ul>
+    <p class="muted">En este repo: <code>site/config.js</code> lleva el ID; el secreto vive en <code>simulator/.env</code>, gitignored.</p>
+  </section>
+
+  <section>
+    <h3>Server-side tagging, en una slide</h3>
+    <p>Un contenedor tuyo (en tu dominio) recibe los hits del navegador y decide qué reenvía a Google y a quién más.</p>
+    <table>
+      <tr><th>A favor</th><th>En contra</th></tr>
+      <tr><td>cookies de primera parte, más duraderas</td><td>es infraestructura: servidor, coste, guardias</td></tr>
+      <tr><td>los bloqueadores lo ven menos</td><td>más piezas que se pueden romper</td></tr>
+      <tr><td>datos sensibles no salen del servidor</td><td>no arregla una instrumentación mala</td></tr>
+    </table>
+    <div class="note">
+      Si tu medición está mal en el navegador, server-side la envía mal más
+      caro. Primero el tracking plan; la infraestructura después.
+    </div>
   </section>
 </section>
 
-<section data-menu-title="2.5 Cierre">
-  <p class="kicker">Bloque 2.5 · cierre</p>
-  <h2>Encuentra los cinco fallos</h2>
-  <div class="split split--wide">
-    <div>
-      <p>En <code>/buggy/</code> hay la misma tienda con cinco errores de instrumentación. Están todos en producción real, en alguna web, ahora mismo.</p>
-      <p>Herramientas: DebugView, Network, el test e2e.</p>
-      <p class="muted">Quince minutos. Por parejas.</p>
+<!-- ---- 2.5 Cierre ---- -->
+<section>
+  <section data-menu-title="2.5 Cierre">
+    <p class="kicker">Bloque 2.5 · cierre</p>
+    <h2>Encuentra los cinco fallos</h2>
+  </section>
+
+  <section>
+    <h3>El ejercicio</h3>
+    <div class="split split--wide">
+      <div>
+        <p>En <code>/buggy/</code> está la misma tienda con <strong>cinco errores</strong> de instrumentación. Los cinco están hoy en webs reales.</p>
+        <ul>
+          <li>Herramientas: DebugView, Network, el test e2e.</li>
+          <li>Por parejas, 15 minutos.</li>
+          <li>Vale describir el síntoma; mejor si dais el arreglo.</li>
+        </ul>
+        <p class="muted">Pista: uno de ellos no se arregla tocando código.</p>
+      </div>
+      <div>
+        <div class="phone"><iframe data-src-app="/buggy/?debug=1" title="Versión con fallos"></iframe></div>
+        <p class="phone-url" data-url-label></p>
+      </div>
     </div>
-    <div>
-      <div class="phone"><iframe data-src-app="/buggy/?debug=1" title="Versión con fallos"></iframe></div>
-      <p class="phone-url" data-url-label></p>
+  </section>
+
+  <section>
+    <h3>Solución</h3>
+    <table>
+      <tr><th>#</th><th>Fallo</th><th>Se ve en</th><th>Coste real</th></tr>
+      <tr><td>1</td><td><code>config</code> antes de <code>consent default</code></td><td>falta <code>gcs</code>, cookie sin permiso</td><td>legal</td></tr>
+      <tr><td>2</td><td><code>page_view</code> doble</td><td>DebugView</td><td>páginas infladas</td></tr>
+      <tr><td>3</td><td><code>value</code> como string</td><td><code>ep.value</code> en Network</td><td>ingresos a cero</td></tr>
+      <tr><td>4</td><td>items sin <code>item_id</code></td><td><code>pr1</code> en Network</td><td>informes de producto vacíos</td></tr>
+      <tr><td>5</td><td><code>purchase</code> duplicado, id fijo</td><td>dos eventos, mismo id</td><td>ingresos inventados</td></tr>
+    </table>
+    <p class="muted">El nº 2 tiene media solución en el código y media en la interfaz de GA4.</p>
+  </section>
+
+  <section>
+    <h3>Checklist para revisar cualquier implementación</h3>
+    <ol>
+      <li>¿Hay un <strong>tracking plan</strong> escrito? Si no, no hay nada que revisar.</li>
+      <li>¿Los eventos usan los <strong>nombres recomendados</strong>?</li>
+      <li>¿<code>value</code> es numérico y lleva <code>currency</code>?</li>
+      <li>¿Los items llevan <code>item_id</code> en <strong>todos</strong> los eventos?</li>
+      <li>¿<code>purchase</code> puede dispararse dos veces? Recarga y "atrás".</li>
+      <li>¿Cuántos <code>page_view</code> por navegación? Cuéntalos.</li>
+      <li>¿El consentimiento va <strong>antes</strong> del <code>config</code>?</li>
+      <li>¿Hay un <strong>test</strong> que lo verifique en CI?</li>
+    </ol>
+  </section>
+
+  <section>
+    <h3>Qué os lleváis</h3>
+    <ul>
+      <li>Un repo que funciona y del que copiar: <code>analytics.js</code> es reutilizable tal cual.</li>
+      <li>Un <strong>test de analítica</strong>, que casi nadie tiene.</li>
+      <li>Un simulador para probar sin esperar tráfico real.</li>
+      <li>Cinco consultas de BigQuery de las que tiran el 80 % de los análisis.</li>
+    </ul>
+    <div class="note">
+      La idea que se queda: <strong>la analítica es código</strong>. Tiene contrato, tiene
+      tests, se revisa en un PR y se rompe en silencio si no la vigilas.
     </div>
-  </div>
+  </section>
 </section>
 
 <section class="cover">
