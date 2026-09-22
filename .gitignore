@@ -1,0 +1,19 @@
+# Secretos
+.env
+simulator/.env
+
+# Python
+simulator/.venv/
+__pycache__/
+*.pyc
+
+# Estado del simulador (storage_state de usuarios recurrentes, logs)
+simulator/.state/
+simulator/*.log
+simulator/reports/
+
+# Node
+node_modules/
+
+# SO / editores
+.DS_Store
