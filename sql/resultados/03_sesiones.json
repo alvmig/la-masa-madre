@@ -1,0 +1,23 @@
+[
+  {
+    "dispositivo": "desktop", 
+    "eventos_por_sesion": "9.5", 
+    "sesiones": "15408", 
+    "tasa_conversion_pct": "0.54", 
+    "usuarios": "13409"
+  }, 
+  {
+    "dispositivo": "mobile", 
+    "eventos_por_sesion": "9.1", 
+    "sesiones": "10330", 
+    "tasa_conversion_pct": "0.55", 
+    "usuarios": "8914"
+  }, 
+  {
+    "dispositivo": "tablet", 
+    "eventos_por_sesion": "9.5", 
+    "sesiones": "593", 
+    "tasa_conversion_pct": "0.67", 
+    "usuarios": "527"
+  }
+]

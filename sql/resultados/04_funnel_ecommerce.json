@@ -1,0 +1,32 @@
+[
+  {
+    "paso": "view_item", 
+    "pct_del_inicio": "100.0", 
+    "pct_del_paso_anterior": null, 
+    "sesiones": "23105"
+  }, 
+  {
+    "paso": "add_to_cart", 
+    "pct_del_inicio": "19.64", 
+    "pct_del_paso_anterior": "19.64", 
+    "sesiones": "4537"
+  }, 
+  {
+    "paso": "begin_checkout", 
+    "pct_del_inicio": "9.34", 
+    "pct_del_paso_anterior": "47.59", 
+    "sesiones": "2159"
+  }, 
+  {
+    "paso": "add_payment_info", 
+    "pct_del_inicio": "6.75", 
+    "pct_del_paso_anterior": "72.26", 
+    "sesiones": "1560"
+  }, 
+  {
+    "paso": "purchase", 
+    "pct_del_inicio": "4.83", 
+    "pct_del_paso_anterior": "71.47", 
+    "sesiones": "1115"
+  }
+]

@@ -13,9 +13,10 @@ SELECT
   it.item_category,
   COUNT(DISTINCT ecommerce.transaction_id)      AS pedidos,
   SUM(it.quantity)                              AS unidades,
-  -- item_revenue es el campo "oficial", pero en este dataset público puede
-  -- venir NULL: por eso el COALESCE con price × quantity. Compara las dos
-  -- columnas antes de fiarte de ninguna.
+  -- item_revenue es el campo "oficial". En este dataset SÍ está poblado
+  -- (comprobado), pero el COALESCE con price × quantity es barato y te salva
+  -- en propiedades donde no lo esté. Compara las dos columnas: se parecen,
+  -- y donde no, la diferencia son descuentos.
   ROUND(SUM(COALESCE(it.item_revenue, it.price * it.quantity)), 2) AS ingresos,
   ROUND(SUM(it.price * it.quantity), 2)         AS ingresos_calc,
   ROUND(AVG(it.price), 2)                       AS precio_medio
@@ -42,10 +43,18 @@ LIMIT 25;
 --   WHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210131'
 --     AND event_name = 'purchase'
 --
--- Si una columna sale NULL o a cero, no es que la consulta esté mal: es que
--- ese campo no está poblado en el dataset. Lección para llevarse: en BigQuery
--- comprueba SIEMPRE que el campo tiene datos antes de construir un informe
--- encima. `SELECT COUNT(campo) FROM …` es tu amigo.
+-- Resultado real (enero 2021, ejecutado el 2026-09-22):
+--
+--   pedidos                895
+--   por_campo_ecommerce     57.350,00
+--   por_parametro_value     57.360,51   ← 10,51 € de diferencia
+--   eventos_purchase      1.204
+--   sin_revenue             300         ← una de cada cuatro compras
+--
+-- Tres cifras para el mismo mes y ninguna es "la mala". Lección para
+-- llevarse: en BigQuery comprueba SIEMPRE que el campo tiene datos antes de
+-- construir un informe encima. `SELECT COUNTIF(campo IS NULL) FROM …` es tu
+-- amigo, y la consulta 06 lo automatiza.
 --
 -- La diferencia entre la suma de items y el total del pedido se explica por
 -- descuentos, envío e impuestos.

@@ -1,0 +1,11 @@
+[
+  {
+    "eventos_purchase": "1204", 
+    "items_sin_item_id": "0", 
+    "sin_items": "0", 
+    "sin_revenue": "300", 
+    "sin_transaction_id": "300", 
+    "transaction_id_distintos": "895", 
+    "transaction_id_repetidos": "10"
+  }
+]

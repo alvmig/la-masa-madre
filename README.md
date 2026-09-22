@@ -25,7 +25,7 @@ starter/           la misma con analytics.js vacío + EJERCICIOS.md (alumnos)
 slides/            reveal.js vendorizado, 50 slides
 scripts/           dev-server.mjs · extract-snippets.mjs
 simulator/         tests e2e, generador de tráfico y backfill
-sql/               5 consultas comentadas contra el dataset público
+sql/               6 consultas comentadas + resultados reales en sql/resultados/
 ```
 
 Sin build step. La web son módulos ES servidos tal cual; las slides, reveal.js
@@ -119,8 +119,8 @@ mejorada, que `send_page_view: false` **no** desactiva.
 - [ ] Recargar `https://alvmig.github.io/la-masa-madre/panes/MM-HOG-01`: la URL
       debe mantenerse tras el rebote por `404.html`.
 - [ ] `e2e_events_test.py` contra **producción**, en verde.
-- [ ] Ejecutar las 5 consultas de `sql/` en BigQuery y apuntar resultados
-      (ver nota en `sql/README.md`: no se han ejecutado nunca).
+- [x] Consultas de `sql/` ejecutadas contra BigQuery el 2026-09-22; resultados
+      en `sql/resultados/` y anotados en cada `.sql`. Reejecutar con `./scripts/run-sql.sh`.
 
 **Datos**
 

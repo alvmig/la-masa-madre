@@ -24,3 +24,7 @@ ORDER BY dia, eventos DESC;
 --     una persona: el mismo humano en móvil y portátil son dos.
 --
 -- Prueba a quitar el WHERE y mira cómo sube el coste estimado antes de ejecutar.
+--
+-- Resultado real (1–7 enero 2021, ejecutado el 2026-09-22): 30 filas,
+-- 0,01 GB escaneados. El 31/01/2021 la tabla diaria tiene 26.489 eventos.
+-- Los más frecuentes: page_view, user_engagement, session_start, scroll.

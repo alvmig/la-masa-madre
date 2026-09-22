@@ -44,3 +44,16 @@ ORDER BY orden;
 -- los event_timestamp de cada paso dentro de la sesión. Buen ejercicio:
 -- hazlo con MIN(IF(event_name='add_to_cart', event_timestamp, NULL)) por
 -- sesión y exige que sea mayor que el de view_item.
+--
+-- Resultado real (enero 2021, ejecutado el 2026-09-22), 0,27 GB:
+--
+--   view_item          23.105   100,00 %        —
+--   add_to_cart         4.537    19,64 %   19,64 % del paso anterior
+--   begin_checkout      2.159     9,34 %   47,59 %
+--   add_payment_info    1.560     6,75 %   72,26 %
+--   purchase            1.115     4,83 %   71,47 %
+--
+-- Dónde está el problema: NO en el checkout (que retiene el 70 %), sino en el
+-- primer salto, ficha → carrito, que pierde el 80 %. Es el error de lectura
+-- más común: se optimiza el pago, que es lo que "duele", cuando el dinero
+-- está en la ficha de producto.

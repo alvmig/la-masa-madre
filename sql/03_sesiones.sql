@@ -40,3 +40,14 @@ ORDER BY sesiones DESC;
 --   · "sesiones con interacción" es otra métrica distinta (usa
 --     session_engaged / engagement_time_msec).
 -- Que no cuadre al decimal es normal. Que no cuadre por un 30 % no lo es.
+--
+-- Resultado real (1–7 enero 2021, ejecutado el 2026-09-22), 0,06 GB:
+--
+--   desktop   15.408 sesiones · 13.409 usuarios · 9,5 ev/sesión · conv. 0,54 %
+--   mobile    10.330 sesiones ·  8.914 usuarios · 9,1 ev/sesión · conv. 0,55 %
+--   tablet       593 sesiones ·    527 usuarios · 9,5 ev/sesión · conv. 0,67 %
+--
+-- Sorpresa para comentar en clase: aquí el móvil NO convierte peor que el
+-- escritorio. El tópico de "el móvil siempre convierte la mitad" es cierto en
+-- muchas tiendas, pero no en esta. Por eso se miden los datos propios en vez
+-- de repetir lo que dice un blog.

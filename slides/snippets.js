@@ -87,9 +87,15 @@ window.SNIPPETS = {
     "lang": "sql"
   },
   "sql-ingresos-item": {
-    "code": "SELECT\n  it.item_name,\n  it.item_category,\n  COUNT(DISTINCT ecommerce.transaction_id)      AS pedidos,\n  SUM(it.quantity)                              AS unidades,\n  -- item_revenue es el campo \"oficial\", pero en este dataset público puede\n  -- venir NULL: por eso el COALESCE con price × quantity. Compara las dos\n  -- columnas antes de fiarte de ninguna.\n  ROUND(SUM(COALESCE(it.item_revenue, it.price * it.quantity)), 2) AS ingresos,\n  ROUND(SUM(it.price * it.quantity), 2)         AS ingresos_calc,\n  ROUND(AVG(it.price), 2)                       AS precio_medio\nFROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`,\n     UNNEST(items) AS it\nWHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210131'\n  AND event_name = 'purchase'\nGROUP BY it.item_name, it.item_category\nHAVING unidades > 10\nORDER BY ingresos DESC\nLIMIT 25;",
+    "code": "SELECT\n  it.item_name,\n  it.item_category,\n  COUNT(DISTINCT ecommerce.transaction_id)      AS pedidos,\n  SUM(it.quantity)                              AS unidades,\n  -- item_revenue es el campo \"oficial\". En este dataset SÍ está poblado\n  -- (comprobado), pero el COALESCE con price × quantity es barato y te salva\n  -- en propiedades donde no lo esté. Compara las dos columnas: se parecen,\n  -- y donde no, la diferencia son descuentos.\n  ROUND(SUM(COALESCE(it.item_revenue, it.price * it.quantity)), 2) AS ingresos,\n  ROUND(SUM(it.price * it.quantity), 2)         AS ingresos_calc,\n  ROUND(AVG(it.price), 2)                       AS precio_medio\nFROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`,\n     UNNEST(items) AS it\nWHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210131'\n  AND event_name = 'purchase'\nGROUP BY it.item_name, it.item_category\nHAVING unidades > 10\nORDER BY ingresos DESC\nLIMIT 25;",
     "file": "sql/05_ingresos_por_item.sql",
     "line": 11,
+    "lang": "sql"
+  },
+  "sql-auditoria": {
+    "code": "WITH compras AS (\n  SELECT\n    ecommerce.transaction_id                AS tx,\n    ecommerce.purchase_revenue              AS revenue,\n    user_pseudo_id,\n    (SELECT COUNT(*) FROM UNNEST(items) WHERE item_id IS NULL OR item_id = '') AS items_sin_id,\n    ARRAY_LENGTH(items)                     AS n_items\n  FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`\n  WHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210131'\n    AND event_name = 'purchase'\n)\nSELECT\n  COUNT(*)                                                   AS eventos_purchase,\n  COUNT(DISTINCT tx)                                         AS transaction_id_distintos,\n  COUNTIF(tx IS NULL OR tx = '(not set)')                    AS sin_transaction_id,\n  COUNTIF(revenue IS NULL)                                   AS sin_revenue,\n  COUNTIF(n_items = 0)                                       AS sin_items,\n  SUM(items_sin_id)                                          AS items_sin_item_id,\n  (SELECT COUNT(*) FROM (\n     SELECT tx FROM compras\n     WHERE tx IS NOT NULL AND tx != '(not set)'\n     GROUP BY tx HAVING COUNT(*) > 1))                       AS transaction_id_repetidos\nFROM compras;",
+    "file": "sql/06_auditoria_calidad.sql",
+    "line": 10,
     "lang": "sql"
   }
 };

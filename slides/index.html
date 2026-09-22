@@ -626,12 +626,36 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
   </section>
 
   <section>
-    <h3>Nuestro embudo</h3>
-    <p><code>view_item</code> → <code>add_to_cart</code> → <code>begin_checkout</code> → <code>add_payment_info</code> → <code>purchase</code></p>
-    <p>Ayer lo instrumentamos. Hoy lo miramos.</p>
+    <h3>Nuestro embudo, con datos reales</h3>
+    <table>
+      <tr><th>Paso</th><th>Sesiones</th><th>Del inicio</th><th>Del paso anterior</th></tr>
+      <tr><td><code>view_item</code></td><td>23.105</td><td>100 %</td><td>—</td></tr>
+      <tr><td><code>add_to_cart</code></td><td>4.537</td><td>19,64 %</td><td><strong>19,64 %</strong></td></tr>
+      <tr><td><code>begin_checkout</code></td><td>2.159</td><td>9,34 %</td><td>47,59 %</td></tr>
+      <tr><td><code>add_payment_info</code></td><td>1.560</td><td>6,75 %</td><td>72,26 %</td></tr>
+      <tr><td><code>purchase</code></td><td>1.115</td><td>4,83 %</td><td>71,47 %</td></tr>
+    </table>
+    <p class="muted">Google Merchandise Store, enero 2021. Consulta <code>sql/04</code>.</p>
+    <div class="warn">
+      <strong>¿Dónde está el problema?</strong> No en el pago, que retiene el 70 %.
+      Está en el primer salto: ficha → carrito pierde el <strong>80 %</strong>.
+      Es el error de lectura más común: se optimiza el checkout, que es lo que
+      duele, cuando el dinero está en la ficha de producto.
+    </div>
+    <aside class="notes">
+      Preguntar a la sala dónde invertirían antes de enseñar el aviso. Casi
+      todo el mundo dice "el checkout".
+    </aside>
+  </section>
+
+  <section>
+    <h3>Y el embudo solo existe porque…</h3>
+    <p>…los nombres de evento son los <strong>recomendados</strong>. Con <code>compra_ok</code> en
+    vez de <code>purchase</code>, esta exploración habría que construirla a mano, paso a
+    paso, y los informes de monetización estarían vacíos.</p>
     <div class="note">
-      Fíjate en que el embudo <strong>solo existe</strong> porque los nombres de evento son
-      los recomendados. Con <code>compra_ok</code> tendrías que construirlo a mano.
+      Todo el trabajo de ayer —nombres exactos, <code>value</code> numérico, <code>items</code>
+      con <code>item_id</code>— sirve exactamente para esto.
     </div>
   </section>
 
@@ -655,12 +679,23 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
     <h3>Segmentar: donde aparece la información</h3>
     <p>El embudo global no dice casi nada. El comparado, sí.</p>
     <ul>
-      <li><strong>Móvil vs escritorio</strong>: el móvil casi siempre cae en el pago.</li>
+      <li><strong>Móvil vs escritorio</strong></li>
       <li><strong>Nuevos vs recurrentes</strong>: el recurrente se salta pasos.</li>
       <li><strong>Por fuente</strong>: el tráfico de pago suele rebotar antes.</li>
       <li><strong>Por lista de origen</strong>: aquí se nota el <code>item_list_id</code> de ayer.</li>
     </ul>
-    <p class="muted">"Tendencia del embudo" convierte cada paso en una serie temporal: para ver si una release rompió algo.</p>
+    <table>
+      <tr><th>Dispositivo</th><th>Sesiones</th><th>Ev./sesión</th><th>Conversión</th></tr>
+      <tr><td>escritorio</td><td>15.408</td><td>9,5</td><td>0,54 %</td></tr>
+      <tr><td>móvil</td><td>10.330</td><td>9,1</td><td><strong>0,55 %</strong></td></tr>
+      <tr><td>tablet</td><td>593</td><td>9,5</td><td>0,67 %</td></tr>
+    </table>
+    <div class="warn">
+      Datos reales de la tienda de Google, enero 2021. Aquí el móvil <strong>no</strong>
+      convierte peor. El tópico de "el móvil convierte la mitad" es cierto en
+      muchas tiendas y falso en esta: por eso se miden los datos propios en vez
+      de repetir lo que dice un blog.
+    </div>
   </section>
 
   <section>
@@ -786,6 +821,34 @@ GROUP BY p.key ORDER BY veces DESC
   </section>
 
   <section>
+    <h3>6 · Auditar tu propia medición</h3>
+    <div data-snippet="sql-auditoria"></div>
+  </section>
+
+  <section>
+    <h3>Lo que encuentra en la tienda de Google</h3>
+    <table>
+      <tr><th>Métrica</th><th>Valor</th><th>Qué significa</th></tr>
+      <tr><td>eventos <code>purchase</code></td><td>1.204</td><td></td></tr>
+      <tr><td><code>transaction_id</code> distintos</td><td>895</td><td></td></tr>
+      <tr><td>sin <code>transaction_id</code></td><td><strong>300</strong></td><td>1 de cada 4 compras, anónimas</td></tr>
+      <tr><td>sin ingresos</td><td>300</td><td>las mismas</td></tr>
+      <tr><td><code>transaction_id</code> repetidos</td><td>10</td><td>pedidos contados dos veces</td></tr>
+      <tr><td>items sin <code>item_id</code></td><td>0</td><td>esto sí lo hacen bien</td></tr>
+    </table>
+    <div class="warn">
+      Esto es la <strong>tienda de merchandising de Google</strong>, medida por Google, en
+      su dataset de ejemplo público. Dos de los cinco fallos de ayer, en
+      producción. Que nadie se sienta mal por su implementación.
+    </div>
+    <aside class="notes">
+      Cierre del bloque: esta consulta en un cron semanal es alerta temprana de
+      que alguien rompió la medición en un despliegue. Es la versión "datos ya
+      recogidos" del test e2e del día 1.
+    </aside>
+  </section>
+
+  <section>
     <h3>Coste: cómo no llevarte un susto</h3>
     <ul>
       <li>Se paga por <strong>bytes escaneados</strong>, no por filas devueltas. <code>LIMIT</code> no abarata nada.</li>
@@ -795,6 +858,14 @@ GROUP BY p.key ORDER BY veces DESC
       <li>El sandbox da 1 TB al mes gratis, sin tarjeta.</li>
     </ul>
     <p class="muted">Comprobación honesta: <code>bq query --dry_run</code> te da los bytes sin ejecutar nada.</p>
+    <table>
+      <tr><th>Consulta de <code>/sql</code></th><th>Escanea</th></tr>
+      <tr><td>01 eventos por día (7 días)</td><td>0,01 GB</td></tr>
+      <tr><td>02 páginas más vistas (7 días)</td><td>0,07 GB</td></tr>
+      <tr><td>04 embudo (31 días)</td><td>0,27 GB</td></tr>
+      <tr><td>05 ingresos por item (31 días)</td><td>0,08 GB</td></tr>
+    </table>
+    <p class="muted">Las seis juntas: menos del 0,1 % del terabyte gratuito mensual.</p>
   </section>
 
   <section>
@@ -990,7 +1061,7 @@ POST https://www.google-analytics.com/debug/mp/collect?…
       <li>Un repo que funciona y del que copiar: <code>analytics.js</code> es reutilizable tal cual.</li>
       <li>Un <strong>test de analítica</strong>, que casi nadie tiene.</li>
       <li>Un simulador para probar sin esperar tráfico real.</li>
-      <li>Cinco consultas de BigQuery de las que tiran el 80 % de los análisis.</li>
+      <li>Seis consultas de BigQuery: las cinco de las que tiran el 80 % de los análisis, y una que audita tu medición.</li>
     </ul>
     <div class="note">
       La idea que se queda: <strong>la analítica es código</strong>. Tiene contrato, tiene
