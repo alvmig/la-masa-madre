@@ -67,7 +67,13 @@ python simulator/mp_backfill.py --dry-run      # valida contra /debug/mp/collect
 
 ## Estado por fases
 
-Ver `README.md` → sección "Estado". Fase actual: **6 (material de alumnos)**.
+Fases 0–7 completas. Ver `README.md` (estructura, comandos y checklist del día anterior).
+
+Pendiente de ejecutar por el formador, no de programar:
+- Ejecutar una vez las 5 consultas de `sql/` en BigQuery (nunca se han ejecutado).
+- Relanzar `mp_backfill.py` **el mismo día** de la formación (ventana de 72 h).
+- Lanzar `traffic_generator.py --spread-hours 8` la tarde anterior.
+- Desactivar en GA4 "Cambios de página basados en eventos del historial del navegador".
 
 ## Contenido obligatorio en slides (petición del formador)
 
