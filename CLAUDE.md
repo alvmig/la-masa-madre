@@ -68,3 +68,10 @@ python simulator/mp_backfill.py --dry-run      # valida contra /debug/mp/collect
 ## Estado por fases
 
 Ver `README.md` → sección "Estado". Fase actual: **0 (plan)**.
+
+## Contenido obligatorio en slides (petición del formador)
+
+Todo el proceso de puesta en marcha se explica en la formación, como bloque "Alta y configuración" del día 1:
+crear propiedad (zona horaria/moneda) → flujo web → Measurement ID → snippet oficial vs. nuestro `initAnalytics()` →
+desactivar "page changes based on browser history" de Enhanced Measurement → API secret de MP → DebugView con `?debug=1` →
+hosting estático sin reescrituras (GitHub Pages: `404.html` + base path) y por qué web y slides en el mismo dominio.
