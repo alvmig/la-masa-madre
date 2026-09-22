@@ -61,5 +61,35 @@ window.SNIPPETS = {
     "file": "site/router.js",
     "line": 77,
     "lang": "javascript"
+  },
+  "sql-eventos-por-dia": {
+    "code": "SELECT\n  PARSE_DATE('%Y%m%d', event_date) AS dia,\n  event_name,\n  COUNT(*)                                   AS eventos,\n  COUNT(DISTINCT user_pseudo_id)             AS usuarios\nFROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`\nWHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210107'\nGROUP BY dia, event_name\nORDER BY dia, eventos DESC;",
+    "file": "sql/01_eventos_por_dia.sql",
+    "line": 10,
+    "lang": "sql"
+  },
+  "sql-unnest": {
+    "code": "SELECT\n  (SELECT value.string_value\n   FROM UNNEST(event_params)\n   WHERE key = 'page_location')            AS page_location,\n  COUNT(*)                                 AS vistas\nFROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`\nWHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210107'\n  AND event_name = 'page_view'\nGROUP BY page_location\nORDER BY vistas DESC\nLIMIT 20;",
+    "file": "sql/02_unnest_page_location.sql",
+    "line": 11,
+    "lang": "sql"
+  },
+  "sql-sesiones": {
+    "code": "WITH eventos AS (\n  SELECT\n    user_pseudo_id,\n    (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id') AS session_id,\n    event_name,\n    event_timestamp,\n    traffic_source.source AS fuente,\n    device.category       AS dispositivo\n  FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`\n  WHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210107'\n)\nSELECT\n  dispositivo,\n  COUNT(DISTINCT CONCAT(user_pseudo_id, '-', CAST(session_id AS STRING))) AS sesiones,\n  COUNT(DISTINCT user_pseudo_id)                                          AS usuarios,\n  ROUND(COUNT(*) / COUNT(DISTINCT CONCAT(user_pseudo_id, '-', CAST(session_id AS STRING))), 1) AS eventos_por_sesion,\n  ROUND(100 * COUNTIF(event_name = 'purchase')\n        / COUNT(DISTINCT CONCAT(user_pseudo_id, '-', CAST(session_id AS STRING))), 2) AS tasa_conversion_pct\nFROM eventos\nGROUP BY dispositivo\nORDER BY sesiones DESC;",
+    "file": "sql/03_sesiones.sql",
+    "line": 10,
+    "lang": "sql"
+  },
+  "sql-funnel": {
+    "code": "WITH sesiones AS (\n  SELECT\n    CONCAT(user_pseudo_id, '-', CAST(\n      (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id') AS STRING)) AS sesion,\n    event_name\n  FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`\n  WHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210131'\n),\npasos AS (\n  SELECT\n    COUNT(DISTINCT IF(event_name = 'view_item',        sesion, NULL)) AS ficha,\n    COUNT(DISTINCT IF(event_name = 'add_to_cart',      sesion, NULL)) AS carrito,\n    COUNT(DISTINCT IF(event_name = 'begin_checkout',   sesion, NULL)) AS checkout,\n    COUNT(DISTINCT IF(event_name = 'add_payment_info', sesion, NULL)) AS pago,\n    COUNT(DISTINCT IF(event_name = 'purchase',         sesion, NULL)) AS compra\n  FROM sesiones\n)\nSELECT paso, sesiones,\n       ROUND(100 * sesiones / FIRST_VALUE(sesiones) OVER (ORDER BY orden), 2)  AS pct_del_inicio,\n       ROUND(100 * sesiones / LAG(sesiones) OVER (ORDER BY orden), 2)          AS pct_del_paso_anterior\nFROM (\n  SELECT 1 AS orden, 'view_item'        AS paso, ficha    AS sesiones FROM pasos\n  UNION ALL SELECT 2, 'add_to_cart',      carrito  FROM pasos\n  UNION ALL SELECT 3, 'begin_checkout',   checkout FROM pasos\n  UNION ALL SELECT 4, 'add_payment_info', pago     FROM pasos\n  UNION ALL SELECT 5, 'purchase',         compra   FROM pasos\n)\nORDER BY orden;",
+    "file": "sql/04_funnel_ecommerce.sql",
+    "line": 9,
+    "lang": "sql"
+  },
+  "sql-ingresos-item": {
+    "code": "SELECT\n  it.item_name,\n  it.item_category,\n  COUNT(DISTINCT ecommerce.transaction_id)      AS pedidos,\n  SUM(it.quantity)                              AS unidades,\n  -- item_revenue es el campo \"oficial\", pero en este dataset público puede\n  -- venir NULL: por eso el COALESCE con price × quantity. Compara las dos\n  -- columnas antes de fiarte de ninguna.\n  ROUND(SUM(COALESCE(it.item_revenue, it.price * it.quantity)), 2) AS ingresos,\n  ROUND(SUM(it.price * it.quantity), 2)         AS ingresos_calc,\n  ROUND(AVG(it.price), 2)                       AS precio_medio\nFROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`,\n     UNNEST(items) AS it\nWHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210131'\n  AND event_name = 'purchase'\nGROUP BY it.item_name, it.item_category\nHAVING unidades > 10\nORDER BY ingresos DESC\nLIMIT 25;",
+    "file": "sql/05_ingresos_por_item.sql",
+    "line": 11,
+    "lang": "sql"
   }
 };
