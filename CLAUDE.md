@@ -9,6 +9,7 @@ Repo de material para una formación de Google Analytics 4. Prioridad: **que tod
 - Slides con **reveal.js** (vendorizado en `slides/vendor/`), no un motor propio.
 - Simulador de tráfico: **Python + Playwright**. Backfill con **Measurement Protocol**.
 - Datos ricos del día 2 → cuenta demo de GA4 + `bigquery-public-data.ga4_obfuscated_sample_ecommerce`. La propiedad propia es para demo en vivo, DebugView y Tiempo real.
+- Repo: https://github.com/alvmig/la-masa-madre (público). Web: **https://alvmig.github.io/la-masa-madre/** · Slides: **https://alvmig.github.io/la-masa-madre/slides/**
 - **GitHub Pages**: web en `/`, slides en `/slides/`, **mismo dominio** (el iframe de las slides no es third-party → cookies OK). Publicación con GitHub Actions (`.github/workflows/pages.yml`) que ensambla `site/` + `slides/` en el artefacto; no es un build de la web.
 - GitHub Pages no tiene reescrituras: el fallback SPA es `site/404.html` (redirige a la raíz guardando la ruta en `sessionStorage`; el router la restaura con `replaceState` antes del primer `page_view`).
 - La web puede vivir bajo un **base path** (`/<repo>/` en project pages). El router calcula la base desde `import.meta.url`; nada de rutas absolutas `/panes` en HTML ni en JS. Los scripts Python construyen URLs con `urljoin` sobre `--url`.

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La Masa Madre · Obrador</title>
+  <style>
+    body { font-family: Georgia, serif; color: #1B2A4A; margin: 2rem; }
+    code { background: #eef1f6; padding: 0 .3em; }
+  </style>
+</head>
+<body>
+  <h1>La Masa Madre</h1>
+  <p>Hola, mundo. Obrador en construcción.</p>
+  <p id="ruta"></p>
+  <script>
+    // Comprobación del fallback SPA de GitHub Pages (ver 404.html).
+    // En la Fase 1 esto pasa a router.js.
+    var raw = sessionStorage.getItem('mm_redirect');
+    if (raw) {
+      sessionStorage.removeItem('mm_redirect');
+      var r = JSON.parse(raw);
+      var base = location.pathname.replace(/\/$/, '');
+      history.replaceState(null, '', base + r.path);
+      document.getElementById('ruta').innerHTML =
+        'Ruta restaurada: <code>' + r.path + '</code> · referrer: <code>' + (r.referrer || '—') + '</code>';
+    }
+  </script>
+</body>
+</html>
