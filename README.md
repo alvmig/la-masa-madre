@@ -15,6 +15,10 @@ tráfico, backfill por Measurement Protocol y consultas de BigQuery.
 
 Añade `?debug=1` a cualquiera de ellas para que los eventos aparezcan en DebugView.
 
+**Soluciones para el formador:** https://alvmig.github.io/la-masa-madre/slides/#/soluciones
+(índice con enlace a la solución de cada ejercicio; cada una está también justo
+debajo de su ejercicio en el mazo, con la flecha abajo).
+
 ## Qué hay aquí
 
 ```
@@ -55,7 +59,8 @@ cp .env.example .env     # y rellena MP_API_SECRET
 
 ```bash
 node scripts/dev-server.mjs                 # web + slides en local
-node scripts/extract-snippets.mjs           # regenera los fragmentos de las slides
+node scripts/extract-snippets.mjs           # regenera fragmentos y números de línea de las slides
+python3 scripts/build-buggy.py              # regenera site/buggy/ desde site/ con los 5 fallos
 
 # QA de la instrumentación (rebote, abandono, compra)
 simulator/.venv/bin/python simulator/e2e_events_test.py --url http://localhost:8080/

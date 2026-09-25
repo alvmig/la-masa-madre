@@ -15,9 +15,9 @@ window.SNIPPETS = {
     "lang": "javascript"
   },
   "consent-update": {
-    "code": "gtag('consent', 'update', consentPayload(granted));",
+    "code": "export function updateConsent(granted) {\n  gtag('consent', 'update', consentPayload(granted));\n  try { localStorage.setItem(CONSENT_KEY, granted ? 'granted' : 'denied'); } catch { /* modo privado */ }\n}",
     "file": "site/analytics.js",
-    "line": 73,
+    "line": 72,
     "lang": "javascript"
   },
   "to-ga4-item": {
@@ -33,7 +33,7 @@ window.SNIPPETS = {
     "lang": "javascript"
   },
   "track-page-view": {
-    "code": "export function trackPageView({ page_title, page_location, page_referrer }) {\n  const params = { page_title, page_location };\n  if (page_referrer) params.page_referrer = page_referrer;\n  gtag('event', 'page_view', params);\n}",
+    "code": "export function trackPageView({ page_title, page_location, page_referrer, tipo_pagina }) {\n  const params = { page_title, page_location };\n  if (page_referrer) params.page_referrer = page_referrer;\n  // Parámetro propio: GA4 lo recibe, pero no sale en informes hasta que se\n  // registra como dimensión personalizada (Administrar → Definiciones personalizadas).\n  if (tipo_pagina) params.tipo_pagina = tipo_pagina;\n  gtag('event', 'page_view', params);\n}",
     "file": "site/analytics.js",
     "line": 127,
     "lang": "javascript"
@@ -41,61 +41,61 @@ window.SNIPPETS = {
   "track-view-item-list": {
     "code": "export function trackViewItemList(list, products) {\n  gtag('event', 'view_item_list', {\n    item_list_id: list.id,\n    item_list_name: list.name,\n    items: products.map((p, index) => toGA4Item(p, { index, list })),\n  });\n}",
     "file": "site/analytics.js",
-    "line": 137,
+    "line": 140,
     "lang": "javascript"
   },
   "track-select-item": {
     "code": "export function trackSelectItem(list, product, index) {\n  gtag('event', 'select_item', {\n    item_list_id: list.id,\n    item_list_name: list.name,\n    items: [toGA4Item(product, { index, list })],\n  });\n}",
     "file": "site/analytics.js",
-    "line": 147,
+    "line": 150,
     "lang": "javascript"
   },
   "track-view-item": {
     "code": "export function trackViewItem(product, listCtx = {}) {\n  const items = [toGA4Item(product, { quantity: 1, ...listCtx })];\n  gtag('event', 'view_item', { currency: CURRENCY, value: sumValue(items), items });\n}",
     "file": "site/analytics.js",
-    "line": 158,
+    "line": 161,
     "lang": "javascript"
   },
   "track-add-to-cart": {
     "code": "export function trackAddToCart(product, quantity, listCtx = {}) {\n  const items = [toGA4Item(product, { quantity, ...listCtx })];\n  gtag('event', 'add_to_cart', {\n    currency: CURRENCY,          // obligatorio cuando hay value\n    value: sumValue(items),      // price × quantity\n    items,\n  });\n}",
     "file": "site/analytics.js",
-    "line": 166,
+    "line": 169,
     "lang": "javascript"
   },
   "track-remove-from-cart": {
     "code": "export function trackRemoveFromCart(product, quantity, listCtx = {}) {\n  const items = [toGA4Item(product, { quantity, ...listCtx })];\n  gtag('event', 'remove_from_cart', { currency: CURRENCY, value: sumValue(items), items });\n}",
     "file": "site/analytics.js",
-    "line": 177,
+    "line": 180,
     "lang": "javascript"
   },
   "track-view-cart": {
     "code": "export function trackViewCart(lines) {\n  const items = linesToItems(lines);\n  gtag('event', 'view_cart', { currency: CURRENCY, value: sumValue(items), items });\n}",
     "file": "site/analytics.js",
-    "line": 184,
+    "line": 187,
     "lang": "javascript"
   },
   "track-begin-checkout": {
     "code": "export function trackBeginCheckout(lines) {\n  const items = linesToItems(lines);\n  gtag('event', 'begin_checkout', { currency: CURRENCY, value: sumValue(items), items });\n}",
     "file": "site/analytics.js",
-    "line": 191,
+    "line": 194,
     "lang": "javascript"
   },
   "track-add-shipping-info": {
     "code": "export function trackAddShippingInfo(lines, shippingTier) {\n  const items = linesToItems(lines);\n  gtag('event', 'add_shipping_info', {\n    currency: CURRENCY,\n    value: sumValue(items),\n    shipping_tier: shippingTier,   // 'Recogida en obrador' | 'Envío a domicilio'\n    items,\n  });\n}",
     "file": "site/analytics.js",
-    "line": 198,
+    "line": 201,
     "lang": "javascript"
   },
   "track-add-payment-info": {
     "code": "export function trackAddPaymentInfo(lines, paymentType) {\n  const items = linesToItems(lines);\n  gtag('event', 'add_payment_info', {\n    currency: CURRENCY,\n    value: sumValue(items),\n    payment_type: paymentType,     // 'Tarjeta' | 'Bizum'\n    items,\n  });\n}",
     "file": "site/analytics.js",
-    "line": 210,
+    "line": 213,
     "lang": "javascript"
   },
   "track-purchase": {
     "code": "export function trackPurchase(order) {\n  if (wasSent(order.transaction_id)) {\n    console.warn(`[analytics] purchase ${order.transaction_id} ya enviado, se omite`);\n    return false;\n  }\n  const items = linesToItems(order.lines);\n  gtag('event', 'purchase', {\n    transaction_id: order.transaction_id,\n    currency: CURRENCY,\n    value: sumValue(items),   // solo items; tax y shipping van aparte\n    tax: order.tax,\n    shipping: order.shipping,\n    items,\n  });\n  markSent(order.transaction_id);\n  return true;\n}",
     "file": "site/analytics.js",
-    "line": 227,
+    "line": 230,
     "lang": "javascript"
   },
   "confirm-order": {
@@ -111,7 +111,7 @@ window.SNIPPETS = {
     "lang": "javascript"
   },
   "router-page-view": {
-    "code": "// En una SPA no hay recarga: sin esto GA4 solo vería la primera URL.\n// page_referrer es la vista anterior (o document.referrer en la primera).\ntrackPageView({\n  page_title: document.title,\n  page_location: location.href,\n  page_referrer: previousUrl ?? initialReferrer ?? '',\n});\npreviousUrl = location.href;",
+    "code": "// En una SPA no hay recarga: sin esto GA4 solo vería la primera URL.\n// page_referrer es la vista anterior (o document.referrer en la primera).\ntrackPageView({\n  tipo_pagina: match.tipo,   // parámetro propio → dimensión personalizada\n  page_title: document.title,\n  page_location: location.href,\n  page_referrer: previousUrl ?? initialReferrer ?? '',\n});\npreviousUrl = location.href;",
     "file": "site/router.js",
     "line": 77,
     "lang": "javascript"
@@ -153,4 +153,31 @@ window.SNIPPETS = {
     "lang": "sql"
   }
 };
-window.LINES = {};
+window.LINES = {
+  "site/router.js::addEventListener('popstate'": 53,
+  "site/analytics.js#trackPurchase": 230,
+  "site/analytics.js::value: sumValue(items),@@trackAddToCart": 173,
+  "starter/analytics.js#initAnalytics": 33,
+  "starter/analytics.js#consentPayload": 45,
+  "starter/analytics.js#updateConsent": 56,
+  "starter/analytics.js#toGA4Item": 68,
+  "starter/analytics.js#sumValue": 80,
+  "starter/analytics.js#trackPageView": 92,
+  "starter/analytics.js#trackViewItemList": 101,
+  "starter/analytics.js#trackSelectItem": 106,
+  "starter/analytics.js#trackViewItem": 116,
+  "starter/analytics.js#trackAddToCart": 120,
+  "starter/analytics.js#trackRemoveFromCart": 124,
+  "starter/analytics.js#trackViewCart": 128,
+  "starter/analytics.js#trackBeginCheckout": 132,
+  "starter/analytics.js#trackAddShippingInfo": 137,
+  "starter/analytics.js#trackAddPaymentInfo": 142,
+  "starter/analytics.js#trackPurchase": 156,
+  "site/buggy/analytics.js::gtag('consent', 'default'": 37,
+  "site/buggy/analytics.js::const script = document.createElement": 24,
+  "site/buggy/analytics.js::send_page_view: true": 32,
+  "site/buggy/analytics.js::.toFixed(2)": 172,
+  "site/buggy/analytics.js::const { item_id, ...item }": 105,
+  "site/buggy/app.js::if (order && order.lines) trackPurchase(order);": 264,
+  "site/buggy/analytics.js::transaction_id: 'MM-TEST'": 232
+};

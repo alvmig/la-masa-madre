@@ -43,6 +43,9 @@ README.md            arranque local, despliegue, checklist del día anterior
 - Todos los `items` salen de **una única** función `toGA4Item(product, {quantity, index, list})`.
 - Comentarios breves y técnicos, en castellano, pensados para proyectarse en slides.
 - Snippets para slides delimitados con `// @snippet:<nombre>` … `// @end` en `site/*.js`; se extraen con `node scripts/extract-snippets.mjs` (no copiar a mano).
+- Las slides citan líneas con `<code data-line="fichero#funcion">` o `data-line="fichero::texto[@@funcion]"`; el extractor las resuelve contra el código real y falla si alguna no existe. Nunca escribir números de línea a mano.
+- `site/buggy/` se genera con `python3 scripts/build-buggy.py`; no editarla a mano. Tras cambiar `site/`, regenerarla.
+- Cada ejercicio de las slides lleva debajo una slide `class="solucion" id="sol-N"`; el índice está en `#/soluciones`.
 - `data-testid` estables en tarjetas, botones y banner (lista en `tracking-plan.md`), compartidos por el test e2e y el simulador.
 - Dinero: cálculos en céntimos (enteros) y conversión a euros al emitir; nunca `value` como string.
 

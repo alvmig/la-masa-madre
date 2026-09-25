@@ -139,3 +139,24 @@
 
 /* Tiempo estimado del bloque */
 .reveal .kicker .tiempo { color: var(--accent); }
+
+/* Soluciones: se distinguen de un vistazo del ejercicio y del contenido. */
+.reveal section.solucion { border-left: 10px solid var(--accent); padding-left: 1.2em; }
+.sol-tag {
+  display: inline-block; background: var(--accent); color: #fff;
+  font-family: var(--serif-body); font-weight: 700; font-size: .6em;
+  padding: .15em .7em; border-radius: 999px; margin-bottom: .5em; letter-spacing: .04em;
+}
+.reveal .solucion h2 { margin-top: 0; }
+.reveal .solucion table { font-size: .6em; }
+.reveal .solucion pre { font-size: .52em; }
+.reveal .ejercicio pre { font-size: .62em; margin: .3em 0 .5em; }
+.reveal .pasos pre { width: 100%; }
+.cmd-label { font-size: .55em; color: var(--muted); margin: .2em 0 -.2em; font-family: ui-monospace, monospace; }
+code[data-line] { background: #faf1e6 !important; color: var(--accent) !important; font-weight: 700; }
+code.line-missing { background: #fde2e2 !important; color: #a00 !important; }
+
+/* Índice de soluciones */
+.sol-index { columns: 2; font-size: .7em; }
+.sol-index li { break-inside: avoid; }
+.sol-index a { text-decoration: none; }

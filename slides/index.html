@@ -16,9 +16,7 @@
 <div class="reveal"><div class="slides">
 
 <section class="cover" data-menu-title="Portada">
-  <p class="kicker">Formación · 14 horas · 2 jornadas</p>
   <h1>Google Analytics 4<br>para developers</h1>
-  <p class="muted">Qué mide, cómo se configura, cómo se implementa y cómo se lee.</p>
   <aside class="notes">
     Presentar. Preguntar quién ha tocado GA4, quién viene de Universal Analytics
     y quién no ha visto la consola en su vida. Ajustar el ritmo del bloque 1 a eso.
@@ -124,11 +122,23 @@
       <li>Para cada una, decid de qué ámbito es la respuesta: ¿evento, sesión o usuario?</li>
       <li>Marcad cuáles creéis que ya podríais responder hoy con lo que tenéis medido.</li>
     </ol>
-    <p class="muted">Las recogemos en voz alta. Volveremos a ellas mañana por la tarde.</p>
+    <p class="muted">Las recogemos en voz alta. Volveremos a ellas más tarde.</p>
     <aside class="notes">
       Apuntar las preguntas en la pizarra. Sirven de hilo conductor y para
       elegir qué exploraciones montar el día 2.
     </aside>
+  </section>
+  <section class="solucion" id="sol-1" data-menu-title="Solución 1">
+    <span class="sol-tag">Solución · Ejercicio 1</span>
+    <h2>Tus tres preguntas</h2>
+    <p>No hay una respuesta única: cada uno trae su producto. Tres ejemplos con el obrador para enseñar el criterio:</p>
+    <table>
+      <tr><th>Pregunta</th><th>Ámbito</th><th>¿Se responde hoy?</th></tr>
+      <tr><td>¿Qué pan se añade más a la cesta desde la portada?</td><td>evento</td><td>sí: <code>add_to_cart</code> con <code>item_list_id = destacados_home</code></td></tr>
+      <tr><td>¿Qué canal trae las visitas que acaban comprando?</td><td>sesión</td><td>sí: fuente de la sesión con <code>purchase</code></td></tr>
+      <tr><td>¿Cuántos clientes repiten en un mes?</td><td>usuario</td><td>a medias: GA4 cuenta navegadores, no personas</td></tr>
+    </table>
+    <div class="note">Regla rápida para corregir: si la pregunta habla de <strong>gente</strong>, es usuario. Si habla de <strong>visitas</strong>, sesión. Si habla de <strong>cosas que pasan</strong>, evento.</div>
   </section>
 </section>
 
@@ -206,6 +216,20 @@ gtag('event', 'buscar_pan', {
       dependen del negocio. Discutir que "descarga" puede medirse de dos formas.
     </aside>
   </section>
+  <section class="solucion" id="sol-2" data-menu-title="Solución 2">
+    <span class="sol-tag">Solución · Ejercicio 2</span>
+    <h2>Clasificad estos eventos</h2>
+    <table>
+      <tr><th>Evento</th><th>Familia</th><th>¿Evento clave?</th></tr>
+      <tr><td><code>session_start</code></td><td>automático</td><td>no</td></tr>
+      <tr><td><code>purchase</code></td><td>recomendado</td><td>sí, siempre</td></tr>
+      <tr><td><code>descarga_catalogo_pdf</code></td><td>personalizado</td><td>depende del negocio</td></tr>
+      <tr><td><code>scroll</code></td><td>medición mejorada</td><td>no</td></tr>
+      <tr><td><code>login</code></td><td>recomendado</td><td>si el negocio vive de usuarios registrados</td></tr>
+      <tr><td><code>abre_horario_obrador</code></td><td>personalizado</td><td>probablemente no</td></tr>
+    </table>
+    <div class="note">La descarga tiene trampa: si es un enlace a un PDF, la medición mejorada ya manda <code>file_download</code> sola y no hace falta inventar nada.</div>
+  </section>
 </section>
 
 <!-- ---------- B3 · LA CONSOLA ---------- -->
@@ -280,7 +304,7 @@ gtag('event', 'buscar_pan', {
     <h3>Publicidad</h3>
     <p>Solo tiene sentido si invertís en campañas. Dentro está la comparación de modelos de atribución y las rutas de conversión.</p>
     <p>Es donde se ve que el último clic se lleva el mérito de un trabajo que hicieron otros canales antes.</p>
-    <p class="muted">Lo miramos por encima mañana; si nadie invierte en Ads, lo saltamos.</p>
+    <p class="muted">Lo miramos por encima más tarde; si nadie invierte en Ads, lo saltamos.</p>
   </section>
 
   <section>
@@ -316,7 +340,7 @@ gtag('event', 'buscar_pan', {
   <section>
     <h3>Administrar · el resto</h3>
     <ul>
-      <li><strong>Vinculaciones</strong>: BigQuery, Google Ads, Search Console. La de BigQuery es gratis y la veremos mañana.</li>
+      <li><strong>Vinculaciones</strong>: BigQuery, Google Ads, Search Console. La de BigQuery es gratis y la veremos más tarde.</li>
       <li><strong>Configuración de la propiedad</strong>: nombre, zona horaria y moneda. Las dos últimas se fijan al crear y luego duelen de cambiar.</li>
       <li><strong>Gestión de accesos</strong>: quién entra y con qué permisos.</li>
       <li><strong>Historial de cambios</strong>: quién tocó qué. El primer sitio donde mirar cuando un informe "se rompe solo".</li>
@@ -341,6 +365,21 @@ gtag('event', 'buscar_pan', {
       puntos habrá que verlos en la propiedad de la formación. Tenerla abierta
       en otra pestaña.
     </aside>
+  </section>
+  <section class="solucion" id="sol-3" data-menu-title="Solución 3">
+    <span class="sol-tag">Solución · Ejercicio 3</span>
+    <h2>Búsqueda del tesoro</h2>
+    <table>
+      <tr><th>Qué</th><th>Dónde</th></tr>
+      <tr><td>Measurement ID</td><td>Administrar → Flujos de datos → el flujo web → arriba a la derecha</td></tr>
+      <tr><td>Retención de datos</td><td>Administrar → Recopilación y modificación de datos → Retención de datos</td></tr>
+      <tr><td>Eventos clave</td><td>Administrar → Visualización de datos → Eventos clave</td></tr>
+      <tr><td>Páginas más vistas</td><td>Informes → Interacción → Páginas y pantallas</td></tr>
+      <tr><td>Cupo de dimensiones</td><td>Administrar → Definiciones personalizadas → Información sobre la cuota</td></tr>
+      <tr><td>Cambios recientes</td><td>Administrar → Historial de cambios</td></tr>
+      <tr><td>Tráfico interno (extra)</td><td>Flujo web → Configuración de la etiqueta → Definir tráfico interno; y el filtro en Recopilación y modificación de datos → Filtros de datos</td></tr>
+    </table>
+    <p class="muted">En la cuenta demo no hay permisos de administración: los puntos de Administrar se enseñan en la propiedad de la formación.</p>
   </section>
 </section>
 
@@ -409,12 +448,26 @@ function gtag() { dataLayer.push(arguments); }
     <span class="ej-num">Ejercicio 4</span><span class="ej-tiempo">10 minutos</span>
     <h2>Leed un hit</h2>
     <ol class="pasos">
-      <li>Abrid la tienda y las herramientas del navegador, pestaña Red.</li>
-      <li>Filtrad por <code>collect</code> y marcad "conservar el registro".</li>
-      <li>Navegad a un pan y añadidlo a la cesta.</li>
+      <li>Abrid <code>https://alvmig.github.io/la-masa-madre/</code> y las herramientas del navegador (F12 o Cmd+Opción+I), pestaña <strong>Red</strong>.</li>
+      <li>En el filtro escribid <code>collect</code> y marcad <strong>Conservar registro</strong>.</li>
+      <li>Aceptad el banner, id a <em>Panes</em>, abrid la hogaza y pulsad <em>Añadir a la cesta</em>.</li>
       <li>Buscad el hit de <code>add_to_cart</code> y responded: ¿cuánto vale <code>epn.value</code>? ¿qué hay dentro de <code>pr1</code>? ¿qué pone en <code>gcs</code>?</li>
     </ol>
-    <p class="muted">Sin mirar el código de la web. Solo lo que viaja.</p>
+    <p class="muted"><code>gcs</code> es el estado del consentimiento; lo vemos a fondo en el bloque 8. De momento: G111 = aceptado, G100 = rechazado.</p>
+  </section>
+  <section class="solucion" id="sol-4" data-menu-title="Solución 4">
+    <span class="sol-tag">Solución · Ejercicio 4</span>
+    <h2>Leed un hit</h2>
+    <p>Con una hogaza añadida desde el catálogo y el banner aceptado:</p>
+    <pre><code class="language-text" data-trim>en=add_to_cart   cu=EUR   epn.value=5.5
+pr1=idMM-HOG-01~nmHogaza de masa madre~brLa Masa Madre~caPanes~c2Masa madre~pr5.5~qt1~licatalogo~lnCatálogo~lp0
+gcs=G111</code></pre>
+    <ul>
+      <li><code>epn.value</code>: precio × unidades añadidas. 5.5 con una hogaza, 11 con dos.</li>
+      <li><code>pr1</code>: el artículo. <code>id</code>, <code>nm</code>, <code>br</code>, <code>ca</code>, <code>c2</code>, <code>pr</code> (precio), <code>qt</code> (cantidad) y, como vino del catálogo, <code>li</code>, <code>ln</code> y <code>lp</code> (la lista y la posición).</li>
+      <li><code>gcs</code>: G111 si aceptaron el banner; G100 si lo rechazaron o no lo tocaron.</li>
+    </ul>
+    <div class="note">¿No encuentran <code>en=add_to_cart</code> en la URL? Va en el cuerpo de un POST junto a otros eventos: pestaña <strong>Carga útil</strong> de esa petición.</div>
   </section>
 </section>
 
@@ -459,7 +512,7 @@ function gtag() { dataLayer.push(arguments); }
     <span class="ej-num">Ejercicio 5</span><span class="ej-tiempo">10 minutos</span>
     <h2>Contad las vistas</h2>
     <ol class="pasos">
-      <li>Abrid la tienda con <code>?debug=1</code> y DebugView al lado.</li>
+      <li>Abrid <code>https://alvmig.github.io/la-masa-madre/?debug=1</code> y, en otra ventana, GA4 → <strong>Administrar → DebugView</strong>.</li>
       <li>Navegad: inicio, panes, un pan, cesta. Cuatro vistas.</li>
       <li>Contad los <code>page_view</code> en DebugView. ¿Salen cuatro?</li>
       <li>Ahora dadle a atrás dos veces. ¿Qué pasa?</li>
@@ -470,6 +523,16 @@ function gtag() { dataLayer.push(arguments); }
       despiste habitual: la gente instrumenta pushState y se olvida de la
       navegación hacia atrás.
     </aside>
+  </section>
+  <section class="solucion" id="sol-5" data-menu-title="Solución 5">
+    <span class="sol-tag">Solución · Ejercicio 5</span>
+    <h2>Contad las vistas</h2>
+    <ul>
+      <li>Inicio, panes, un pan y cesta: <strong>4 <code>page_view</code></strong>, cada uno con su <code>tipo_pagina</code> (<code>inicio</code>, <code>catalogo</code>, <code>producto</code>, <code>cesta</code>).</li>
+      <li>Atrás dos veces: <strong>2 más</strong> (la ficha del pan y el catálogo). Total, 6.</li>
+      <li>¿Debe contar el botón de atrás? <strong>Sí</strong>: el usuario ve otra pantalla. Lo hace el router escuchando <code>popstate</code> en <code data-line="site/router.js::addEventListener('popstate'"></code>.</li>
+    </ul>
+    <div class="warn">Si alguien ve <strong>el doble</strong>, está activa la vista de página por historial de la medición mejorada. Se apaga en Administrar → Flujos de datos → flujo web → Medición mejorada (engranaje) → Vistas de página → Mostrar configuración avanzada → "Cambios de página basados en eventos del historial del navegador".</div>
   </section>
 </section>
 
@@ -546,12 +609,28 @@ function gtag() { dataLayer.push(arguments); }
     <span class="ej-num">Ejercicio 6</span><span class="ej-tiempo">15 minutos</span>
     <h2>Seguid el dinero</h2>
     <ol class="pasos">
-      <li>Haced un pedido completo en la tienda con <code>?debug=1</code>.</li>
+      <li>Con <code>https://alvmig.github.io/la-masa-madre/?debug=1</code>: dos hogazas, envío a domicilio, Bizum, confirmar.</li>
       <li>En DebugView, abrid el <code>purchase</code> y anotad <code>value</code>, <code>tax</code> y <code>shipping</code>.</li>
       <li>Comprobad que <code>value</code> coincide con la suma de los artículos y no con el total que veíais en pantalla.</li>
       <li>Recargad la página de gracias. ¿Aparece otro <code>purchase</code>?</li>
       <li>Haced un segundo pedido. ¿Cambia el <code>transaction_id</code>?</li>
     </ol>
+  </section>
+  <section class="solucion" id="sol-6" data-menu-title="Solución 6">
+    <span class="sol-tag">Solución · Ejercicio 6</span>
+    <h2>Seguid el dinero</h2>
+    <p>Dos hogazas, envío a domicilio:</p>
+    <table>
+      <tr><th>Parámetro de <code>purchase</code></th><th>Valor</th><th>De dónde sale</th></tr>
+      <tr><td><code>value</code></td><td>11</td><td>5,50 × 2. Solo los artículos.</td></tr>
+      <tr><td><code>tax</code></td><td>1.1</td><td>IVA del 10 % sobre 11</td></tr>
+      <tr><td><code>shipping</code></td><td>3.5</td><td>envío a domicilio (recogida = 0)</td></tr>
+      <tr><td>Total en pantalla</td><td>15,60 €</td><td>no viaja en <code>value</code></td></tr>
+    </table>
+    <ul>
+      <li>Recargar la página de gracias: <strong>ningún</strong> <code>purchase</code> nuevo. Lo impide <code data-line="site/analytics.js#trackPurchase"></code>, que recuerda los ya enviados.</li>
+      <li>Segundo pedido: <code>transaction_id</code> distinto. Formato <code>MM-</code> + 13 dígitos + <code>-</code> + 4 caracteres.</li>
+    </ul>
   </section>
 </section>
 
@@ -603,12 +682,31 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
     <span class="ej-num">Ejercicio 7</span><span class="ej-tiempo">10 minutos</span>
     <h2>Romped algo</h2>
     <ol class="pasos">
-      <li>Lanzad el test contra la tienda. Todo en verde.</li>
-      <li>Abrid <code>site/analytics.js</code> y cambiad <code>value</code> para que sea texto.</li>
-      <li>Volved a lanzarlo. ¿Qué dice exactamente?</li>
-      <li>Miradlo también en Red: ¿en qué cambia el parámetro?</li>
+      <li>En una terminal, desde la raíz del repositorio, arrancad la web:
+        <pre><code class="language-bash" data-trim>node scripts/dev-server.mjs</code></pre></li>
+      <li>En otra terminal, lanzad el test del flujo de abandono. Tiene que salir en verde:
+        <pre><code class="language-bash" data-trim>simulator/.venv/bin/python simulator/e2e_events_test.py --url http://localhost:8080/ --flow abandon</code></pre></li>
+      <li>Abrid <code data-line="site/analytics.js::value: sumValue(items),@@trackAddToCart"></code> y cambiad
+        <code>value: sumValue(items),</code> por <code>value: String(sumValue(items)),</code></li>
+      <li>Guardad y repetid el comando del paso 2. ¿Qué dice exactamente?</li>
     </ol>
-    <p class="muted">Luego deshaced el cambio, que lo vamos a seguir usando.</p>
+    <p class="muted">Al acabar, deshaced el cambio con <code>git checkout site/analytics.js</code>.</p>
+  </section>
+  <section class="solucion" id="sol-7" data-menu-title="Solución 7">
+    <span class="sol-tag">Solución · Ejercicio 7</span>
+    <h2>Romped algo</h2>
+    <p>Salida exacta del test tras el cambio:</p>
+    <pre><code class="language-text" data-trim>[FAIL] abandon  hits= 15 (+0 ae=a) comprobaciones=128 fallos=2
+       ✗ add_to_cart: value = 5.50 × 2: esperado 11.0, obtenido '11'
+       ✗ add_to_cart: value ausente o no numérico ('11')
+
+2 FALLOS</code></pre>
+    <ul>
+      <li>En la pestaña Red, el hit de <code>add_to_cart</code> pasa de <code>epn.value=11</code> a <strong><code>ep.value=11</code></strong>: de número a texto.</li>
+      <li>GA4 lo aceptaría sin quejarse, pero no lo sumaría como ingreso. El test es lo único que avisa.</li>
+    </ul>
+    <p class="cmd-label">deshacer el cambio</p>
+    <pre><code class="language-bash" data-trim>git checkout site/analytics.js</code></pre>
   </section>
 </section>
 
@@ -654,33 +752,171 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
     </div>
   </section>
 
+  <section data-menu-title="Qué es gcs">
+    <h3>Qué es <code>gcs</code></h3>
+    <p><code>gcs</code> significa <em>Google Consent State</em>: el estado del consentimiento en el momento de enviar ese hit. gtag.js lo añade a <strong>cada</strong> petición a <code>/g/collect</code> en cuanto hay Consent Mode.</p>
+    <div data-diagram="gcs"></div>
+  </section>
+
+  <section>
+    <h3>Los cuatro valores posibles</h3>
+    <table>
+      <tr><th><code>gcs</code></th><th>Publicidad</th><th>Analítica</th><th>Qué pasa con la cookie <code>_ga</code></th></tr>
+      <tr><td><code>G100</code></td><td>denegado</td><td>denegado</td><td>no se escribe; hits sin identificador</td></tr>
+      <tr><td><code>G110</code></td><td>concedido</td><td>denegado</td><td>no se escribe</td></tr>
+      <tr><td><code>G101</code></td><td>denegado</td><td>concedido</td><td>se escribe</td></tr>
+      <tr><td><code>G111</code></td><td>concedido</td><td>concedido</td><td>se escribe</td></tr>
+    </table>
+    <ul>
+      <li><strong>Si no aparece <code>gcs</code></strong>, no hay Consent Mode… o el <code>consent default</code> llegó tarde. Es exactamente uno de los fallos del ejercicio final.</li>
+      <li>Hay otro parámetro, <code>gcd</code>, con las cuatro señales de Consent Mode v2 incluidas <code>ad_user_data</code> y <code>ad_personalization</code>. Es más completo pero no se lee a ojo.</li>
+    </ul>
+    <p class="muted">Google no documenta este formato oficialmente. Lo ha descifrado la comunidad y coincide con lo que vemos en la tienda: G100 al rechazar, G111 al aceptar.</p>
+  </section>
+
   <section class="ejercicio" data-menu-title="Ejercicio 8">
     <span class="ej-num">Ejercicio 8</span><span class="ej-tiempo">10 minutos</span>
     <h2>Mirad qué pasa al decir que no</h2>
     <ol class="pasos">
-      <li>Abrid la tienda en una ventana de incógnito, con la pestaña Red.</li>
-      <li>Antes de tocar el banner, mirad el primer hit: ¿qué pone en <code>gcs</code>? ¿hay cookie <code>_ga</code>?</li>
+      <li>Abrid <code>https://alvmig.github.io/la-masa-madre/</code> en una ventana de <strong>incógnito</strong>, con la pestaña Red filtrada por <code>collect</code>.</li>
+      <li>Antes de tocar el banner, mirad el primer hit: ¿qué pone en <code>gcs</code>? ¿Hay cookie <code>_ga</code>? (pestaña <strong>Aplicación → Cookies</strong>)</li>
       <li>Pulsad Rechazar y navegad un poco. ¿Se siguen enviando eventos?</li>
       <li>Ahora aceptad. ¿Qué cambia?</li>
     </ol>
     <p class="muted">La pregunta interesante: lo que se midió antes de aceptar, ¿se recupera?</p>
   </section>
+  <section class="solucion" id="sol-8" data-menu-title="Solución 8">
+    <span class="sol-tag">Solución · Ejercicio 8</span>
+    <h2>Decir que no</h2>
+    <table>
+      <tr><th>Momento</th><th><code>gcs</code></th><th>¿Hits?</th><th>Cookie <code>_ga</code></th></tr>
+      <tr><td>Antes de tocar el banner</td><td>G100</td><td>sí</td><td>no</td></tr>
+      <tr><td>Tras pulsar Rechazar</td><td>G100</td><td>sí, siguen saliendo</td><td>no</td></tr>
+      <tr><td>Tras pulsar Aceptar</td><td>G111</td><td>sí</td><td><strong>aparece</strong></td></tr>
+    </table>
+    <ul>
+      <li>Lo que se midió antes de aceptar <strong>no se recupera</strong>: esos eventos se quedan sin identificador.</li>
+      <li>Incógnito es necesario porque la tienda recuerda la elección en <code>localStorage</code> (<code>mm_consent</code>). Para repetir sin incógnito: enlace <em>Cookies</em> del pie, que vuelve a abrir el banner.</li>
+    </ul>
+  </section>
 </section>
 
 <!-- ---------- PRÁCTICA DÍA 1 ---------- -->
-<section data-menu-title="Práctica día 1">
-  <p class="kicker">Resto de la jornada</p>
-  <h2>Instrumentad vosotros</h2>
-  <div class="task">
-    <p>En <code>/starter/</code> está la misma tienda con el archivo de medición vacío. Cada función es un hueco con una pista.</p>
-    <ol class="pasos">
-      <li>Arranque y consentimiento.</li>
-      <li>Vistas de página en el router.</li>
-      <li>La función de artículos y el embudo.</li>
-      <li><code>purchase</code> sin duplicados.</li>
-    </ol>
-    <p class="muted">Terminado es cuando el test pasa en verde. Los enunciados completos están en EJERCICIOS.md.</p>
-  </div>
+<section>
+  <section data-menu-title="Práctica día 1">
+    <p class="kicker">Resto de la jornada</p>
+    <h2>Instrumentad vosotros</h2>
+    <div class="task">
+      <p>En <code>/starter/</code> está la misma tienda con el archivo de medición vacío. Cada función es un hueco con una pista.</p>
+      <ol class="pasos">
+        <li>Arranque y consentimiento.</li>
+        <li>Vistas de página en el router.</li>
+        <li>La función de artículos y el embudo.</li>
+        <li><code>purchase</code> sin duplicados.</li>
+      </ol>
+      <p class="cmd-label">arrancar (terminal 1) · comprobar (terminal 2)</p>
+      <pre><code class="language-bash" data-trim>node scripts/dev-server.mjs
+  simulator/.venv/bin/python simulator/e2e_events_test.py --url http://localhost:8080/starter/</code></pre>
+      <p class="muted">Se edita un solo archivo: <code>starter/analytics.js</code>. Terminado = el test en verde. Enunciados completos en <code>starter/EJERCICIOS.md</code>.</p>
+    </div>
+  </section>
+  <section class="solucion" id="sol-p1" data-menu-title="Práctica · solución 1">
+    <span class="sol-tag">Solución · Práctica, ejercicio 1</span>
+    <h2>Arranque</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#initAnalytics"></code> con:</p>
+    <div data-snippet="init"></div>
+    <p><strong>Comprobar:</strong> en Red, el primer hit sale con <code>gcs=G100</code> y sin cookie <code>_ga</code>.</p>
+  </section>
+  <section class="solucion" id="sol-p2" data-menu-title="Práctica · solución 2">
+    <span class="sol-tag">Solución · Práctica, ejercicio 2</span>
+    <h2>Aceptar y rechazar</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#consentPayload"></code> y <code data-line="starter/analytics.js#updateConsent"></code>:</p>
+    <div data-snippet="consent-payload"></div>
+    <div data-snippet="consent-update"></div>
+    <p><strong>Comprobar:</strong> los ejercicios 1 y 2 juntos dejan en verde el rebote con rechazo:</p>
+    <pre><code class="language-bash" data-trim>simulator/.venv/bin/python simulator/e2e_events_test.py --url http://localhost:8080/starter/ --flow bounce_rejected</code></pre>
+  </section>
+  <section class="solucion" id="sol-p3" data-menu-title="Práctica · solución 3">
+    <span class="sol-tag">Solución · Práctica, ejercicio 3</span>
+    <h2>toGA4Item</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#toGA4Item"></code>:</p>
+    <div data-snippet="to-ga4-item"></div>
+    <p><strong>Comprobar:</strong> en Red, <code>pr1</code> lleva <code>id</code>, <code>nm</code>, <code>br</code>, <code>ca</code>, <code>c2</code>, <code>pr</code> y <code>qt</code>.</p>
+  </section>
+  <section class="solucion" id="sol-p4" data-menu-title="Práctica · solución 4">
+    <span class="sol-tag">Solución · Práctica, ejercicio 4</span>
+    <h2>sumValue</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#sumValue"></code>:</p>
+    <div data-snippet="sum-value"></div>
+    <p><strong>Comprobar:</strong> en Red el importe viaja como <code>epn.value</code> (número). Si sale <code>ep.value</code>, es texto.</p>
+    <p class="muted">Error típico: devolver <code>(cents / 100).toFixed(2)</code>. Queda bonito y rompe los ingresos.</p>
+  </section>
+  <section class="solucion" id="sol-p5" data-menu-title="Práctica · solución 5">
+    <span class="sol-tag">Solución · Práctica, ejercicio 5</span>
+    <h2>Vistas de página</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#trackPageView"></code>:</p>
+    <div data-snippet="track-page-view"></div>
+    <p><strong>Comprobar:</strong> un <code>page_view</code> por pantalla en DebugView, cada uno con su <code>tipo_pagina</code>.</p>
+  </section>
+  <section class="solucion" id="sol-p6" data-menu-title="Práctica · solución 6">
+    <span class="sol-tag">Solución · Práctica, ejercicio 6</span>
+    <h2>Listas de producto</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#trackViewItemList"></code> y <code data-line="starter/analytics.js#trackSelectItem"></code>:</p>
+    <div data-snippet="track-view-item-list"></div>
+    <div data-snippet="track-select-item"></div>
+    <p><strong>Comprobar:</strong> con los ejercicios 1 a 6, el rebote ya pasa:</p>
+    <pre><code class="language-bash" data-trim>simulator/.venv/bin/python simulator/e2e_events_test.py --url http://localhost:8080/starter/ --flow bounce</code></pre>
+  </section>
+  <section class="solucion" id="sol-p7a" data-menu-title="Práctica · solución 7a">
+    <span class="sol-tag">Solución · Práctica, ejercicio 7a</span>
+    <h2>El embudo (1 de 3)</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#trackViewItem"></code>, <code data-line="starter/analytics.js#trackAddToCart"></code> y <code data-line="starter/analytics.js#trackRemoveFromCart"></code>:</p>
+    <div data-snippet="track-view-item"></div>
+    <div data-snippet="track-add-to-cart"></div>
+    <div data-snippet="track-remove-from-cart"></div>
+  </section>
+  <section class="solucion" id="sol-p7b" data-menu-title="Práctica · solución 7b">
+    <span class="sol-tag">Solución · Práctica, ejercicio 7b</span>
+    <h2>El embudo (2 de 3)</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#trackViewCart"></code> y <code data-line="starter/analytics.js#trackBeginCheckout"></code>:</p>
+    <div data-snippet="track-view-cart"></div>
+    <div data-snippet="track-begin-checkout"></div>
+    <p class="muted">Los dos reciben las líneas del carrito y mandan todos los artículos, no el último añadido.</p>
+  </section>
+
+  <section class="solucion" id="sol-p7c" data-menu-title="Práctica · solución 7c">
+    <span class="sol-tag">Solución · Práctica, ejercicio 7c</span>
+    <h2>El embudo (3 de 3)</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#trackAddShippingInfo"></code> y <code data-line="starter/analytics.js#trackAddPaymentInfo"></code>:</p>
+    <div data-snippet="track-add-shipping-info"></div>
+    <div data-snippet="track-add-payment-info"></div>
+    <p><strong>Comprobar</strong> el ejercicio 7 entero:</p>
+    <pre><code class="language-bash" data-trim>simulator/.venv/bin/python simulator/e2e_events_test.py --url http://localhost:8080/starter/ --flow abandon</code></pre>
+  </section>
+  <section class="solucion" id="sol-p8" data-menu-title="Práctica · solución 8">
+    <span class="sol-tag">Solución · Práctica, ejercicio 8</span>
+    <h2>purchase, una sola vez</h2>
+    <p>Rellenar <code data-line="starter/analytics.js#trackPurchase"></code>:</p>
+    <div data-snippet="track-purchase"></div>
+    <p><strong>Comprobar:</strong> <code>simulator/.venv/bin/python simulator/e2e_events_test.py --url http://localhost:8080/starter/ --flow purchase</code></p>
+    <p class="muted">La pregunta del enunciado: GA4 deduplica por usuario, pero no un <code>purchase</code> que llegue desde otro dispositivo o desde el backend con otro <code>client_id</code>.</p>
+  </section>
+  <section class="solucion" id="sol-p-final" data-menu-title="Práctica · comprobación final">
+    <span class="sol-tag">Solución · Práctica, comprobación final</span>
+    <h2>Todo en verde</h2>
+    <pre><code class="language-bash" data-trim>simulator/.venv/bin/python simulator/e2e_events_test.py --url http://localhost:8080/starter/</code></pre>
+    <p>Salida esperada:</p>
+    <pre><code class="language-text" data-trim>[OK ] bounce           hits=  2 (+0 ae=a) comprobaciones=7 fallos=0
+[OK ] bounce_rejected  hits=  2 (+0 ae=a) comprobaciones=4 fallos=0
+[OK ] abandon          hits= 15 (+0 ae=a) comprobaciones=136 fallos=0
+[OK ] purchase         hits= 19 (+0 ae=a) comprobaciones=137 fallos=0
+
+TODO OK</code></pre>
+    <p class="cmd-label">para quien se atasque del todo: copiar la solución · y volver a su versión</p>
+    <pre><code class="language-bash" data-trim>cp site/analytics.js starter/analytics.js
+git checkout starter/analytics.js</code></pre>
+    <p class="muted">Ojo: el segundo comando borra lo que hubieran escrito. Que guarden antes una copia.</p>
+  </section>
 </section>
 
 <!-- ======================= DÍA 2 ======================= -->
@@ -689,7 +925,7 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
   <h1>Leer</h1>
   <p class="muted">Informes · exploraciones · configuración avanzada · BigQuery · datos desde el servidor</p>
   <aside class="notes">
-    Ayer escribimos los eventos. Hoy vemos qué hace GA4 con ellos y hasta dónde
+    Hasta aquí hemos escrito los eventos. Ahora vemos qué hace GA4 con ellos y hasta dónde
     te puedes fiar de lo que enseña.
   </aside>
 </section>
@@ -719,7 +955,7 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
       <li><strong>Adquisición de tráfico</strong> — de dónde vino <em>cada sesión</em>.</li>
     </ul>
     <p>Un usuario que os descubrió por Instagram y hoy entra escribiendo la URL aparece en Instagram en el primero y en directo en el segundo.</p>
-    <p class="muted">Los dos están bien. Responden a preguntas distintas. Es el ámbito de ayer.</p>
+    <p class="muted">Los dos están bien. Responden a preguntas distintas. Es lo del ámbito, del bloque 1.</p>
   </section>
 
   <section>
@@ -731,7 +967,7 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
     </ul>
     <div class="note">
       Si medís mal las vistas en una SPA, estos tres informes mienten a la vez
-      y en la misma dirección. Por eso ayer insistimos tanto.
+      y en la misma dirección. Por eso insistimos tanto en el bloque 5.
     </div>
   </section>
 
@@ -770,6 +1006,17 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
       <li>¿Cambia el orden? ¿Por qué?</li>
       <li>Añadid una comparación de móvil contra escritorio y mirad si la respuesta cambia.</li>
     </ol>
+  </section>
+  <section class="solucion" id="sol-9" data-menu-title="Solución 9">
+    <span class="sol-tag">Solución · Ejercicio 9</span>
+    <h2>Dos informes, dos respuestas</h2>
+    <p>Los números de la cuenta demo cambian cada día; lo que hay que validar es el razonamiento.</p>
+    <ul>
+      <li><strong>Sí, el orden suele cambiar.</strong> "Directo" pesa más en tráfico que en usuarios: mucha gente descubre la tienda por un buscador o una campaña y luego vuelve escribiendo la URL.</li>
+      <li><strong>Por qué:</strong> Adquisición de usuarios usa la fuente de <em>la primera visita</em> (ámbito usuario). Adquisición de tráfico usa la de <em>cada sesión</em> (ámbito sesión).</li>
+      <li><strong>Comparación:</strong> botón <em>Añadir comparación</em> arriba del informe → Categoría de dispositivo → <code>mobile</code>, y otra con <code>desktop</code>.</li>
+    </ul>
+    <div class="note">Si alguien dice "uno de los dos informes está mal", es la ocasión perfecta para volver a la slide del ámbito.</div>
   </section>
 </section>
 
@@ -840,6 +1087,22 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
     </ol>
     <p class="muted">Si acabáis pronto: haced una exploración de rutas hacia atrás desde <code>purchase</code>.</p>
   </section>
+  <section class="solucion" id="sol-10" data-menu-title="Solución 10">
+    <span class="sol-tag">Solución · Ejercicio 10</span>
+    <h2>Vuestro embudo</h2>
+    <p class="cmd-label">cómo se monta</p>
+    <p>Explorar → <strong>Exploración de embudo</strong> → Pasos (lápiz) → cinco pasos, cada uno con su evento: <code>view_item</code>, <code>add_to_cart</code>, <code>begin_checkout</code>, <code>add_payment_info</code>, <code>purchase</code>. Interruptor <em>Hacer embudo abierto</em> encendido. Desglose: Categoría de dispositivo.</p>
+    <p>Referencia de la misma tienda, enero de 2021 (BigQuery):</p>
+    <table>
+      <tr><th>Paso</th><th>Sesiones</th><th>Del anterior</th></tr>
+      <tr><td><code>view_item</code></td><td>23.105</td><td>—</td></tr>
+      <tr><td><code>add_to_cart</code></td><td>4.537</td><td><strong>19,6 %</strong> ← el peor</td></tr>
+      <tr><td><code>begin_checkout</code></td><td>2.159</td><td>47,6 %</td></tr>
+      <tr><td><code>add_payment_info</code></td><td>1.560</td><td>72,3 %</td></tr>
+      <tr><td><code>purchase</code></td><td>1.115</td><td>71,5 %</td></tr>
+    </table>
+    <p class="muted">Al pasarlo a cerrado bajan todos los pasos menos el primero: salen las sesiones que entraron por el medio del embudo.</p>
+  </section>
 </section>
 
 <!-- ---------- B11 · CONFIGURACIÓN ---------- -->
@@ -851,7 +1114,7 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
 
   <section>
     <h3>Dimensiones personalizadas</h3>
-    <p>Ayer mandamos parámetros propios. Para que aparezcan en un informe hay que registrarlos.</p>
+    <p>La tienda manda un parámetro propio, <code>tipo_pagina</code>, en cada <code>page_view</code>. GA4 lo recibe, pero no sale en ningún informe hasta que lo registras.</p>
     <ul>
       <li>Se hace en Administrar, definiciones personalizadas.</li>
       <li>Solo cuentan desde que las creas: los datos de antes no se rellenan.</li>
@@ -895,12 +1158,23 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
     <span class="ej-num">Ejercicio 11</span><span class="ej-tiempo">15 minutos</span>
     <h2>Configurad algo de verdad</h2>
     <ol class="pasos">
-      <li>En la propiedad de la formación, cread una dimensión personalizada para un parámetro que mandamos ayer.</li>
+      <li>En la propiedad de la formación, registrad <code>tipo_pagina</code> como dimensión personalizada.</li>
       <li>Marcad un evento como clave.</li>
       <li>Cread una audiencia con quien haya hecho <code>add_to_cart</code> pero no <code>purchase</code>.</li>
       <li>Mirad cuánto cupo os queda de dimensiones.</li>
     </ol>
     <p class="muted">La dimensión tardará un rato en aparecer en los informes. Es normal.</p>
+  </section>
+  <section class="solucion" id="sol-11" data-menu-title="Solución 11">
+    <span class="sol-tag">Solución · Ejercicio 11</span>
+    <h2>Configurad algo de verdad</h2>
+    <ol class="pasos">
+      <li><strong>Dimensión:</strong> Administrar → Definiciones personalizadas → <em>Crear dimensión personalizada</em>. Nombre <code>Tipo de página</code>, ámbito <strong>Evento</strong>, parámetro de evento <code>tipo_pagina</code>.</li>
+      <li><strong>Evento clave:</strong> Administrar → Eventos clave → <em>Nuevo evento clave</em> → <code>begin_checkout</code>. Si <code>purchase</code> ya aparece marcado, es normal: GA4 lo marca solo.</li>
+      <li><strong>Audiencia:</strong> Administrar → Audiencias → <em>Nueva audiencia</em> → personalizada. Incluir usuarios con <code>add_to_cart</code>; <em>Añadir grupo para excluir</em> con <code>purchase</code>.</li>
+      <li><strong>Cupo:</strong> en Definiciones personalizadas → <em>Información sobre la cuota</em>. Tras crear la primera: 1 de 50 dimensiones de evento usadas.</li>
+    </ol>
+    <p class="muted">La dimensión tarda hasta 24-48 h en poblar los informes estándar; en DebugView y Tiempo real el parámetro se ve ya.</p>
   </section>
 </section>
 
@@ -922,7 +1196,7 @@ python simulator/e2e_events_test.py --url http://localhost:8080/
       <li>Cruzar los datos con los vuestros: márgenes, devoluciones, el CRM.</li>
       <li>Calcular la atribución a vuestra manera, no a la de Google.</li>
       <li>Auditar la propia medición, que es lo que haremos al final del bloque.</li>
-      <li>Quedaros el histórico. Si mañana se borra la propiedad, los datos siguen ahí.</li>
+      <li>Quedaros el histórico. Si algún día se borra la propiedad, los datos siguen ahí.</li>
     </ul>
     <div class="warn">
       No es retroactiva. Empieza a llenarse el día que la activáis. Activadla
@@ -1037,12 +1311,30 @@ GROUP BY p.key ORDER BY veces DESC
     <span class="ej-num">Ejercicio 12</span><span class="ej-tiempo">20 minutos</span>
     <h2>Preguntad vosotros</h2>
     <ol class="pasos">
-      <li>Ejecutad la consulta del inventario de eventos sobre un día cualquiera.</li>
-      <li>Elegid un evento que os llame la atención y sacad sus parámetros.</li>
+      <li>En <code>console.cloud.google.com/bigquery</code>, pegad y ejecutad:
+        <pre><code class="language-sql" data-trim>SELECT event_name, COUNT(*) AS veces
+FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_20210131`
+GROUP BY event_name ORDER BY veces DESC</code></pre></li>
+      <li>Sacad qué parámetros llegan ese día (el truco del <code>UNNEST</code> de hace dos slides).</li>
       <li>Calculad los ingresos totales de una semana de dos formas distintas.</li>
       <li>Comparad los dos números y explicad la diferencia.</li>
     </ol>
     <p class="muted">Mirad el coste estimado antes de darle a ejecutar. Siempre.</p>
+  </section>
+  <section class="solucion" id="sol-12" data-menu-title="Solución 12">
+    <span class="sol-tag">Solución · Ejercicio 12</span>
+    <h2>Preguntad vosotros</h2>
+    <p>Inventario del 31/01/2021: <code>page_view</code> 9.498 · <code>user_engagement</code> 5.005 · <code>scroll</code> 2.870 · <code>session_start</code> 2.760 · <code>first_visit</code> 2.127 · <code>view_item</code> 1.829 · <code>add_to_cart</code> 295.</p>
+    <p class="cmd-label">ingresos de la semana del 1 al 7 de enero de 2021, de dos formas</p>
+    <pre><code class="language-sql" data-trim>SELECT
+  COUNT(DISTINCT ecommerce.transaction_id)  AS pedidos,
+  ROUND(SUM(ecommerce.purchase_revenue), 2) AS por_campo_ecommerce,
+  ROUND(SUM((SELECT COALESCE(value.double_value, value.float_value, CAST(value.int_value AS FLOAT64))
+             FROM UNNEST(event_params) WHERE key = 'value')), 2) AS por_parametro_value
+FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
+WHERE _TABLE_SUFFIX BETWEEN '20210101' AND '20210107' AND event_name = 'purchase'</code></pre>
+    <p><strong>137 pedidos · 7.982,00 € por el campo <code>ecommerce</code> · 7.978,87 € por el parámetro <code>value</code>.</strong> Diferencia: 3,13 €. Son dos campos que GA4 rellena por separado y 6 compras llegan sin <code>purchase_revenue</code>.</p>
+    <p class="muted">Curiosidad: ese día 21.602 de 26.489 eventos llevan <code>debug_mode</code>. Hasta Google se deja el modo depuración puesto.</p>
   </section>
 </section>
 
@@ -1125,12 +1417,28 @@ gtag('get', MEASUREMENT_ID, 'client_id', (cid) => {
     <span class="ej-num">Ejercicio 13</span><span class="ej-tiempo">10 minutos</span>
     <h2>Mandad un evento a mano</h2>
     <ol class="pasos">
-      <li>Sacad vuestro <code>client_id</code> de la tienda con <code>gtag('get', …)</code>.</li>
-      <li>Mandad un evento al validador y provocad un error a propósito.</li>
-      <li>Arregladlo y mandadlo de verdad.</li>
-      <li>Buscadlo en Tiempo real.</li>
+      <li>En la tienda, abrid la <strong>Consola</strong> del navegador y ejecutad:
+        <pre><code class="language-javascript" data-trim>gtag('get', 'G-TCCFCHKDG9', 'client_id', console.log)</code></pre></li>
+      <li>En una terminal, mandad al validador un evento con un nombre inválido (sustituid <code>CLIENT_ID</code>):
+        <pre><code class="language-bash" data-trim>curl -s -X POST "https://www.google-analytics.com/debug/mp/collect?measurement_id=G-TCCFCHKDG9&amp;api_secret=x" -d '{"client_id":"CLIENT_ID","events":[{"name":"_prueba"}]}'</code></pre></li>
+      <li>Leed el error, arreglad el nombre y añadid <code>session_id</code> y <code>engagement_time_msec</code>.</li>
+      <li>Mandadlo al endpoint de verdad con el secreto que os dé el formador, y buscadlo en <strong>Informes → Tiempo real</strong>.</li>
     </ol>
     <p class="muted">El script <code>mp_backfill.py</code> del repositorio hace esto mismo, pero con 350 sesiones.</p>
+  </section>
+  <section class="solucion" id="sol-13" data-menu-title="Solución 13">
+    <span class="sol-tag">Solución · Ejercicio 13</span>
+    <h2>Mandad un evento a mano</h2>
+    <p class="cmd-label">paso 2 · respuesta del validador</p>
+    <pre><code class="language-json" data-trim>{"validationMessages": [{
+  "fieldPath": "events",
+  "description": "Event at index: [0] has invalid name [_prueba]. Names must start with an alphabetic character.",
+  "validationCode": "NAME_INVALID" }]}</code></pre>
+    <p class="cmd-label">paso 3 · arreglado → responde <code>{"validationMessages": [ ]}</code></p>
+    <pre><code class="language-bash" data-trim>curl -s -X POST "https://www.google-analytics.com/debug/mp/collect?measurement_id=G-TCCFCHKDG9&amp;api_secret=x" -d '{"client_id":"CLIENT_ID","events":[{"name":"prueba_formacion","params":{"session_id":"1790000000","engagement_time_msec":100}}]}'</code></pre>
+    <p class="cmd-label">paso 4 · envío real → HTTP 204, sin cuerpo</p>
+    <pre><code class="language-bash" data-trim>curl -s -o /dev/null -w "%{http_code}\n" -X POST "https://www.google-analytics.com/mp/collect?measurement_id=G-TCCFCHKDG9&amp;api_secret=$MP_API_SECRET" -d '{"client_id":"CLIENT_ID","events":[{"name":"prueba_formacion","params":{"session_id":"1790000000","engagement_time_msec":100}}]}'</code></pre>
+    <p class="muted">Aparece en Tiempo real en un minuto como <code>prueba_formacion</code>. Fijaos en que el validador aceptó <code>api_secret=x</code>: no comprueba el secreto. En Windows, usad Git Bash por las comillas simples.</p>
   </section>
 </section>
 
@@ -1157,17 +1465,29 @@ gtag('get', MEASUREMENT_ID, 'client_id', (cid) => {
     </div>
   </section>
 
-  <section>
-    <h3>Solución</h3>
+  <section class="solucion" id="sol-fallos" data-menu-title="Solución · los cinco fallos">
+    <span class="sol-tag">Solución · Los cinco fallos</span>
+    <h2>Dónde están y cómo se arreglan</h2>
     <table>
-      <tr><th>Fallo</th><th>Cómo se ve</th><th>Qué cuesta</th></tr>
-      <tr><td>Consentimiento después del <code>config</code></td><td>falta <code>gcs</code>, cookie sin permiso</td><td>un problema legal</td></tr>
-      <tr><td>Vista de página doble</td><td>dos <code>page_view</code> seguidos</td><td>el doble de tráfico del real</td></tr>
-      <tr><td>Importe como texto</td><td><code>ep.value</code> en vez de <code>epn.value</code></td><td>ingresos a cero</td></tr>
-      <tr><td>Artículos sin identificador</td><td>hay que mirar el <code>pr1</code></td><td>informes de producto vacíos</td></tr>
-      <tr><td>Compra repetida con id fijo</td><td>dos eventos, mismo id</td><td>ventas que no existen</td></tr>
+      <tr><th>Fallo</th><th>Dónde</th><th>Arreglo</th></tr>
+      <tr><td>1 · <code>consent default</code> después del <code>config</code></td><td><code data-line="site/buggy/analytics.js::gtag('consent', 'default'"></code></td><td>subir esa línea antes de <code data-line="site/buggy/analytics.js::const script = document.createElement"></code></td></tr>
+      <tr><td>2 · <code>page_view</code> doble</td><td><code data-line="site/buggy/analytics.js::send_page_view: true"></code></td><td><code>send_page_view: false</code> <strong>y</strong> apagar "historial del navegador" en la medición mejorada</td></tr>
+      <tr><td>3 · <code>value</code> como texto</td><td><code data-line="site/buggy/analytics.js::.toFixed(2)"></code></td><td>quitar <code>.toFixed(2)</code></td></tr>
+      <tr><td>4 · artículos sin <code>item_id</code></td><td><code data-line="site/buggy/analytics.js::const { item_id, ...item }"></code></td><td>devolver el artículo entero de <code>toGA4Item</code></td></tr>
+      <tr><td rowspan="2">5 · <code>purchase</code> repetido con id fijo</td><td><code data-line="site/buggy/app.js::if (order &amp;&amp; order.lines) trackPurchase(order);"></code></td><td>borrar la línea: no se compra al pintar la página de gracias</td></tr>
+      <tr><td><code data-line="site/buggy/analytics.js::transaction_id: 'MM-TEST'"></code></td><td><code>order.transaction_id</code> y recuperar la comprobación <code>wasSent</code></td></tr>
     </table>
-    <p class="muted">El segundo se arregla a medias en el código y a medias en la consola.</p>
+  </section>
+
+  <section class="solucion" id="sol-fallos-diff" data-menu-title="Solución · fallos en 10 segundos">
+    <span class="sol-tag">Solución · Los cinco fallos</span>
+    <h2>La respuesta en diez segundos</h2>
+    <p>La versión con fallos es la buena con cinco cambios. Un <code>diff</code> los enseña todos:</p>
+    <pre><code class="language-bash" data-trim>diff site/analytics.js site/buggy/analytics.js
+diff site/app.js site/buggy/app.js</code></pre>
+    <p>Para comprobar un arreglo, el test contra la versión con fallos:</p>
+    <pre><code class="language-bash" data-trim>simulator/.venv/bin/python simulator/e2e_events_test.py --url http://localhost:8080/buggy/</code></pre>
+    <p class="muted">Si alguien los arregla todos queda en verde. El fallo 1 solo se ve en Red o con la aplicación limpia (incógnito): sin <code>gcs</code> en el primer hit y con cookie <code>_ga</code> escrita antes de aceptar.</p>
   </section>
 
   <section>
@@ -1186,9 +1506,34 @@ gtag('get', MEASUREMENT_ID, 'client_id', (cid) => {
 
   <section>
     <h3>Volvamos a vuestras preguntas</h3>
-    <p>Las del primer ejercicio, las que apuntamos ayer por la mañana.</p>
+    <p>Las del primer ejercicio, las que apuntamos al principio.</p>
     <p>¿Cuáles podéis responder ya? ¿Cuáles necesitan que midáis algo nuevo? ¿Y cuáles necesitan BigQuery?</p>
     <p class="muted">Eso es vuestro plan de trabajo para el mes que viene.</p>
+  </section>
+
+
+  <section class="solucion" id="soluciones" data-menu-title="Índice de soluciones">
+    <span class="sol-tag">Para el formador</span>
+    <h2>Soluciones</h2>
+    <ul class="sol-index">
+      <li><a href="#/sol-1">1 · Tus tres preguntas</a></li>
+      <li><a href="#/sol-2">2 · Clasificar eventos</a></li>
+      <li><a href="#/sol-3">3 · Búsqueda en la consola</a></li>
+      <li><a href="#/sol-4">4 · Leer un hit</a></li>
+      <li><a href="#/sol-5">5 · Contar vistas</a></li>
+      <li><a href="#/sol-6">6 · Seguir el dinero</a></li>
+      <li><a href="#/sol-7">7 · Romper algo</a></li>
+      <li><a href="#/sol-8">8 · Decir que no</a></li>
+      <li><a href="#/sol-p1">Práctica 1 a 8</a></li>
+      <li><a href="#/sol-p-final">Práctica · comprobación final</a></li>
+      <li><a href="#/sol-9">9 · Dos informes</a></li>
+      <li><a href="#/sol-10">10 · Vuestro embudo</a></li>
+      <li><a href="#/sol-11">11 · Configurar</a></li>
+      <li><a href="#/sol-12">12 · BigQuery</a></li>
+      <li><a href="#/sol-13">13 · Measurement Protocol</a></li>
+      <li><a href="#/sol-fallos">Los cinco fallos</a></li>
+    </ul>
+    <p class="muted">Cada solución está justo debajo de su ejercicio (flecha abajo). Esta página se abre directamente en <code>/slides/#/soluciones</code>.</p>
   </section>
 
   <section class="cover">

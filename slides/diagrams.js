@@ -290,3 +290,24 @@ D['limites-datos'] = svg(940, 280, `
 
   <text x="470" y="265" text-anchor="middle" font-size="15" fill="${NAVY}" font-family="Merriweather, Georgia, serif">Los tres desaparecen en BigQuery. Por eso existe la exportación.</text>
 `);
+
+// ---------------------------------------------------------------------------
+// 11 · Cómo se lee gcs
+// ---------------------------------------------------------------------------
+D['gcs'] = svg(940, 330, `
+  <text x="470" y="40" text-anchor="middle" font-size="15" fill="${MUTED}" font-family="Merriweather, Georgia, serif">En cada hit a /g/collect, por ejemplo:</text>
+  <text x="470" y="80" text-anchor="middle" font-size="22" fill="${NAVY}" font-family="ui-monospace, monospace">…&amp;gcs=<tspan font-weight="700">G101</tspan>&amp;…</text>
+
+  ${box(170, 110, 100, 90, ['G'], { size: 40, bold: 1, fill: SOFT, stroke: MUTED })}
+  ${box(285, 110, 100, 90, ['1'], { size: 40, bold: 1, fill: SOFT, stroke: MUTED })}
+  ${box(450, 110, 100, 90, ['0'], { size: 40, bold: 1, stroke: ACCENT })}
+  ${box(660, 110, 100, 90, ['1'], { size: 40, bold: 1, stroke: NAVY })}
+
+  <text x="277" y="232" text-anchor="middle" font-size="14" fill="${MUTED}" font-family="Merriweather, Georgia, serif">prefijo fijo</text>
+  <text x="500" y="232" text-anchor="middle" font-size="15" font-weight="700" fill="${ACCENT}" font-family="ui-monospace, monospace">ad_storage</text>
+  <text x="500" y="254" text-anchor="middle" font-size="13" fill="${MUTED}" font-family="Merriweather, Georgia, serif">cookies de publicidad</text>
+  <text x="710" y="232" text-anchor="middle" font-size="15" font-weight="700" fill="${NAVY}" font-family="ui-monospace, monospace">analytics_storage</text>
+  <text x="710" y="254" text-anchor="middle" font-size="13" fill="${MUTED}" font-family="Merriweather, Georgia, serif">cookie _ga</text>
+
+  <text x="470" y="300" text-anchor="middle" font-size="16" fill="${NAVY}" font-family="Merriweather, Georgia, serif">1 = concedido · 0 = denegado. Este usuario acepta analítica y rechaza publicidad.</text>
+`);

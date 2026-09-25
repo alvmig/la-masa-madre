@@ -238,6 +238,7 @@ function renderSummary() {
     <p class="total"><span>Total</span><strong data-testid="sum-total">${fmt(t.total)}</strong></p>`;
 }
 
+// @snippet:confirm-order
 function confirmOrder(lines) {
   const t = orderTotals();
   const order = {
@@ -255,6 +256,7 @@ function confirmOrder(lines) {
   updateCartBadge();
   navigate('/gracias');              // 3. page_view de /gracias, sin purchase
 }
+// @end
 
 function renderThanks() {
   let order = null;
@@ -309,6 +311,7 @@ function updateCartBadge() {
 
 // Clic en una tarjeta: select_item con su lista y posición, se guarda el
 // contexto para propagarlo a view_item/add_to_cart, y se navega.
+// @snippet:select-item
 document.addEventListener('click', (e) => {
   const card = e.target.closest('a[data-item-id][data-list]');
   if (!card || e.metaKey || e.ctrlKey) return;
@@ -321,6 +324,7 @@ document.addEventListener('click', (e) => {
   persist();
   navigate(`/panes/${product.item_id}`);
 });
+// @end
 
 // ---------------------------------------------------------------------------
 // Banner de consentimiento
