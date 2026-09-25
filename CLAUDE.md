@@ -30,7 +30,8 @@ site/                SPA instrumentada = solución
 starter/             misma SPA con los cuerpos de analytics.js como // TODO + EJERCICIOS.md
 slides/              reveal.js (index.html, theme.css, snippets.js generado, vendor/)
 scripts/             dev-server.mjs (sirve site/ en / y slides/ en /slides/ con fallback SPA)
-                     extract-snippets.mjs (site/*.js → slides/snippets.js)
+                     extract-snippets.mjs (site/*.js → slides/snippets.js, con números de línea)
+                     build-buggy.py (site/ → site/buggy/ con los 5 fallos) · run-sql.sh (sql/ → BigQuery)
 simulator/           traffic_generator.py  mp_backfill.py  e2e_events_test.py  requirements.txt  .env.example
 sql/                 consultas comentadas contra el dataset público
 .github/workflows/pages.yml   ensambla site/ + slides/ y publica en GitHub Pages
@@ -73,7 +74,6 @@ python simulator/mp_backfill.py --dry-run      # valida contra /debug/mp/collect
 Fases 0–7 completas. Ver `README.md` (estructura, comandos y checklist del día anterior).
 
 Pendiente de ejecutar por el formador, no de programar:
-- Ejecutar una vez las 5 consultas de `sql/` en BigQuery (nunca se han ejecutado).
 - Relanzar `mp_backfill.py` **el mismo día** de la formación (ventana de 72 h).
 - Lanzar `traffic_generator.py --spread-hours 8` la tarde anterior.
 - Desactivar en GA4 "Cambios de página basados en eventos del historial del navegador".
