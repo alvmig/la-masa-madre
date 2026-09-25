@@ -51,6 +51,19 @@ function renderSnippets() {
 }
 renderSnippets();
 
+// <code data-line="starter/analytics.js#trackPageView"></code> → "starter/analytics.js:118"
+// Resuelto por extract-snippets.mjs contra el código real.
+function renderLineRefs() {
+  document.querySelectorAll('[data-line]').forEach((el) => {
+    const ref = el.dataset.line;
+    const n = (window.LINES || {})[ref];
+    const file = ref.split(/::|#/)[0];
+    el.textContent = n ? `${file}:${n}` : `${file}:??`;
+    if (!n) el.classList.add('line-missing');
+  });
+}
+renderLineRefs();
+
 // --- 2b. Diagramas -----------------------------------------------------------
 // <div data-diagram="anatomia-hit"></div> → el SVG de diagrams.js.
 function renderDiagrams() {

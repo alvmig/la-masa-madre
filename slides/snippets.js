@@ -8,40 +8,94 @@ window.SNIPPETS = {
     "line": 20,
     "lang": "javascript"
   },
+  "consent-payload": {
+    "code": "function consentPayload(granted) {\n  const v = granted ? 'granted' : 'denied';\n  return {\n    ad_storage: v,\n    ad_user_data: v,\n    ad_personalization: v,\n    analytics_storage: v,\n  };\n}",
+    "file": "site/analytics.js",
+    "line": 56,
+    "lang": "javascript"
+  },
   "consent-update": {
     "code": "gtag('consent', 'update', consentPayload(granted));",
     "file": "site/analytics.js",
-    "line": 71,
+    "line": 73,
     "lang": "javascript"
   },
   "to-ga4-item": {
     "code": "export function toGA4Item(product, { quantity = 1, index, list } = {}) {\n  const item = {\n    item_id: product.item_id,\n    item_name: product.item_name,\n    item_brand: BRAND,\n    item_category: product.item_category,\n    item_category2: product.item_category2,\n    price: product.price, // número, nunca \"5.50\"\n    quantity,             // entero ≥ 1\n  };\n  // Contexto de lista: solo si el item viene de una (catálogo, destacados).\n  // Se propaga desde select_item hasta add_to_cart para atribuir la lista.\n  if (list) {\n    item.item_list_id = list.id;\n    item.item_list_name = list.name;\n  }\n  if (Number.isInteger(index)) item.index = index; // posición desde 0\n  return item;\n}",
     "file": "site/analytics.js",
-    "line": 83,
+    "line": 85,
+    "lang": "javascript"
+  },
+  "sum-value": {
+    "code": "function sumValue(items) {\n  const cents = items.reduce((acc, it) => acc + Math.round(it.price * 100) * it.quantity, 0);\n  return cents / 100;\n}",
+    "file": "site/analytics.js",
+    "line": 114,
     "lang": "javascript"
   },
   "track-page-view": {
     "code": "export function trackPageView({ page_title, page_location, page_referrer }) {\n  const params = { page_title, page_location };\n  if (page_referrer) params.page_referrer = page_referrer;\n  gtag('event', 'page_view', params);\n}",
     "file": "site/analytics.js",
-    "line": 123,
+    "line": 127,
     "lang": "javascript"
   },
   "track-view-item-list": {
     "code": "export function trackViewItemList(list, products) {\n  gtag('event', 'view_item_list', {\n    item_list_id: list.id,\n    item_list_name: list.name,\n    items: products.map((p, index) => toGA4Item(p, { index, list })),\n  });\n}",
     "file": "site/analytics.js",
-    "line": 133,
+    "line": 137,
+    "lang": "javascript"
+  },
+  "track-select-item": {
+    "code": "export function trackSelectItem(list, product, index) {\n  gtag('event', 'select_item', {\n    item_list_id: list.id,\n    item_list_name: list.name,\n    items: [toGA4Item(product, { index, list })],\n  });\n}",
+    "file": "site/analytics.js",
+    "line": 147,
+    "lang": "javascript"
+  },
+  "track-view-item": {
+    "code": "export function trackViewItem(product, listCtx = {}) {\n  const items = [toGA4Item(product, { quantity: 1, ...listCtx })];\n  gtag('event', 'view_item', { currency: CURRENCY, value: sumValue(items), items });\n}",
+    "file": "site/analytics.js",
+    "line": 158,
     "lang": "javascript"
   },
   "track-add-to-cart": {
     "code": "export function trackAddToCart(product, quantity, listCtx = {}) {\n  const items = [toGA4Item(product, { quantity, ...listCtx })];\n  gtag('event', 'add_to_cart', {\n    currency: CURRENCY,          // obligatorio cuando hay value\n    value: sumValue(items),      // price × quantity\n    items,\n  });\n}",
     "file": "site/analytics.js",
-    "line": 158,
+    "line": 166,
+    "lang": "javascript"
+  },
+  "track-remove-from-cart": {
+    "code": "export function trackRemoveFromCart(product, quantity, listCtx = {}) {\n  const items = [toGA4Item(product, { quantity, ...listCtx })];\n  gtag('event', 'remove_from_cart', { currency: CURRENCY, value: sumValue(items), items });\n}",
+    "file": "site/analytics.js",
+    "line": 177,
+    "lang": "javascript"
+  },
+  "track-view-cart": {
+    "code": "export function trackViewCart(lines) {\n  const items = linesToItems(lines);\n  gtag('event', 'view_cart', { currency: CURRENCY, value: sumValue(items), items });\n}",
+    "file": "site/analytics.js",
+    "line": 184,
+    "lang": "javascript"
+  },
+  "track-begin-checkout": {
+    "code": "export function trackBeginCheckout(lines) {\n  const items = linesToItems(lines);\n  gtag('event', 'begin_checkout', { currency: CURRENCY, value: sumValue(items), items });\n}",
+    "file": "site/analytics.js",
+    "line": 191,
+    "lang": "javascript"
+  },
+  "track-add-shipping-info": {
+    "code": "export function trackAddShippingInfo(lines, shippingTier) {\n  const items = linesToItems(lines);\n  gtag('event', 'add_shipping_info', {\n    currency: CURRENCY,\n    value: sumValue(items),\n    shipping_tier: shippingTier,   // 'Recogida en obrador' | 'Envío a domicilio'\n    items,\n  });\n}",
+    "file": "site/analytics.js",
+    "line": 198,
+    "lang": "javascript"
+  },
+  "track-add-payment-info": {
+    "code": "export function trackAddPaymentInfo(lines, paymentType) {\n  const items = linesToItems(lines);\n  gtag('event', 'add_payment_info', {\n    currency: CURRENCY,\n    value: sumValue(items),\n    payment_type: paymentType,     // 'Tarjeta' | 'Bizum'\n    items,\n  });\n}",
+    "file": "site/analytics.js",
+    "line": 210,
     "lang": "javascript"
   },
   "track-purchase": {
     "code": "export function trackPurchase(order) {\n  if (wasSent(order.transaction_id)) {\n    console.warn(`[analytics] purchase ${order.transaction_id} ya enviado, se omite`);\n    return false;\n  }\n  const items = linesToItems(order.lines);\n  gtag('event', 'purchase', {\n    transaction_id: order.transaction_id,\n    currency: CURRENCY,\n    value: sumValue(items),   // solo items; tax y shipping van aparte\n    tax: order.tax,\n    shipping: order.shipping,\n    items,\n  });\n  markSent(order.transaction_id);\n  return true;\n}",
     "file": "site/analytics.js",
-    "line": 209,
+    "line": 227,
     "lang": "javascript"
   },
   "confirm-order": {
@@ -99,3 +153,4 @@ window.SNIPPETS = {
     "lang": "sql"
   }
 };
+window.LINES = {};

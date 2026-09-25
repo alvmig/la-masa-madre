@@ -71,8 +71,12 @@ salen de aquí.
 
 `trackPageView()`. El router ya te llama en cada cambio de ruta.
 
+Además de los tres parámetros estándar, el router te pasa `tipo_pagina`
+(`inicio`, `catalogo`, `producto`…). Es un parámetro **propio**: mándalo también.
+Más adelante lo registraremos como dimensión personalizada.
+
 **Comprueba:** navega por la web y cuenta los `page_view` en DebugView. Uno por
-vista, ni más ni menos.
+vista, ni más ni menos, y cada uno con su `tipo_pagina`.
 
 **Pregunta:** ¿por qué `page_referrer` es importante aquí y no en una web clásica?
 

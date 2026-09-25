@@ -348,12 +348,12 @@ showBanner(!getStoredConsent());       // sin elección guardada, se pregunta
 restore();
 updateCartBadge();
 
-addRoute('/',                 { title: () => 'La Masa Madre · Obrador',               render: renderHome });
-addRoute('/panes',            { title: () => 'Panes · La Masa Madre',                 render: renderCatalog });
-addRoute('/panes/:item_id',   { title: (p) => `${getProduct(p.item_id)?.item_name ?? 'Pan'} · La Masa Madre`, render: renderDetail });
-addRoute('/carrito',          { title: () => 'Tu cesta · La Masa Madre',              render: viewCart });
-addRoute('/checkout',         { title: () => 'Pedido · La Masa Madre',                render: renderCheckout });
-addRoute('/gracias',          { title: () => 'Gracias · La Masa Madre',               render: renderThanks });
-addRoute('/404',              { title: () => 'No encontrado · La Masa Madre',         render: renderNotFound });
+addRoute('/',                 { tipo: 'inicio',   title: () => 'La Masa Madre · Obrador',               render: renderHome });
+addRoute('/panes',            { tipo: 'catalogo', title: () => 'Panes · La Masa Madre',                 render: renderCatalog });
+addRoute('/panes/:item_id',   { tipo: 'producto', title: (p) => `${getProduct(p.item_id)?.item_name ?? 'Pan'} · La Masa Madre`, render: renderDetail });
+addRoute('/carrito',          { tipo: 'cesta',    title: () => 'Tu cesta · La Masa Madre',              render: viewCart });
+addRoute('/checkout',         { tipo: 'checkout', title: () => 'Pedido · La Masa Madre',                render: renderCheckout });
+addRoute('/gracias',          { tipo: 'gracias',  title: () => 'Gracias · La Masa Madre',               render: renderThanks });
+addRoute('/404',              { tipo: 'error',    title: () => 'No encontrado · La Masa Madre',         render: renderNotFound });
 
 start();                               // primer page_view + render

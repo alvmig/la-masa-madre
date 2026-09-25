@@ -87,7 +87,9 @@ function sumValue(items) {
 // ---------------------------------------------------------------------------
 // router.js ya llama a esto en cada cambio de ruta. Manda el evento page_view
 // con page_title, page_location y, si lo hay, page_referrer.
-export function trackPageView({ page_title, page_location, page_referrer }) {
+// Además manda tipo_pagina ('inicio', 'catalogo', 'producto'…): es un parámetro
+// PROPIO, no de Google. Lo registraremos como dimensión personalizada.
+export function trackPageView({ page_title, page_location, page_referrer, tipo_pagina }) {
   // TODO
 }
 

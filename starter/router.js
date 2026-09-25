@@ -22,11 +22,11 @@ export function currentPath() {
   return location.pathname.slice(BASE.length - 1) || '/';
 }
 
-// addRoute('/panes/:item_id', { title: (p) => '...', render: (p) => ... })
-export function addRoute(pattern, { title, render }) {
+// addRoute('/panes/:item_id', { tipo: 'producto', title: (p) => '...', render: (p) => ... })
+export function addRoute(pattern, { tipo, title, render }) {
   const keys = [];
   const source = pattern.replace(/:(\w+)/g, (_, k) => { keys.push(k); return '([^/]+)'; });
-  routes.push({ regex: new RegExp(`^${source}/?$`), keys, title, render });
+  routes.push({ regex: new RegExp(`^${source}/?$`), keys, tipo, title, render });
 }
 
 export function navigate(path, { replace = false } = {}) {
@@ -77,6 +77,7 @@ function handle(initialReferrer) {
   // En una SPA no hay recarga: sin esto GA4 solo vería la primera URL.
   // page_referrer es la vista anterior (o document.referrer en la primera).
   trackPageView({
+    tipo_pagina: match.tipo,   // parámetro propio → dimensión personalizada
     page_title: document.title,
     page_location: location.href,
     page_referrer: previousUrl ?? initialReferrer ?? '',

@@ -52,6 +52,7 @@ function isDebug() {
 // Con analytics_storage 'denied' gtag NO escribe la cookie _ga pero SÍ manda
 // pings sin identificador (gcs=G100) que GA4 usa para modelar. Con 'granted'
 // los hits llevan cid y gcs=G111. Se ve en Network → /g/collect.
+// @snippet:consent-payload
 function consentPayload(granted) {
   const v = granted ? 'granted' : 'denied';
   return {
@@ -61,17 +62,18 @@ function consentPayload(granted) {
     analytics_storage: v,
   };
 }
+// @end
 
 export function getStoredConsent() {
   try { return localStorage.getItem(CONSENT_KEY); } catch { return null; }
 }
 
+// @snippet:consent-update
 export function updateConsent(granted) {
-  // @snippet:consent-update
   gtag('consent', 'update', consentPayload(granted));
-  // @end
   try { localStorage.setItem(CONSENT_KEY, granted ? 'granted' : 'denied'); } catch { /* modo privado */ }
 }
+// @end
 
 // ---------------------------------------------------------------------------
 // 3. Items
@@ -108,10 +110,12 @@ function linesToItems(lines) {
 
 // value = Σ price × quantity. Se suma en céntimos para no arrastrar
 // errores de coma flotante (0.1 + 0.2) y se emite como número.
+// @snippet:sum-value
 function sumValue(items) {
   const cents = items.reduce((acc, it) => acc + Math.round(it.price * 100) * it.quantity, 0);
   return cents / 100;
 }
+// @end
 
 // ---------------------------------------------------------------------------
 // 4. Eventos. Nombres y parámetros: literalmente los de la doc de GA4.
@@ -120,9 +124,12 @@ function sumValue(items) {
 // Vista de página manual. Necesaria porque en una SPA no hay recarga: sin esto
 // GA4 solo vería la primera URL de la sesión.
 // @snippet:track-page-view
-export function trackPageView({ page_title, page_location, page_referrer }) {
+export function trackPageView({ page_title, page_location, page_referrer, tipo_pagina }) {
   const params = { page_title, page_location };
   if (page_referrer) params.page_referrer = page_referrer;
+  // Parámetro propio: GA4 lo recibe, pero no sale en informes hasta que se
+  // registra como dimensión personalizada (Administrar → Definiciones personalizadas).
+  if (tipo_pagina) params.tipo_pagina = tipo_pagina;
   gtag('event', 'page_view', params);
 }
 // @end
@@ -139,6 +146,7 @@ export function trackViewItemList(list, products) {
 }
 // @end
 
+// @snippet:track-select-item
 export function trackSelectItem(list, product, index) {
   gtag('event', 'select_item', {
     item_list_id: list.id,
@@ -146,12 +154,15 @@ export function trackSelectItem(list, product, index) {
     items: [toGA4Item(product, { index, list })],
   });
 }
+// @end
 
 // listCtx = { list, index } si el usuario llegó desde una lista; si no, undefined.
+// @snippet:track-view-item
 export function trackViewItem(product, listCtx = {}) {
   const items = [toGA4Item(product, { quantity: 1, ...listCtx })];
   gtag('event', 'view_item', { currency: CURRENCY, value: sumValue(items), items });
 }
+// @end
 
 // add_to_cart mide el DELTA: la cantidad añadida ahora, no el estado del carrito.
 // @snippet:track-add-to-cart
@@ -165,21 +176,28 @@ export function trackAddToCart(product, quantity, listCtx = {}) {
 }
 // @end
 
+// @snippet:track-remove-from-cart
 export function trackRemoveFromCart(product, quantity, listCtx = {}) {
   const items = [toGA4Item(product, { quantity, ...listCtx })];
   gtag('event', 'remove_from_cart', { currency: CURRENCY, value: sumValue(items), items });
 }
+// @end
 
+// @snippet:track-view-cart
 export function trackViewCart(lines) {
   const items = linesToItems(lines);
   gtag('event', 'view_cart', { currency: CURRENCY, value: sumValue(items), items });
 }
+// @end
 
+// @snippet:track-begin-checkout
 export function trackBeginCheckout(lines) {
   const items = linesToItems(lines);
   gtag('event', 'begin_checkout', { currency: CURRENCY, value: sumValue(items), items });
 }
+// @end
 
+// @snippet:track-add-shipping-info
 export function trackAddShippingInfo(lines, shippingTier) {
   const items = linesToItems(lines);
   gtag('event', 'add_shipping_info', {
@@ -189,7 +207,9 @@ export function trackAddShippingInfo(lines, shippingTier) {
     items,
   });
 }
+// @end
 
+// @snippet:track-add-payment-info
 export function trackAddPaymentInfo(lines, paymentType) {
   const items = linesToItems(lines);
   gtag('event', 'add_payment_info', {
@@ -199,6 +219,7 @@ export function trackAddPaymentInfo(lines, paymentType) {
     items,
   });
 }
+// @end
 
 // order = { transaction_id, lines, tax, shipping }
 // GA4 deduplica purchase con el mismo transaction_id para el mismo usuario

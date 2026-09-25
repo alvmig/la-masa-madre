@@ -72,7 +72,7 @@ Todos se envían con `gtag('event', '<nombre>', {…})` desde `analytics.js`. La
 
 | Evento               | Función               | Cuándo                                              | Parámetros a nivel de evento |
 |----------------------|-----------------------|-----------------------------------------------------|------------------------------|
-| `page_view`          | `trackPageView`       | Cada cambio de ruta del router (manual, `send_page_view: false`) | `page_title`, `page_location` (URL completa), `page_referrer` (URL virtual anterior; en la primera vista, `document.referrer`) |
+| `page_view`          | `trackPageView`       | Cada cambio de ruta del router (manual, `send_page_view: false`) | `page_title`, `page_location` (URL completa), `page_referrer` (URL virtual anterior; en la primera vista, `document.referrer`), `tipo_pagina` (**parámetro propio**, ver §4b) |
 | `view_item_list`     | `trackViewItemList`   | Render del catálogo y de destacados en la home       | `item_list_id`, `item_list_name`, `items[]` (cada uno con `index`, `item_list_id`, `item_list_name`) |
 | `select_item`        | `trackSelectItem`     | Clic en una tarjeta de producto                      | `item_list_id`, `item_list_name`, `items[1]` |
 | `view_item`          | `trackViewItem`       | Render del detalle                                   | `currency`, `value` (= price), `items[1]` |
@@ -91,6 +91,18 @@ Notas de la doc aplicadas:
 - `items` es un array aunque lleve un solo elemento: GA4 lo desanida en la dimensión de item; el evento tiene sus métricas y cada item las suyas.
 - `index` empieza en 0.
 - `add_to_cart`/`remove_from_cart` miden el **delta**, no el estado del carrito. Por eso `quantity` es la cantidad añadida/quitada y `value` su importe.
+
+## 4b. Parámetros propios
+
+Solo hay uno, y existe para enseñar las dimensiones personalizadas: todos los
+demás parámetros son estándar de Google y ya tienen dimensión en los informes.
+
+| Parámetro     | Evento      | Valores                                                            | Registrar en GA4 como |
+|---------------|-------------|--------------------------------------------------------------------|-----------------------|
+| `tipo_pagina` | `page_view` | `inicio`, `catalogo`, `producto`, `cesta`, `checkout`, `gracias`, `error` | Dimensión personalizada, ámbito **Evento**, nombre "Tipo de página" |
+
+Se declara en cada ruta (`addRoute('/panes', { tipo: 'catalogo', … })`) y el
+router lo manda con el `page_view`.
 
 ## 5. Checkout: importes
 

@@ -85,7 +85,9 @@ def check_items_and_values(c: Check, hits):
 
 def check_page_views(c: Check, hits, base):
     pvs = [h for h in hits if h.name == "page_view"]
+    tipos = {"inicio", "catalogo", "producto", "cesta", "checkout", "gracias", "error"}
     for h in pvs:
+        c.ok(h.params.get("tipo_pagina") in tipos, f"page_view sin tipo_pagina válido: {h.params.get('tipo_pagina')!r} en {h.page_location}")
         c.ok(h.page_location.startswith(base.rstrip("/")), f"page_view con page_location fuera del sitio: {h.page_location}")
         c.ok(h.page_title.endswith("La Masa Madre") or "La Masa Madre" in h.page_title, f"page_view sin page_title: {h.page_title!r}")
     # Cada evento de ecommerce va después del page_view de su vista.

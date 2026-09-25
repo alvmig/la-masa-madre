@@ -66,13 +66,56 @@ for (const dir of SOURCES) {
 
 if (duplicates.length) console.warn(`aviso: nombres repetidos: ${duplicates.join(', ')}`);
 
+// --- Referencias a líneas -----------------------------------------------------
+// Las slides citan líneas exactas con <code data-line="…">. Se resuelven aquí,
+// contra el código real, para que nunca se desfasen:
+//   data-line="starter/analytics.js#trackPageView"   → línea de la función
+//   data-line="site/analytics.js::value: sumValue"   → primera línea que contiene el texto
+//   data-line="site/analytics.js::texto@@trackAddToCart" → primera coincidencia DESPUÉS de esa función
+const html = await readFile(path.join(ROOT, 'slides', 'index.html'), 'utf8');
+const refs = [...new Set([...html.matchAll(/data-line="([^"]+)"/g)].map((m) => m[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')))];
+const lines = {};
+const missing = [];
+const fileCache = {};
+async function linesOf(rel) {
+  if (!fileCache[rel]) fileCache[rel] = (await readFile(path.join(ROOT, rel), 'utf8')).split('\n');
+  return fileCache[rel];
+}
+function fnLine(src, name, from = 0) {
+  const re = new RegExp(`^\\s*(export\\s+)?(async\\s+)?function\\s+${name}\\b`);
+  const i = src.findIndex((l, n) => n >= from && re.test(l));
+  return i;
+}
+for (const ref of refs) {
+  let n = -1;
+  try {
+    if (ref.includes('::')) {
+      const [file, rest] = ref.split('::');
+      const [needle, after] = rest.split('@@');
+      const src = await linesOf(file);
+      const start = after ? Math.max(0, fnLine(src, after)) : 0;
+      n = src.findIndex((l, i) => i >= start && l.includes(needle));
+    } else {
+      const [file, fn] = ref.split('#');
+      n = fnLine(await linesOf(file), fn);
+    }
+  } catch { n = -1; }
+  if (n < 0) missing.push(ref);
+  else lines[ref] = n + 1;
+}
+if (missing.length) {
+  console.error(`ERROR: referencias de línea sin resolver:\n  ${missing.join('\n  ')}`);
+  process.exitCode = 1;
+}
+
 const out = `// GENERADO por scripts/extract-snippets.mjs · no editar a mano.
 // Fuente: el código real de site/ y simulator/. Regenerar con:
 //   node scripts/extract-snippets.mjs
 window.SNIPPETS = ${JSON.stringify(snippets, null, 2)};
+window.LINES = ${JSON.stringify(lines, null, 2)};
 `;
 await writeFile(path.join(ROOT, 'slides', 'snippets.js'), out);
-console.log(`${Object.keys(snippets).length} fragmentos → slides/snippets.js`);
+console.log(`${Object.keys(snippets).length} fragmentos y ${Object.keys(lines).length} referencias de línea → slides/snippets.js`);
 for (const [k, v] of Object.entries(snippets)) {
   console.log(`  ${k.padEnd(22)} ${v.file}:${v.line}  (${v.code.split('\n').length} líneas)`);
 }
